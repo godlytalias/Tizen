@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<manifest xmlns="http://tizen.org/ns/packages" api-version="2.3" package="org.tizen.tizen_silent_service" version="1.0.0">
+    <profile name="mobile"/>
+    <service-application appid="org.tizen.tizen_silent_service" exec="tizen_silent_service" multiple="false" nodisplay="true" taskmanage="false" type="capp">
+        <label>tizen_silent_service</label>
+        <icon>tizen_silent_service.png</icon>
+    </service-application>
+    <privileges>
+        <privilege>http://tizen.org/privilege/telephony</privilege>
+        <privilege>http://tizen.org/privilege/systemsettings</privilege>
+        <privilege>http://tizen.org/privilege/contact.read</privilege>
+        <privilege>http://tizen.org/privilege/volume.set</privilege>
+        <privilege>http://tizen.org/privilege/message.write</privilege>
+        <privilege>http://tizen.org/privilege/callhistory.read</privilege>
+        <privilege>http://tizen.org/privilege/notification</privilege>
+        <privilege>http://tizen.org/privilege/message.read</privilege>
+    </privileges>
+</manifest>
