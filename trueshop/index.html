@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <meta name="description" content="TrueShop developed by Godly T Alias"/>
+
+    <title>TrueShop</title>
+    
+
+    <link rel="stylesheet" href="css/jquery.mobile-1.3.2.css"/>
+    <script type="text/javascript" src="js/jquery-1.9.1.js"></script>
+    <script type="text/javascript" src="js/jquery.mobile-1.3.2.js"></script>
+    <script type="text/javascript" src="js/main.js"></script>
+    <link rel="stylesheet" href="css/style.css" />
+</head>
+
+<body>
+    <div data-role="page" id="foo" >
+        <div data-role="header" data-id="fool" data-position="fixed" data-tap-toggle="false" >
+            <h1>TrueShop</h1>
+        </div><!-- /header -->
+        <div id="dataspace" data-role="content" >
+            <ul data-role="listview" style="margin-top: 0px; " >
+            			<li data-role="list-divider"><div style="padding: 5px;">Select the Item</div></li>
+            </ul>
+                        <div align="center" class = "ui-field-contain" style="padding:30px;"><select id="item">
+                        </select></div>
+                       <ul data-role="listview"> <li data-role="list-divider"><div style="padding: 5px;">Start Date</div></li></ul>
+                        <div align="center" class="ui-field-contain" style="padding:30px;"><input type="date" name="sdate" id="sdate" data-format="yyyymmdd" required/></div>
+                       <ul data-role="listview"> <li data-role="list-divider"><div style="padding: 5px;">End Date</div></li></ul>
+                       <div align="center" class="ui-field-contain" style="padding:30px;"><input type="date" name="edate" id="edate" required/></div>
+        <div data-role="content"> 
+        <button id="submit" onclick="go();">Go</button> </div>
+        
+   </div>
+        <div data-role="footer" data-id="fool" data-position="fixed" data-tap-toggle="false" id='footer1'>
+            <div data-role="navbar">
+                <ul>
+                	<li><a href="#" class="ui-btn-active ui-state-persist">Market Price</a></li>
+                    <li><a href="ecommerce.html" data-transition="slide" id="ecomlink">E-Commerce Price</a></li>
+                </ul>
+            </div><!-- /navbar -->
+        </div><!-- /footer -->
+        <div data-role="footer" data-id="fool" data-position="fixed" data-tap-toggle="false" style="display:none;" id='footer2'>
+            <div data-role="navbar">
+                <ul>
+                	<li><a onclick="prevpage('1');" href="#">Previous</a></li>
+                    <li><a onclick="home('1')" href="#">Home</a></li>
+                    <li><a onclick="nextpage('1');" href="#">Next</a></li>
+                </ul>
+            </div><!-- /navbar -->
+        </div><!-- /footer -->
+        <div data-role="popup" id="popupmenu">
+        <a href="#" data-rel="back" data-role="button" data-theme="a" data-icon="delete" data-iconpos="notext" class="ui-btn-right">Close</a>
+        <div data-role="header" style="padding:5px;">About Application</div>
+        <div data-role="content">This is an application developed for helping the users to know about the pricing of various commodities in various
+        markets across India. This application also gives details about items across different e-commerce sites also, So that users will get the items sold
+        out in different e-commerce platforms under one roof and can check the prices and can buy the needed item. This application will help users to 
+        crosscheck pricing of items in various markets and to get items in less cost.<br/><br/>
+        <h6 align="center">Developed by Godly T Alias<br/>godlytalias@yahoo.co.in</h6>
+        </div>
+        </div>
+    </div><!-- /page -->
+</body>
+</html>

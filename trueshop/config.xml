@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<widget xmlns="http://www.w3.org/ns/widgets" xmlns:tizen="http://tizen.org/ns/widgets" id="http://yourdomain/TrueShop" version="1.0.0" viewmodes="fullscreen">
+    <access origin="http://api.dataweave.in" subdomains="true"></access>
+    <tizen:application id="cRYizzwIsn.TrueShop" package="cRYizzwIsn" required_version="2.2"/>
+    <author email="godlytalias@yahoo.co.in">Godly T Alias</author>
+    <content src="start.html"/>
+    <feature name="http://tizen.org/feature/screen.size.all"/>
+    <icon src="icon.png" height="117" width="117"/>
+    <name>TrueShop</name>
+</widget>
