@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<widget xmlns="http://www.w3.org/ns/widgets" xmlns:tizen="http://tizen.org/ns/widgets" id="http://yourdomain/silenttrackerweb" version="0.2.1" viewmodes="maximized">
+    <tizen:application id="E4W9zCiCoO.silenttrackerweb" package="E4W9zCiCoO" required_version="2.2"/>
+    <content src="index.html"/>
+    <feature name="http://tizen.org/feature/screen.size.normal.720.1280"/>
+    <icon src="icon.png"/>
+    <name>silenttrackerweb</name>
+    <tizen:privilege name="http://tizen.org/privilege/application.launch"/>
+    <tizen:privilege name="http://tizen.org/privilege/account.read"/>
+    <tizen:privilege name="http://tizen.org/privilege/notification"/>
+    <tizen:profile name="mobile"/>
+</widget>

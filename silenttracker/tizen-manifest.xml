@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<manifest xmlns="http://tizen.org/ns/packages" api-version="2.3" package="org.tizen.silenttracker" version="1.0.0">
+    <profile name="mobile"/>
+    <service-application appid="org.tizen.silenttracker" exec="silenttracker" multiple="false" nodisplay="true" taskmanage="false" type="capp">
+        <label>silenttracker</label>
+        <icon>silenttracker.png</icon>
+    </service-application>
+    <privileges>
+        <privilege>http://tizen.org/privilege/account.read</privilege>
+        <privilege>http://tizen.org/privilege/notification</privilege>
+    </privileges>
+</manifest>
