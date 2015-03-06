@@ -23,7 +23,7 @@ var gServiceAppId = 'E4W9zCiCoO.silenttracker',
     gLocalMessagePort,
     gRemoteMessagePort,
     gLocalMessagePortWatchId,
-    isStarting = false,
+    started = false,
     start;
 
 function writeToScreen(message,unixtime) {
@@ -32,11 +32,11 @@ function writeToScreen(message,unixtime) {
         time = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' +
             today.getDate() + ' ' + today.getHours() + ':' +
             today.getMinutes(),
-        str = '<li class="ui-li-has-multiline ui-li-text-ellipsis">' +
+        str = '<li><a href="#"><h3>' +
             message +
-            '<span class="ui-li-text-sub">' +
+            '</h3><p>' +
             time +
-            '</span></li>';
+            '</p></a></li>';
 
     $('#logs').append(str).listview('refresh');
     document.getElementById('logs').scrollIntoView(false);
@@ -85,10 +85,6 @@ function startMessagePort() {
     } catch (er) {
         gRemoteMessagePort = null;
     }
-
-    isStarting = false;
-
-    sendCommand('start');
 }
 
 function showAlert(message) {
@@ -103,11 +99,11 @@ function launchServiceApp() {
     function onSuccess() {
         console.log('Service App launched successfully!');
         console.log('Restart...');
+        started=true;
     }
 
     function onError(err) {
         console.error('Service Applaunch failed', err);
-        isStarting = false;
         showAlert('Failed to launch HybridServiceApp!');
     }
 
@@ -122,42 +118,17 @@ function launchServiceApp() {
     }
 }
 
-function onGetAppsContextSuccess(contexts) {
-    'use strict';
-    var i, appInfo;
-    for (i = 0; i < contexts.length; i = i + 1) {
-        try {
-            appInfo = tizen.application.getAppInfo(contexts[i].appId);
-        } catch (exc) {
-            console.log('Exception while getting application info: ' +
-                exc.message);
-            showAlert('Exception while getting application info:<br>' +
-                exc.message);
-        }
-
-        if (appInfo.id === gServiceAppId) {
-            console.log('Running Service App found');
-            break;
-        }
-    }
-
-    if (i >= contexts.length) {
-        console.log('Running Service App not found. Trying to launch it');
-        
-    } else {
-        startMessagePort();
-    }
-}
-
-function onGetAppsContextError(err) {
-    'use strict';
-    console.error('getAppsContext exc', err);
-}
-
 function start() {
     'use strict';
     launchServiceApp();
     startMessagePort();
+    sendCommand('start');
+    sendCommand('get');
+}
+
+function stop() {
+    'use strict';
+	sendCommand('stop');
 }
 
 function getAppsInfoSuccessCB(apps) {
@@ -170,7 +141,6 @@ function getAppsInfoSuccessCB(apps) {
         }
     }
     if (i >= apps.length) {
-        isStarting = false;
         return;
     }
     launchServiceApp();
@@ -179,7 +149,6 @@ function getAppsInfoSuccessCB(apps) {
 function getAppsInfoErrorCB(err) {
     'use strict';
     console.error('getAppsInfo failed', err);
-    isStarting = false;
 }
 
 function listInstalledApps() {
@@ -190,47 +159,91 @@ function listInstalledApps() {
     }
 }
 
+function set_values(){
+	if(started){
+	 $("a#btn-start").text("STOP");
+	 if(!gLocalMessagePort)
+		 startMessagePort();
+	 sendCommand("get");
+	}
+}
+
+function onGetAppsContextSuccess(contexts) {
+    'use strict';
+    var i, appInfo;
+    for (i = 0; i < contexts.length; i = i + 1) {
+        try {
+            appInfo = tizen.application.getAppInfo(contexts[i].appId);
+        } catch (exc) {
+            console.log('Exception while getting application info: ' +
+                exc.message);
+            showAlert('Exception while getting application info:<br>' +
+                exc.message);
+        }
+        if (appInfo.id === gServiceAppId) {
+            started=true;
+            console.log('Running Service App found');
+            break;
+        }
+    }
+    set_values();
+}
+
+function onGetAppsContextError(err) {
+    'use strict';
+    console.error('getAppsContext exc', err);
+    set_values();
+}
+
+function check_start() {
+    'use strict';
+    $.mobile.loading('show', {theme:"b", text:"Loading...", textonly:false, textVisible: true}); 
+    started=false;
+    try {
+        tizen.application.getAppsContext(onGetAppsContextSuccess,
+            onGetAppsContextError);
+    } catch (exc) {
+        console.error('Get AppContext Error', err);
+    }
+}
+
 $(document).delegate('#main', 'pageinit', function onMainPageInit() {
     'use strict';
+    
+    check_start();
+    
     $('#btn-start').on('tap', function onStartBtnTap() {
-
-        if (gLocalMessagePort) {
-            showAlert('Cannot start:<br>already running');
-        } else if (isStarting) {
-            showAlert('Cannot start:<br>service is starting');
-        } else {
-            isStarting = true;
-            start();
-        }
+    	if(started){
+    		$('#btn-start').text('START');
+    		stop();
+    	}
+    	else{
+    		$('#btn-start').text('STOP');
+    		start();
+    	}
+    	$('#btn-start').button('refresh');
         return false;
     });
 
     $('#btn-exit').on('tap', function onStopBtnTap() {
-        if (isStarting) {
-            showAlert('Cannot stop:<br>service is starting');
-        } else if (gRemoteMessagePort) {
-            sendCommand('stop');
-        } else {
-            showAlert('Cannot stop:<br>not running');
-        }
-        return false;
+    	 try {
+             tizen.application.getCurrentApplication().exit();
+         } catch (exc) {
+             console.error('Error: ', exc.message);
+         }
     });
     
-    $('#btn-ins').on('tap', function onStopBtnTap() {
-        sendCommand("insert");
-        return false;
-    });
+    $('#btn-ins').on('tap', function onAddBtnTap() {
+    	$('#details').popup('close');
+    	$('#logs').empty();
+   	   if(started)
+   		   {
+   		   		sendCommand('insert');
+   		   }
+   	   else
+   		   alert("Tracking service is not started!");
+   });
     
-    $('#btn-get').on('tap', function onStopBtnTap() {
-        sendCommand("get");
-        return false;
-    });
-
-    $('#btn-clear').on('tap', function onClearBtnTap() {
-        $('#logs').empty().listview('refresh');
-        return false;
-    });
-
     $(window).on('tizenhwkey', function onTizenHWKey(e) {
         if (e.originalEvent.keyName === 'back') {
             if ($.mobile.activePage.attr('id') === 'main') {

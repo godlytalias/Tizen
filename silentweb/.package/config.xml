@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<widget xmlns:tizen="http://tizen.org/ns/widgets" xmlns="http://www.w3.org/ns/widgets" id="http://yourdomain/silentweb" version="0.2.1" viewmodes="maximized">
+    <tizen:application id="RxD3ZTFJgF.silentweb" package="RxD3ZTFJgF" required_version="2.2"/>
+    <content src="index.html"/>
+    <feature name="http://tizen.org/feature/screen.size.normal.720.1280"/>
+    <icon src="icon.png"/>
+    <name>silentweb</name>
+    <tizen:privilege name="http://tizen.org/privilege/application.launch"/>
+    <tizen:privilege name="http://tizen.org/privilege/appmanager.kill"/>
+    <tizen:privilege name="http://tizen.org/privilege/telephony"/>
+    <tizen:privilege name="http://tizen.org/privilege/systemsettings"/>
+    <tizen:privilege name="http://tizen.org/privilege/contact.read"/>
+    <tizen:privilege name="http://tizen.org/privilege/callhistory.read"/>
+    <tizen:privilege name="http://tizen.org/privilege/notification"/>
+    <tizen:profile name="mobile"/>
+</widget>

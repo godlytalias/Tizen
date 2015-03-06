@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<widget xmlns:tizen="http://tizen.org/ns/widgets" xmlns="http://www.w3.org/ns/widgets" id="http://yourdomain/silentweb" version="0.2.1" viewmodes="maximized">
+    <tizen:application id="RxD3ZTFJgF.silentweb" package="RxD3ZTFJgF" required_version="2.2"/>
+    <content src="index.html"/>
+    <feature name="http://tizen.org/feature/screen.size.normal.720.1280"/>
+    <icon src="icon.png"/>
+    <name>silentweb</name>
+    <tizen:privilege name="http://tizen.org/privilege/application.launch"/>
+    <tizen:profile name="mobile"/>
+</widget>
