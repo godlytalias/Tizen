@@ -4,15 +4,15 @@
 <SignatureMethod Algorithm="http://www.w3.org/2001/04/xmldsig-more#rsa-sha256"></SignatureMethod>
 <Reference URI="author-signature.xml">
 <DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha256"></DigestMethod>
-<DigestValue>CKKPtFHIVQ8Qvg3rf5pMDlevhvu3szVtVSIc1yeDAZI=</DigestValue>
+<DigestValue>iarTOxiwomhEk4UJRYIdX6AvzNXGqnkMta2tleYBRm4=</DigestValue>
 </Reference>
 <Reference URI="bin%2Ftizen_silent_service">
 <DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha256"></DigestMethod>
-<DigestValue>qFkIlcvE/v7xy22ZtjxCi/6ArAJKr2xS7AMEs59XMm4=</DigestValue>
+<DigestValue>gKmR4A4eVV8dZonZNcNcIoa3eJKVbcsgSYgXXA2kt6A=</DigestValue>
 </Reference>
 <Reference URI="config.xml">
 <DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha256"></DigestMethod>
-<DigestValue>RJmuyChx9ox/lqHQ09IFCxoxGLTLDoPwJpVfk64BgEw=</DigestValue>
+<DigestValue>RGPh2kR5P/dGp7lHSUnPB/ZoLX/VemYfLW5PpNgTS3I=</DigestValue>
 </Reference>
 <Reference URI="res%2Fwgt%2FAUTHORS">
 <DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha256"></DigestMethod>
@@ -4912,7 +4912,7 @@
 </Reference>
 <Reference URI="tizen-manifest.xml">
 <DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha256"></DigestMethod>
-<DigestValue>kLGp8QdWOODuX3yRhP/WaDTnp0ekT+HvDwKF6Shc/6k=</DigestValue>
+<DigestValue>tHRc/cFgVqTBBzxC63IV0+2ryDHsg38G7dUtVcyP2QA=</DigestValue>
 </Reference>
 <Reference URI="#prop">
 <Transforms>
@@ -4923,9 +4923,9 @@
 </Reference>
 </SignedInfo>
 <SignatureValue>
-ok2x4zH+ILP5SJ6nsmJI2YqNeDlVwnjay0rtjmywHBvcq7PwRwUHKNXpRNEWKqY+EfROnYkdlQsw
-IH/vBVdsU4xL+TNMJsragvZTJy3GH9O6lLuXe1ti9GgHTaRDEsQExyNTtrpHl5BePBeB4diYH/bQ
-K6hwblFBuP2nHC4UjUw=
+k8y6tgabm8e/fnwIozZ1jvG61T+NAMHEaHOznpxwN8R3DrabLuMOBLyEHu65+Q/tlGR9TTmczltF
+S6ulkeAz/XvejGn5CUmqnWMSPeIYr+w3Aagsi53wKMr3fprpS/nWJwN89NLdughc4OH/1+3EnuHM
+0TjbaOMVLsVZNcXyVDQ=
 </SignatureValue>
 <KeyInfo>
 <X509Data>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns="http://tizen.org/ns/packages" api-version="2.3" package="org.tizen.bible" version="1.0.0">
+	<profile name="mobile" />
+	<ui-application appid="org.tizen.bible" exec="bible" type="capp" multiple="false" taskmanage="true" nodisplay="false">
+		<icon>bible.png</icon>
+		<label>bible</label>
+	</ui-application>
+	<privileges>
+		<privilege>http://tizen.org/privilege/systemsettings</privilege>
+	</privileges>
+</manifest>
