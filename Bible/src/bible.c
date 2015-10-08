@@ -7,6 +7,7 @@ win_delete_request_cb(void *data, Evas_Object *obj, void *event_info)
 {
 	appdata_s *ad = (appdata_s*)data;
 	if (ad->db) sqlite3_close(ad->db);
+	elm_genlist_item_class_free(ad->itc);
 	sqlite3_shutdown();
 	ui_app_exit();
 }
@@ -64,11 +65,12 @@ _nxt_clicked(void *data,
 static char*
 gl_text_get_cb(void *data, Evas_Object *obj, const char *part)
 {
-   char edj_path[PATH_MAX];
    if (strstr(part, "elm.text"))
    {
       bible_verse_item *verse_item = (bible_verse_item*)data;
-      return strdup(verse_item->verse);
+      char verse_count[50];
+      sprintf(verse_count, "<subtitle><smaller><em>%d</em></smaller></subtitle>", verse_item->versecount + 1);
+      return strdup(verse_count);
    }
    else return NULL;
 }
@@ -76,19 +78,18 @@ gl_text_get_cb(void *data, Evas_Object *obj, const char *part)
 static Evas_Object*
 gl_content_get_cb(void *data, Evas_Object *obj, const char *part)
 {
-   char edj_path[PATH_MAX];
-   if (!strcmp(part, "elm.swallow.content"))
-   {
-      bible_verse_item *verse_item = (bible_verse_item*)data;
-      Evas_Object *item_layout = elm_layout_add(obj);
-      app_get_resource(EDJ_FILE, edj_path, (int)PATH_MAX);
-      //elm_layout_file_set(item_layout, edj_path, "genlist_item_layout");
-      elm_layout_theme_set(item_layout,"genlist","item","genlist_item_layout");
-      elm_layout_text_set(item_layout, "elm.text.verse", "godly");
-      evas_object_show(item_layout);
-      return item_layout;
-   }
-   else return NULL;
+    bible_verse_item *verse_item = (bible_verse_item*)data;
+    if(strcmp(part, "elm.icon.entry") == 0)
+    {
+       Evas_Object *entry = elm_entry_add(obj);
+       elm_entry_editable_set(entry, EINA_FALSE);
+       evas_object_size_hint_weight_set(entry, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
+       evas_object_size_hint_align_set(entry, EVAS_HINT_FILL, EVAS_HINT_FILL);
+       elm_entry_entry_set(entry, verse_item->verse);
+       evas_object_show(entry);
+       return entry;
+    }
+    else return NULL;
 }
 
 static void
@@ -102,6 +103,7 @@ gl_del_cb(void *data, Evas_Object *obj)
 static Evas_Object*
 _home_screen(appdata_s *ad)
 {
+	Evas_Object *prev_btn, *nxt_btn, *search_btn;
 	char edj_path[PATH_MAX] = {0, };
 	/* Base Layout */
 	app_get_resource(EDJ_FILE, edj_path, (int)PATH_MAX);
@@ -112,27 +114,34 @@ _home_screen(appdata_s *ad)
 	elm_win_resize_object_add(ad->win, ad->layout);
 	elm_layout_signal_callback_add(ad->layout, "elm,book,change", "elm", _change_book, (void*)ad);
 
-	ad->prev_btn = elm_button_add(ad->win);
-	elm_object_text_set(ad->prev_btn, "Back");
-	elm_object_part_content_set(ad->layout, "elm.footer.prev.btn", ad->prev_btn);
-	evas_object_smart_callback_add(ad->prev_btn, "clicked", _prev_clicked, (void*)ad);
-	evas_object_show(ad->prev_btn);
+	prev_btn = elm_button_add(ad->win);
+	elm_object_text_set(prev_btn, "Back");
+	elm_object_part_content_set(ad->layout, "elm.footer.prev.btn", prev_btn);
+	evas_object_smart_callback_add(prev_btn, "clicked", _prev_clicked, (void*)ad);
+	evas_object_show(prev_btn);
 
-	ad->nxt_btn = elm_button_add(ad->win);
-	elm_object_text_set(ad->nxt_btn, "Next");
-	elm_object_part_content_set(ad->layout, "elm.footer.nxt.btn", ad->nxt_btn);
-	evas_object_smart_callback_add(ad->nxt_btn, "clicked", _nxt_clicked, (void*)ad);
-	evas_object_show(ad->nxt_btn);
+	nxt_btn = elm_button_add(ad->win);
+	elm_object_text_set(nxt_btn, "Next");
+	elm_object_part_content_set(ad->layout, "elm.footer.nxt.btn", nxt_btn);
+	evas_object_smart_callback_add(nxt_btn, "clicked", _nxt_clicked, (void*)ad);
+	evas_object_show(nxt_btn);
+
+	search_btn = elm_button_add(ad->win);
+	elm_object_text_set(search_btn, "Search");
+	elm_object_part_content_set(ad->layout, "elm.footer.search.btn", search_btn);
+	evas_object_smart_callback_add(search_btn, "clicked", _search_word, (void*)ad);
+	evas_object_show(search_btn);
 
 	ad->itc = elm_genlist_item_class_new();
-	ad->itc->item_style = "full";
+	ad->itc->item_style = "entry.main";
 	ad->itc->func.content_get = gl_content_get_cb;
-	//ad->itc->func.text_get = gl_text_get_cb;
+	ad->itc->func.text_get = gl_text_get_cb;
 	ad->itc->func.del = gl_del_cb;
 
 	ad->genlist = elm_genlist_add(ad->layout);
 	evas_object_size_hint_align_set(ad->genlist, EVAS_HINT_FILL, EVAS_HINT_FILL);
 	evas_object_size_hint_weight_set(ad->genlist, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
+	elm_genlist_realization_mode_set(ad->genlist, EINA_TRUE);
 	elm_object_part_content_set(ad->layout, "elm.swallow.content", ad->genlist);
 	elm_genlist_mode_set(ad->genlist, ELM_LIST_COMPRESS);
 
