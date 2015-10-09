@@ -62,32 +62,27 @@ _nxt_clicked(void *data,
 		_query_chapter(data, ad->cur_book, ad->cur_chapter + 1);
 }
 
-static char*
-gl_text_get_cb(void *data, Evas_Object *obj, const char *part)
-{
-   if (strstr(part, "elm.text"))
-   {
-      bible_verse_item *verse_item = (bible_verse_item*)data;
-      char verse_count[50];
-      sprintf(verse_count, "<subtitle><smaller><em>%d</em></smaller></subtitle>", verse_item->versecount + 1);
-      return strdup(verse_count);
-   }
-   else return NULL;
-}
-
 static Evas_Object*
 gl_content_get_cb(void *data, Evas_Object *obj, const char *part)
 {
     bible_verse_item *verse_item = (bible_verse_item*)data;
-    if(strcmp(part, "elm.icon.entry") == 0)
+    if(strcmp(part, "elm.swallow.content") == 0)
     {
-       Evas_Object *entry = elm_entry_add(obj);
-       elm_entry_editable_set(entry, EINA_FALSE);
-       evas_object_size_hint_weight_set(entry, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
-       evas_object_size_hint_align_set(entry, EVAS_HINT_FILL, EVAS_HINT_FILL);
-       elm_entry_entry_set(entry, verse_item->verse);
-       evas_object_show(entry);
-       return entry;
+    	Evas_Object *layout = elm_layout_add(obj);
+    	char edj_path[PATH_MAX] = {0, };
+    	app_get_resource(EDJ_FILE, edj_path, (int)PATH_MAX);
+    	elm_layout_file_set(layout, edj_path, "verse_layout");
+    	Evas_Object *entry = elm_entry_add(obj);
+    	elm_entry_editable_set(entry, EINA_FALSE);
+    	evas_object_size_hint_weight_set(entry, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
+    	evas_object_size_hint_align_set(entry, EVAS_HINT_FILL, EVAS_HINT_FILL);
+    	elm_entry_entry_set(entry, verse_item->verse);
+    	evas_object_show(entry);
+    	elm_object_part_content_set(layout,"elm.swallow.verse",entry);
+    	sprintf(edj_path, "%d", verse_item->versecount+1);
+    	elm_object_part_text_set(layout, "elm.text.verse_count", edj_path);
+    	evas_object_show(layout);
+    	return layout;
     }
     else return NULL;
 }
@@ -133,9 +128,9 @@ _home_screen(appdata_s *ad)
 	evas_object_show(search_btn);
 
 	ad->itc = elm_genlist_item_class_new();
-	ad->itc->item_style = "entry.main";
+	ad->itc->item_style = "full";
 	ad->itc->func.content_get = gl_content_get_cb;
-	ad->itc->func.text_get = gl_text_get_cb;
+	ad->itc->func.text_get = NULL;
 	ad->itc->func.del = gl_del_cb;
 
 	ad->genlist = elm_genlist_add(ad->layout);
