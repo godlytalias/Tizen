@@ -34,6 +34,7 @@ typedef struct appdata{
 	int count, versecount, chaptercount;
 	int cur_chapter, cur_book;
 	int nxt_chapter, nxt_book;
+	Evas_Coord mouse_down, mouse_up;
 	sqlite3 *db;
 } appdata_s;
 

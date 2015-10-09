@@ -112,7 +112,7 @@ _change_book(void *data, Evas_Object *obj, char *emission, char *source)
 	elm_object_style_set(done_btn, "naviframe/title_done");
 	elm_object_text_set(done_btn, "Done");
 	evas_object_show(done_btn);
-	nf_it = elm_naviframe_item_push(ad->naviframe, "Bible", NULL, NULL, _select_chapter_layout(ad), NULL);
+	nf_it = elm_naviframe_item_push(ad->naviframe, "Select Chapter", NULL, NULL, _select_chapter_layout(ad), NULL);
 	elm_object_item_part_content_set(nf_it, "title_left_btn", back_btn);
 	elm_object_item_part_content_set(nf_it, "title_right_btn", done_btn);
 	evas_object_smart_callback_add(back_btn, "clicked", _back_btn_clicked, ad);

@@ -4,11 +4,11 @@
 <SignatureMethod Algorithm="http://www.w3.org/2001/04/xmldsig-more#rsa-sha256"></SignatureMethod>
 <Reference URI="bin%2Fbible">
 <DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha256"></DigestMethod>
-<DigestValue>aTzZeresT0O0MgUbXA8r74sgaZIQ9uF3MOCnzHak378=</DigestValue>
+<DigestValue>05jjiSvO9cAG1DT6tRtJBCZvXTlqjA9PlTI70yVc9S0=</DigestValue>
 </Reference>
 <Reference URI="res%2Fedje%2Fbible.edj">
 <DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha256"></DigestMethod>
-<DigestValue>pYIm9TIOccMVRQop2bBSY2UBfsRMqo8mGGQj0mVJID0=</DigestValue>
+<DigestValue>zObU9Z4kLX0WnbJ/k9g/pnM6FLsDCTGGn0pdDPf61rU=</DigestValue>
 </Reference>
 <Reference URI="res%2Fholybible_eng.db">
 <DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha256"></DigestMethod>
@@ -31,9 +31,9 @@
 </Reference>
 </SignedInfo>
 <SignatureValue>
-yKz0N8QR+hRgOFs9HzVAYmyeC+4q8VzHZu30MLsXmq68hBEhk4+vaAdj8en2vE1h3p/L+Yswm2wk
-7guHXwAyeOf53zm8DQzys1qu9sVPRZkkmppwOxT3ulgAfzIA99DT2QIk3X3HmzgLrAms576M8UZP
-H9sAxRUJIfJuG9K5A3s=
+PpV+a+LFjJPsihEVq7FwK8hdJnVaQ1I01U+x0UQzTpHYdF2ZeZwuSv0xsWZ276dSUSmQ+iTWihRb
+L9WVqgzNBBLYL1sZrjBsWJhGH7PuTixgsISOTg5g78W+Y0ltY5FzWtOm7257/OglcWdC9WaQ9a6K
+jXvgdH9aEtRSZQCIw4Q=
 </SignatureValue>
 <KeyInfo>
 <X509Data>

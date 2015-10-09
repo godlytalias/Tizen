@@ -4,15 +4,15 @@
 <SignatureMethod Algorithm="http://www.w3.org/2001/04/xmldsig-more#rsa-sha256"></SignatureMethod>
 <Reference URI="author-signature.xml">
 <DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha256"></DigestMethod>
-<DigestValue>b49+jeSnNpW3pJY0k6IiTXF/4A60pon0+MiblhDrFRE=</DigestValue>
+<DigestValue>3634pBlEEH2ypbTbryqMcKZs9DevnenfgD/SyqIM2Rs=</DigestValue>
 </Reference>
 <Reference URI="bin%2Fbible">
 <DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha256"></DigestMethod>
-<DigestValue>aTzZeresT0O0MgUbXA8r74sgaZIQ9uF3MOCnzHak378=</DigestValue>
+<DigestValue>05jjiSvO9cAG1DT6tRtJBCZvXTlqjA9PlTI70yVc9S0=</DigestValue>
 </Reference>
 <Reference URI="res%2Fedje%2Fbible.edj">
 <DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha256"></DigestMethod>
-<DigestValue>pYIm9TIOccMVRQop2bBSY2UBfsRMqo8mGGQj0mVJID0=</DigestValue>
+<DigestValue>zObU9Z4kLX0WnbJ/k9g/pnM6FLsDCTGGn0pdDPf61rU=</DigestValue>
 </Reference>
 <Reference URI="res%2Fholybible_eng.db">
 <DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha256"></DigestMethod>
@@ -35,9 +35,9 @@
 </Reference>
 </SignedInfo>
 <SignatureValue>
-mdUmCFpO6RjHe1rpeAT2pGpy5cRdVdGpX4CXLbQF9nn5Y/TGzR5gfwH2yQog8vJGQvabWHFLQcOB
-mjgRjrYlU7/EAj3xdUoJo8rVcR4042TUZiTjjpSH3DshURcGYJXJIqfoo+D+Sxagv2jKa9Bvji2K
-V36r0nNJknTipyH8+oU=
+KBRceniGIlyDWP2401ZNcAQbWImcaUmwdCDt0LK+CkVJ34raeVnPng//OvLDHMxu/GM2QlwX6Xub
+wZr2QxGhuNZmu7MIp/TFTQjmhwsrOhUrQ/Ps0t5xmP3dyFs0vNj8Asrouwe4tu9/i+QbuEV2r6jP
+vD5iA7gG1iGHlOFL8Qc=
 </SignatureValue>
 <KeyInfo>
 <X509Data>

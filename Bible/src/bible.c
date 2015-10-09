@@ -31,7 +31,7 @@ app_get_resource(const char *edj_file_in, char *edj_path_out, int edj_path_max)
 }
 
 static void
-_prev_clicked(void *data,
+_prev_chapter(void *data,
               Evas_Object *obj ,
               void *event_info EINA_UNUSED)
 {
@@ -47,7 +47,7 @@ _prev_clicked(void *data,
 }
 
 static void
-_nxt_clicked(void *data,
+_nxt_chapter(void *data,
               Evas_Object *obj ,
               void *event_info EINA_UNUSED)
 {
@@ -60,6 +60,33 @@ _nxt_clicked(void *data,
 	}
 	else
 		_query_chapter(data, ad->cur_book, ad->cur_chapter + 1);
+}
+
+static void
+move_more_ctxpopup(void *data, Evas_Object *obj, void *event_info)
+{
+	Evas_Object *win;
+	Evas_Coord w, h;
+	int pos = -1;
+	Evas_Object *ctxpopup = (Evas_Object*)data;
+
+	/* We convince the top widget is a window */
+	win = elm_object_top_widget_get(ctxpopup);
+	elm_win_screen_size_get(win, NULL, NULL, &w, &h);
+	pos = elm_win_rotation_get(win);
+
+	switch (pos) {
+		case 0:
+		case 180:
+			evas_object_move(ctxpopup, (w / 2), h);
+			break;
+		case 90:
+			evas_object_move(ctxpopup,  (h / 2), w);
+			break;
+		case 270:
+			evas_object_move(ctxpopup, (h / 2), w);
+			break;
+	}
 }
 
 static Evas_Object*
@@ -112,13 +139,13 @@ _home_screen(appdata_s *ad)
 	prev_btn = elm_button_add(ad->win);
 	elm_object_text_set(prev_btn, "Back");
 	elm_object_part_content_set(ad->layout, "elm.footer.prev.btn", prev_btn);
-	evas_object_smart_callback_add(prev_btn, "clicked", _prev_clicked, (void*)ad);
+	evas_object_smart_callback_add(prev_btn, "clicked", _prev_chapter, (void*)ad);
 	evas_object_show(prev_btn);
 
 	nxt_btn = elm_button_add(ad->win);
 	elm_object_text_set(nxt_btn, "Next");
 	elm_object_part_content_set(ad->layout, "elm.footer.nxt.btn", nxt_btn);
-	evas_object_smart_callback_add(nxt_btn, "clicked", _nxt_clicked, (void*)ad);
+	evas_object_smart_callback_add(nxt_btn, "clicked", _nxt_chapter, (void*)ad);
 	evas_object_show(nxt_btn);
 
 	search_btn = elm_button_add(ad->win);
@@ -139,6 +166,8 @@ _home_screen(appdata_s *ad)
 	elm_genlist_realization_mode_set(ad->genlist, EINA_TRUE);
 	elm_object_part_content_set(ad->layout, "elm.swallow.content", ad->genlist);
 	elm_genlist_mode_set(ad->genlist, ELM_LIST_COMPRESS);
+	evas_object_smart_callback_add(ad->genlist, "drag,start,left", _nxt_chapter, ad);
+	evas_object_smart_callback_add(ad->genlist, "drag,start,right", _prev_chapter, ad);
 
 	_query_chapter((void*)ad, 0, 1);
 
@@ -154,10 +183,81 @@ naviframe_pop_cb(void *data, Elm_Object_Item *it)
 }
 
 static void
+ctxpopup_dismissed_cb(void *data, Evas_Object *obj, void *event_info)
+{
+	evas_object_del(data);
+	data = NULL;
+}
+
+static void
+_popup_del(void *data, Evas_Object *obj, void *event_info)
+{
+	evas_object_del(data);
+	data = NULL;
+}
+
+static void
+ctxpopup_item_select_cb(void *data, Evas_Object *obj, void *event_info)
+{
+	const char *title_label = elm_object_item_text_get((Elm_Object_Item *) event_info);
+	char text_content[2048];
+	Evas_Object *ctxpopup = (Evas_Object*)data;
+	Evas_Object *popup = elm_popup_add(elm_object_top_widget_get(obj));
+	elm_object_part_text_set(popup, "title,text", title_label);
+	Evas_Object *label = elm_label_add(popup);
+	evas_object_size_hint_weight_set(label, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
+	evas_object_size_hint_align_set(label, EVAS_HINT_FILL, EVAS_HINT_FILL);
+	elm_label_line_wrap_set(label, ELM_WRAP_WORD);
+	if (!strcmp(title_label, "About"))
+	{
+		sprintf(text_content,"BIBLE MKJV");
+	}
+	else if (!strcmp(title_label, "Help"))
+	{
+		sprintf(text_content,"Loading...");
+	}
+	elm_object_text_set(label, text_content);
+	Evas_Object *button = elm_button_add(popup);
+	elm_object_text_set(button, "OK");
+	elm_object_part_content_set(popup, "button1", button);
+	elm_object_content_set(popup, label);
+	evas_object_show(label);
+	evas_object_show(button);
+	evas_object_show(popup);
+	evas_object_smart_callback_add(button, "clicked", _popup_del, popup);
+	eext_object_event_callback_add(popup, EEXT_CALLBACK_BACK, eext_popup_back_cb, NULL);
+	elm_ctxpopup_dismiss(ctxpopup);
+}
+
+static void
+create_ctxpopup_more_button_cb(void *data, Evas_Object *obj, void *event_info)
+{
+	Evas_Object *it_obj, *win;
+	appdata_s *ad = (appdata_s*)data;
+
+	Evas_Object *ctxpopup = elm_ctxpopup_add(ad->naviframe);
+	elm_ctxpopup_auto_hide_disabled_set(ctxpopup, EINA_TRUE);
+	elm_object_style_set(ctxpopup, "more/default");
+	eext_object_event_callback_add(ctxpopup, EEXT_CALLBACK_BACK, eext_ctxpopup_back_cb, NULL);
+	eext_object_event_callback_add(ctxpopup, EEXT_CALLBACK_MORE, eext_ctxpopup_back_cb, NULL);
+	evas_object_smart_callback_add(ctxpopup, "dismissed", ctxpopup_dismissed_cb, ctxpopup);
+
+	win = elm_object_top_widget_get(ad->naviframe);
+	evas_object_smart_callback_add(win, "rotation,changed", move_more_ctxpopup, ctxpopup);
+
+	elm_ctxpopup_item_append(ctxpopup, "About", NULL, ctxpopup_item_select_cb, ctxpopup);
+	elm_ctxpopup_item_append(ctxpopup, "Help", NULL, ctxpopup_item_select_cb, ctxpopup);
+
+	elm_ctxpopup_direction_priority_set(ctxpopup, ELM_CTXPOPUP_DIRECTION_UP, ELM_CTXPOPUP_DIRECTION_UNKNOWN, ELM_CTXPOPUP_DIRECTION_UNKNOWN, ELM_CTXPOPUP_DIRECTION_UNKNOWN);
+	move_more_ctxpopup(ctxpopup, ctxpopup, NULL);
+	evas_object_show(ctxpopup);
+}
+
+static void
 create_base_gui(appdata_s *ad)
 {
 	Elm_Object_Item *nf_item;
-	/* Window */
+	Evas_Object *menu_btn;
 	ad->win = elm_win_util_standard_add(PACKAGE, PACKAGE);
 	elm_win_autodel_set(ad->win, EINA_TRUE);
 
@@ -176,8 +276,16 @@ create_base_gui(appdata_s *ad)
 	nf_item = elm_naviframe_item_push(ad->naviframe, NULL, NULL, NULL, _home_screen(ad), NULL);
 	elm_naviframe_item_title_enabled_set(nf_item, EINA_FALSE, EINA_TRUE);
 	elm_naviframe_item_pop_cb_set(nf_item, naviframe_pop_cb, ad);
-//_home_screen(ad);
-	/* Show window after base gui is set up */
+
+	menu_btn = elm_button_add(ad->naviframe);
+	elm_object_style_set(menu_btn, "naviframe/more/default");
+	evas_object_smart_callback_add(menu_btn, "clicked", create_ctxpopup_more_button_cb, ad);
+	elm_object_item_part_content_set(nf_item, "toolbar_more_btn", menu_btn);
+	evas_object_show(menu_btn);
+
+	eext_object_event_callback_add(ad->naviframe, EEXT_CALLBACK_BACK, eext_naviframe_back_cb, NULL);
+	eext_object_event_callback_add(ad->naviframe, EEXT_CALLBACK_MORE, eext_naviframe_more_cb, NULL);
+
 	evas_object_show(ad->win);
 
 }

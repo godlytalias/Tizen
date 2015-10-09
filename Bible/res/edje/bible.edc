@@ -181,6 +181,8 @@ collections {
          part {name: "elm.footer.prev.btn";
             type: SWALLOW;
             description { state: "default" 0.0;
+               min: 120 40;
+               fixed: 1 1;
                rel1.to: "footer.left_top.padding";
                rel1.relative: 1.0 1.0;
                rel2.to_x: "footer.left_top.padding";
@@ -215,6 +217,8 @@ collections {
          part {name: "elm.footer.search.btn";
             type: SWALLOW;
             description { state: "default" 0.0;
+               min: 120 40;
+               fixed: 1 1;
                rel1.to: "elm.footer.search_btn.left.padding";
                rel1.relative: 1.0 0.0;
                rel2.to: "elm.footer.search_btn.right.padding";
@@ -225,6 +229,8 @@ collections {
          part {name: "elm.footer.nxt.btn";
             type: SWALLOW;
             description { state: "default" 0.0;
+               min: 120 40;
+               fixed: 1 1;
                rel1.to_x: "footer.right_bottom.padding";
                rel1.to_y: "footer.left_top.padding";
                rel1.relative: 0.0 1.0;
@@ -297,6 +303,9 @@ collections {
          part { name: "elm.swallow.go";
             type: SWALLOW;
             description { state: "default" 0.0;
+               min: 120 80;
+               max: 120 80;
+               fixed: 1 1;
                rel1.to: "elm.swallow.entry";
                rel1.relative: 1.0 0.0;
                rel2.to_x: "elm.content.padding.right_bottom";
