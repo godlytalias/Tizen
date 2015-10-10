@@ -62,8 +62,6 @@ _nxt_chapter(void *data,
 		_query_chapter(data, ad->cur_book, ad->cur_chapter + 1);
 }
 
-
-
 static Evas_Object*
 gl_content_get_cb(void *data, Evas_Object *obj, const char *part)
 {
@@ -125,9 +123,9 @@ _home_screen(appdata_s *ad)
 
 	search_btn = elm_button_add(ad->win);
 	elm_object_text_set(search_btn, "Search");
-	//elm_object_part_content_set(ad->layout, "elm.footer.search.btn", search_btn);
-	//evas_object_smart_callback_add(search_btn, "clicked", _search_word, (void*)ad);
-	//evas_object_show(search_btn);
+	elm_object_part_content_set(ad->layout, "elm.footer.search.btn", search_btn);
+	evas_object_smart_callback_add(search_btn, "clicked", _search_word, (void*)ad);
+	evas_object_show(search_btn);
 
 	ad->itc = elm_genlist_item_class_new();
 	ad->itc->item_style = "full";
@@ -153,6 +151,13 @@ _home_screen(appdata_s *ad)
 static Eina_Bool
 naviframe_pop_cb(void *data, Elm_Object_Item *it)
 {
+	appdata_s *ad = (appdata_s*)data;
+	if (ad->genlist)
+		elm_genlist_clear(ad->genlist);
+	ad->genlist = NULL;
+	if (ad->itc)
+		elm_genlist_item_class_free(ad->itc);
+	ad->itc = NULL;
 	ui_app_exit();
 	return EINA_FALSE;
 }

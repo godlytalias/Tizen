@@ -79,7 +79,7 @@ ctxpopup_item_select_cb(void *data, Evas_Object *obj, void *event_info)
 		evas_object_size_hint_weight_set(label, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
 		evas_object_size_hint_align_set(label, EVAS_HINT_FILL, EVAS_HINT_FILL);
 		elm_label_line_wrap_set(label, ELM_WRAP_WORD);
-		sprintf(text_content,_("<align=center><em><font_size=20>GTA v0.1</font_size></em></align>"));
+		sprintf(text_content,_("<align=center><em><font_size=20>GTA v0.2</font_size></em></align>"));
 		elm_object_text_set(label, text_content);
 		evas_object_show(label);
 		elm_box_pack_end(content_box, label);
@@ -166,7 +166,7 @@ ctxpopup_item_select_cb(void *data, Evas_Object *obj, void *event_info)
 		evas_object_size_hint_weight_set(label, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
 		evas_object_size_hint_align_set(label, EVAS_HINT_FILL, EVAS_HINT_FILL);
 		elm_label_line_wrap_set(label, ELM_WRAP_WORD);
-		sprintf(text_content,_("<align=center><em><font_size=20>GTA v0.1</font_size></em></align>"));
+		sprintf(text_content,_("<align=center><em><font_size=20>GTA v0.2</font_size></em></align>"));
 		elm_object_text_set(label, text_content);
 		evas_object_show(label);
 		elm_box_pack_end(content_box, label);
@@ -215,6 +215,40 @@ ctxpopup_item_select_cb(void *data, Evas_Object *obj, void *event_info)
 		elm_object_text_set(label, text_content);
 		evas_object_show(label);
 		elm_box_pack_end(content_box, label);
+
+		sprintf(text_content, _("<align=left><font_size=25>"
+			"<b>Searching keywords</b></font_size></align>"));
+
+				label = elm_label_add(popup);
+				evas_object_size_hint_weight_set(label, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
+				evas_object_size_hint_align_set(label, EVAS_HINT_FILL, EVAS_HINT_FILL);
+				elm_label_line_wrap_set(label, ELM_WRAP_WORD);
+				elm_object_text_set(label, text_content);
+				evas_object_show(label);
+				elm_box_pack_end(content_box, label);
+
+
+				sprintf(text_content, _("<align=left><font_size=20>"
+				"User can search a specific keyword and get the verses containing those keywords. "
+				"The Search button in the footer bar takes to the search window. "
+				"User can enter the keyword and press 'Go' to get the list of verses containing the entered keyword.</font_size></align>"));
+
+				label = elm_label_add(popup);
+				evas_object_size_hint_weight_set(label, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
+				evas_object_size_hint_align_set(label, EVAS_HINT_FILL, EVAS_HINT_FILL);
+				elm_label_line_wrap_set(label, ELM_WRAP_WORD);
+				elm_object_text_set(label, text_content);
+				evas_object_show(label);
+				elm_box_pack_end(content_box, label);
+
+				label = elm_label_add(popup);
+				evas_object_size_hint_weight_set(label, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
+				evas_object_size_hint_align_set(label, EVAS_HINT_FILL, EVAS_HINT_FILL);
+				elm_label_line_wrap_set(label, ELM_WRAP_WORD);
+				sprintf(text_content,_(" "));
+				elm_object_text_set(label, text_content);
+				evas_object_show(label);
+				elm_box_pack_end(content_box, label);
 
 		sprintf(text_content, _("<align=left><font_size=25>"
 	"<b>Selecting Books / Chapters</b></font_size></align>"));

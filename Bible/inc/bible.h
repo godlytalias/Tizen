@@ -26,11 +26,12 @@ typedef struct _bible_verse_item bible_verse_item;
 
 typedef struct appdata{
 	Evas_Object* win;
-	Evas_Object* layout, *book_btn, *chapter_btn;
+	Evas_Object* layout, *search_layout;
+	Evas_Object* book_btn, *chapter_btn;
 	Evas_Object* label, *naviframe;
-	Evas_Object* genlist;
-	Evas_Object *list1, *list2;
-	Elm_Genlist_Item_Class *itc;
+	Evas_Object* genlist, *search_result_genlist;
+	Evas_Object *list1, *list2, *search_entry;
+	Elm_Genlist_Item_Class *itc, *search_itc;
 	int count, versecount, chaptercount;
 	int cur_chapter, cur_book;
 	int nxt_chapter, nxt_book;
@@ -66,3 +67,4 @@ void _database_query(char*, int func(void*,int,char**,char**), void*);
 void _change_book(void *, Evas_Object*, char*, char*);
 void _search_word(void *, Evas_Object*,void*);
 void create_ctxpopup_more_button_cb(void*, Evas_Object*, void*);
+int _get_bookcount(char*);

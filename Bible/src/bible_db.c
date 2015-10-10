@@ -2,6 +2,15 @@
 #include <sqlite3.h>
 #include "bible.h"
 
+int
+_get_bookcount(char *book)
+{
+	int i=0;
+	while (i < 66 && strcmp(book, Books[i]))
+		i++;
+	return i;
+}
+
 void
 _database_query(char *query, int func(void*,int,char**,char**), void *data)
 {
@@ -23,7 +32,6 @@ _database_query(char *query, int func(void*,int,char**,char**), void *data)
 	   sqlite3_exec(ad->db, query, func, (void*)ad, &err_msg);
 	   sqlite3_free(err_msg);
 	}
-
 }
 
 static int
@@ -65,15 +73,14 @@ _get_verse_list(void *data, int argc, char **argv, char **azColName)
 {
    appdata_s *ad = (appdata_s*) data;
    int i;
-   for (i = 0; i < argc; i++)
-   {
-	   bible_verse_item *verse_item = malloc(sizeof(bible_verse_item));
-	   verse_item->versecount = ad->count;
-	   verse_item->verse = strdup(argv[i]);
-	   verse_item->appdata = ad;
-	   elm_genlist_item_append(ad->genlist, ad->itc, (void*)verse_item, NULL, ELM_GENLIST_ITEM_FIELD_CONTENT, NULL, (void*)verse_item);
-	   ad->count++;
-   }
+
+   bible_verse_item *verse_item = malloc(sizeof(bible_verse_item));
+   verse_item->versecount = ad->count;
+   verse_item->verse = strdup(argv[i]);
+   verse_item->appdata = ad;
+   elm_genlist_item_append(ad->genlist, ad->itc, (void*)verse_item, NULL, ELM_GENLIST_ITEM_FIELD_CONTENT, NULL, (void*)verse_item);
+   ad->count++;
+
    return 0;
 }
 

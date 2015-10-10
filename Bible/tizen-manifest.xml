@@ -1,11 +1,14 @@
-<?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns="http://tizen.org/ns/packages" api-version="2.3" package="org.tizen.bible" version="1.0.0">
-	<profile name="mobile" />
-	<ui-application appid="org.tizen.bible" exec="bible" type="capp" multiple="false" taskmanage="true" nodisplay="false">
-		<icon>bible.png</icon>
-		<label>bible</label>
-	</ui-application>
-	<privileges>
-		<privilege>http://tizen.org/privilege/systemsettings</privilege>
-	</privileges>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<manifest xmlns="http://tizen.org/ns/packages" api-version="2.3" package="org.tizen.gta_holy_bible" version="0.2.0">
+    <author email="godlytalias@yahoo.co.in" href="godlytalais@blogspot.com">Godly T Alias</author>
+    <description>This is a Bible application based on MKJV version released with GPL license.</description>
+    <profile name="mobile"/>
+    <ui-application appid="org.tizen.gta_holy_bible" exec="gta_holy_bible" multiple="false" nodisplay="false" taskmanage="true" type="capp">
+        <label>Holy Bible</label>
+        <icon>Bible.png</icon>
+    </ui-application>
+    <privileges>
+        <privilege>http://tizen.org/privilege/systemsettings</privilege>
+    </privileges>
+    <feature name="http://tizen.org/feature/screen.size.normal.480.800">true</feature>
 </manifest>
