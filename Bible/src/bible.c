@@ -62,32 +62,7 @@ _nxt_chapter(void *data,
 		_query_chapter(data, ad->cur_book, ad->cur_chapter + 1);
 }
 
-static void
-move_more_ctxpopup(void *data, Evas_Object *obj, void *event_info)
-{
-	Evas_Object *win;
-	Evas_Coord w, h;
-	int pos = -1;
-	Evas_Object *ctxpopup = (Evas_Object*)data;
 
-	/* We convince the top widget is a window */
-	win = elm_object_top_widget_get(ctxpopup);
-	elm_win_screen_size_get(win, NULL, NULL, &w, &h);
-	pos = elm_win_rotation_get(win);
-
-	switch (pos) {
-		case 0:
-		case 180:
-			evas_object_move(ctxpopup, (w / 2), h);
-			break;
-		case 90:
-			evas_object_move(ctxpopup,  (h / 2), w);
-			break;
-		case 270:
-			evas_object_move(ctxpopup, (h / 2), w);
-			break;
-	}
-}
 
 static Evas_Object*
 gl_content_get_cb(void *data, Evas_Object *obj, const char *part)
@@ -150,9 +125,9 @@ _home_screen(appdata_s *ad)
 
 	search_btn = elm_button_add(ad->win);
 	elm_object_text_set(search_btn, "Search");
-	elm_object_part_content_set(ad->layout, "elm.footer.search.btn", search_btn);
-	evas_object_smart_callback_add(search_btn, "clicked", _search_word, (void*)ad);
-	evas_object_show(search_btn);
+	//elm_object_part_content_set(ad->layout, "elm.footer.search.btn", search_btn);
+	//evas_object_smart_callback_add(search_btn, "clicked", _search_word, (void*)ad);
+	//evas_object_show(search_btn);
 
 	ad->itc = elm_genlist_item_class_new();
 	ad->itc->item_style = "full";
@@ -180,77 +155,6 @@ naviframe_pop_cb(void *data, Elm_Object_Item *it)
 {
 	ui_app_exit();
 	return EINA_FALSE;
-}
-
-static void
-ctxpopup_dismissed_cb(void *data, Evas_Object *obj, void *event_info)
-{
-	evas_object_del(data);
-	data = NULL;
-}
-
-static void
-_popup_del(void *data, Evas_Object *obj, void *event_info)
-{
-	evas_object_del(data);
-	data = NULL;
-}
-
-static void
-ctxpopup_item_select_cb(void *data, Evas_Object *obj, void *event_info)
-{
-	const char *title_label = elm_object_item_text_get((Elm_Object_Item *) event_info);
-	char text_content[2048];
-	Evas_Object *ctxpopup = (Evas_Object*)data;
-	Evas_Object *popup = elm_popup_add(elm_object_top_widget_get(obj));
-	elm_object_part_text_set(popup, "title,text", title_label);
-	Evas_Object *label = elm_label_add(popup);
-	evas_object_size_hint_weight_set(label, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
-	evas_object_size_hint_align_set(label, EVAS_HINT_FILL, EVAS_HINT_FILL);
-	elm_label_line_wrap_set(label, ELM_WRAP_WORD);
-	if (!strcmp(title_label, "About"))
-	{
-		sprintf(text_content,"BIBLE MKJV");
-	}
-	else if (!strcmp(title_label, "Help"))
-	{
-		sprintf(text_content,"Loading...");
-	}
-	elm_object_text_set(label, text_content);
-	Evas_Object *button = elm_button_add(popup);
-	elm_object_text_set(button, "OK");
-	elm_object_part_content_set(popup, "button1", button);
-	elm_object_content_set(popup, label);
-	evas_object_show(label);
-	evas_object_show(button);
-	evas_object_show(popup);
-	evas_object_smart_callback_add(button, "clicked", _popup_del, popup);
-	eext_object_event_callback_add(popup, EEXT_CALLBACK_BACK, eext_popup_back_cb, NULL);
-	elm_ctxpopup_dismiss(ctxpopup);
-}
-
-static void
-create_ctxpopup_more_button_cb(void *data, Evas_Object *obj, void *event_info)
-{
-	Evas_Object *it_obj, *win;
-	appdata_s *ad = (appdata_s*)data;
-
-	Evas_Object *ctxpopup = elm_ctxpopup_add(ad->naviframe);
-	elm_ctxpopup_auto_hide_disabled_set(ctxpopup, EINA_TRUE);
-	elm_object_style_set(ctxpopup, "more/default");
-	eext_object_event_callback_add(ctxpopup, EEXT_CALLBACK_BACK, eext_ctxpopup_back_cb, NULL);
-	eext_object_event_callback_add(ctxpopup, EEXT_CALLBACK_MORE, eext_ctxpopup_back_cb, NULL);
-	evas_object_smart_callback_add(ctxpopup, "dismissed", ctxpopup_dismissed_cb, ctxpopup);
-
-	win = elm_object_top_widget_get(ad->naviframe);
-	evas_object_smart_callback_add(win, "rotation,changed", move_more_ctxpopup, ctxpopup);
-
-	elm_ctxpopup_item_append(ctxpopup, "About", NULL, ctxpopup_item_select_cb, ctxpopup);
-	elm_ctxpopup_item_append(ctxpopup, "Help", NULL, ctxpopup_item_select_cb, ctxpopup);
-
-	elm_ctxpopup_direction_priority_set(ctxpopup, ELM_CTXPOPUP_DIRECTION_UP, ELM_CTXPOPUP_DIRECTION_UNKNOWN, ELM_CTXPOPUP_DIRECTION_UNKNOWN, ELM_CTXPOPUP_DIRECTION_UNKNOWN);
-	move_more_ctxpopup(ctxpopup, ctxpopup, NULL);
-	evas_object_show(ctxpopup);
 }
 
 static void

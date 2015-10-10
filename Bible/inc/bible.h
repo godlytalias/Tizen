@@ -65,3 +65,4 @@ void _get_verse_count_query(void*, int,int);
 void _database_query(char*, int func(void*,int,char**,char**), void*);
 void _change_book(void *, Evas_Object*, char*, char*);
 void _search_word(void *, Evas_Object*,void*);
+void create_ctxpopup_more_button_cb(void*, Evas_Object*, void*);
