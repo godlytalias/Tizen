@@ -62,6 +62,18 @@ _nxt_chapter(void *data,
 		_query_chapter(data, ad->cur_book, ad->cur_chapter + 1);
 }
 
+static void
+_copy_verse(void *data, Evas_Object *obj, void *event_info)
+{
+	bible_verse_item *verse_item = (bible_verse_item*)data;
+	char buf[2048];
+	if (strcmp(elm_entry_selection_get(obj), verse_item->verse)) return;
+	elm_entry_select_none(obj);
+	sprintf(buf, "%s ~ %s %d : %d", verse_item->verse, Books[verse_item->bookcount], verse_item->chaptercount, verse_item->versecount + 1);
+	elm_cnp_selection_set(obj, ELM_SEL_TYPE_CLIPBOARD, ELM_SEL_FORMAT_TEXT, buf, strlen(buf));
+	return;
+}
+
 static Evas_Object*
 gl_content_get_cb(void *data, Evas_Object *obj, const char *part)
 {
@@ -77,7 +89,9 @@ gl_content_get_cb(void *data, Evas_Object *obj, const char *part)
     	evas_object_size_hint_weight_set(entry, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
     	evas_object_size_hint_align_set(entry, EVAS_HINT_FILL, EVAS_HINT_FILL);
     	elm_entry_entry_set(entry, verse_item->verse);
+    	elm_entry_text_style_user_push(entry, "DEFAULT='font=Tizen:style=Light align=left font_size=25 color=#000000 wrap=mixed'hilight=' + font_weight=Bold'");
     	evas_object_show(entry);
+    	evas_object_smart_callback_add(entry,"selection,copy",_copy_verse,(void*)verse_item);
     	elm_object_part_content_set(layout,"elm.swallow.verse",entry);
     	sprintf(edj_path, "%d", verse_item->versecount+1);
     	elm_object_part_text_set(layout, "elm.text.verse_count", edj_path);
@@ -160,6 +174,34 @@ naviframe_pop_cb(void *data, Elm_Object_Item *it)
 	ad->itc = NULL;
 	ui_app_exit();
 	return EINA_FALSE;
+}
+
+static Eina_Bool
+_loading_dismiss(void *data)
+{
+	Evas_Object *popup = (Evas_Object*)data;
+	evas_object_hide(popup);
+	evas_object_del(popup);
+	return ECORE_CALLBACK_CANCEL;
+}
+
+void
+_loading_progress(Evas_Object *parent)
+{
+	Evas_Object *toast_popup = elm_popup_add(parent);
+	elm_object_style_set(toast_popup, "toast");
+	elm_popup_align_set(toast_popup, 0.5, 0.5);
+
+	Evas_Object *loading = elm_progressbar_add(toast_popup);
+	elm_object_style_set(loading, "process_large");
+	elm_object_content_set(toast_popup, loading);
+	evas_object_size_hint_align_set(loading, EVAS_HINT_FILL, 0.5);
+	evas_object_size_hint_weight_set(loading, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
+	elm_progressbar_pulse(loading, EINA_TRUE);
+	evas_object_show(loading);
+
+	evas_object_show(toast_popup);
+	ecore_idler_add(_loading_dismiss, toast_popup);
 }
 
 static void

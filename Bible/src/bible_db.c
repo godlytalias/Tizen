@@ -77,6 +77,8 @@ _get_verse_list(void *data, int argc, char **argv, char **azColName)
    bible_verse_item *verse_item = malloc(sizeof(bible_verse_item));
    verse_item->versecount = ad->count;
    verse_item->verse = strdup(argv[i]);
+   verse_item->bookcount = ad->cur_book;
+   verse_item->chaptercount = ad->cur_chapter;
    verse_item->appdata = ad;
    elm_genlist_item_append(ad->genlist, ad->itc, (void*)verse_item, NULL, ELM_GENLIST_ITEM_FIELD_CONTENT, NULL, (void*)verse_item);
    ad->count++;
@@ -98,6 +100,7 @@ _query_chapter(void *data, int book, int chapter)
     ad->cur_chapter = chapter;
     sprintf(query, "select e_verse from eng_bible where Book='%s' and Chapter=%d", Books[book], chapter);
 
+	_loading_progress(ad->win);
 	_database_query(query, &_get_verse_list, data);
 
 	sprintf(query, "%s %d", Books[book], chapter);

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<manifest xmlns="http://tizen.org/ns/packages" api-version="2.3" package="org.tizen.gta_holy_bible" version="0.2.1">
+<manifest xmlns="http://tizen.org/ns/packages" api-version="2.3" package="org.tizen.gta_holy_bible" version="0.2.2">
     <author email="godlytalias@yahoo.co.in" href="godlytalais@blogspot.com">Godly T Alias</author>
     <description>This is a Bible application based on MKJV version released with GPL license.</description>
     <profile name="mobile"/>
@@ -11,4 +11,6 @@
         <privilege>http://tizen.org/privilege/systemsettings</privilege>
     </privileges>
     <feature name="http://tizen.org/feature/screen.size.normal.480.800">true</feature>
+    <feature name="http://tizen.org/feature/screen.size.normal.540.960">true</feature>
+    <feature name="http://tizen.org/feature/screen.size.normal.720.1280">true</feature>
 </manifest>

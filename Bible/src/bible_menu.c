@@ -262,11 +262,43 @@ ctxpopup_item_select_cb(void *data, Evas_Object *obj, void *event_info)
 		evas_object_show(label);
 		elm_box_pack_end(content_box, label);
 
-
 		sprintf(text_content, _("<align=left><font_size=20>"
 		"User can click on the header part which opens a new window with all "
 		"the Books and Chapters listed out "
 		"where user can select the Book and Chapter which they want.</font_size></align>"));
+
+		label = elm_label_add(popup);
+		evas_object_size_hint_weight_set(label, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
+		evas_object_size_hint_align_set(label, EVAS_HINT_FILL, EVAS_HINT_FILL);
+		elm_label_line_wrap_set(label, ELM_WRAP_WORD);
+		elm_object_text_set(label, text_content);
+		evas_object_show(label);
+		elm_box_pack_end(content_box, label);
+
+		label = elm_label_add(popup);
+		evas_object_size_hint_weight_set(label, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
+		evas_object_size_hint_align_set(label, EVAS_HINT_FILL, EVAS_HINT_FILL);
+		elm_label_line_wrap_set(label, ELM_WRAP_WORD);
+		sprintf(text_content,_(" "));
+		elm_object_text_set(label, text_content);
+		evas_object_show(label);
+		elm_box_pack_end(content_box, label);
+
+		sprintf(text_content, _("<align=left><font_size=25>"
+	"<b>Copy verses</b></font_size></align>"));
+
+		label = elm_label_add(popup);
+		evas_object_size_hint_weight_set(label, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
+		evas_object_size_hint_align_set(label, EVAS_HINT_FILL, EVAS_HINT_FILL);
+		elm_label_line_wrap_set(label, ELM_WRAP_WORD);
+		elm_object_text_set(label, text_content);
+		evas_object_show(label);
+		elm_box_pack_end(content_box, label);
+
+		sprintf(text_content, _("<align=left><font_size=20>"
+		"User can copy the desired verses fully or partially by double clicking on verses. "
+		"If full verse is selected for copy, the reference of verse also will get appended to verse automatically. "
+		"Users can copy more than one verses one by one and can get the verses from clipboard.</font_size></align>"));
 
 		label = elm_label_add(popup);
 		evas_object_size_hint_weight_set(label, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);

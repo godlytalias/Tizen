@@ -43,6 +43,7 @@ collections {
       data.item: "check" "Bible";
       parts {
          part {name: "base";
+            scale: 1;
             type: RECT;
             description { state: "default" 0.0;
                rel1.relative: 0.0 0.0;
@@ -52,6 +53,7 @@ collections {
          }
          part { name: "elm.header.part";
             type: RECT;
+            scale: 1;
             description { state: "default" 0.0;
               min: 480 104;
               fixed:1 0;
@@ -64,6 +66,7 @@ collections {
          }
          part { name: "header.left_top.padding";
             type: SPACER;
+            scale: 1;
             description { state: "default" 0.0;
               min: 32 32;
               fixed: 1 1;
@@ -75,6 +78,7 @@ collections {
          }
          part { name: "header.right_bottom.padding";
             type: SPACER;
+            scale: 1;
             description { state: "default" 0.0;
               min: 32 32;
               fixed: 1 1;
@@ -87,6 +91,7 @@ collections {
          }
          part {name: "elm.header.prev.btn";
             type: SWALLOW;
+            scale: 1;
             description { state: "default" 0.0;
                rel1.to: "header.left_top.padding";
                rel1.relative: 1.0 1.0;
@@ -98,6 +103,7 @@ collections {
          }
          part {name: "elm.header.nxt.btn";
             type: SWALLOW;
+            scale: 1;
             description { state: "default" 0.0;
                rel1.to_x: "header.right_bottom.padding";
                rel1.to_y: "header.left_top.padding";
@@ -109,6 +115,7 @@ collections {
          }
          part {name: "elm.header.book.left.padding";
             type: SPACER;
+            scale: 1;
             description { state: "default" 0.0;
                rel1.to: "elm.header.prev.btn";
                rel1.relative: 1.0 0.0;
@@ -120,6 +127,7 @@ collections {
          }
          part {name: "elm.header.book.right.padding";
             type: SPACER;
+            scale: 1;
             description { state: "default" 0.0;
                rel1.to: "elm.header.nxt.btn";
                rel2.to: "elm.header.nxt.btn";
@@ -131,6 +139,7 @@ collections {
          }
          part { name: "elm.text.book_title";
             type: TEXTBLOCK;
+            scale: 1;
             description { state: "default" 0.0;
                text.style: "title_style";
                text.min: 1 1;
@@ -142,6 +151,7 @@ collections {
          }
          part { name: "change_book_event";
             type: RECT;
+            scale: 1;
             mouse_events: 1;
             repeat_events: 0;
             description { state: "default" 0.0;
@@ -152,6 +162,7 @@ collections {
          }
          part {name: "elm.swallow.content";
             type: SWALLOW;
+            scale: 1;
             description { state: "default" 0.0;
                rel1.to_y: "elm.header.part";
                rel1.to_x: "base";
@@ -163,6 +174,7 @@ collections {
         }
          part { name: "elm.footer.part";
             type: RECT;
+            scale: 1;
             description { state: "default" 0.0;
               min: 480 104;
               fixed:1 0;
@@ -175,6 +187,7 @@ collections {
          }
          part { name: "footer.left_top.padding";
             type: SPACER;
+            scale: 1;
             description { state: "default" 0.0;
               min: 32 32;
               fixed: 1 1;
@@ -186,6 +199,7 @@ collections {
          }
          part { name: "footer.right_bottom.padding";
             type: SPACER;
+            scale: 1;
             description { state: "default" 0.0;
               min: 32 32;
               fixed: 1 1;
@@ -198,6 +212,7 @@ collections {
          }
          part {name: "elm.footer.prev.btn";
             type: SWALLOW;
+            scale: 1;
             description { state: "default" 0.0;
                min: 120 40;
                fixed: 1 1;
@@ -211,6 +226,7 @@ collections {
          }
          part {name: "elm.footer.search_btn.left.padding";
             type: SPACER;
+            scale: 1;
             description { state: "default" 0.0;
                rel1.to: "elm.footer.prev.btn";
                rel1.relative: 1.0 0.0;
@@ -222,6 +238,7 @@ collections {
         }
          part {name: "elm.footer.search_btn.right.padding";
             type: SPACER;
+            scale: 1;
             description { state: "default" 0.0;
                rel1.to: "elm.footer.nxt.btn";
                rel1.relative: 0.0 0.0;
@@ -234,6 +251,7 @@ collections {
         }
          part {name: "elm.footer.search.btn";
             type: SWALLOW;
+            scale: 1;
             description { state: "default" 0.0;
                min: 120 40;
                fixed: 1 1;
@@ -246,6 +264,7 @@ collections {
          }
          part {name: "elm.footer.nxt.btn";
             type: SWALLOW;
+            scale: 1;
             description { state: "default" 0.0;
                min: 120 40;
                fixed: 1 1;
@@ -259,6 +278,7 @@ collections {
         }
          part {name: "elm.footer.btn.left.padding";
             type: SPACER;
+            scale: 1;
             description { state: "default" 0.0;
                rel1.to: "elm.footer.prev.btn";
                rel1.relative: 1.0 0.0;
@@ -269,6 +289,7 @@ collections {
         }
          part {name: "elm.footer.btn.right.padding";
             type: SPACER;
+            scale: 1;
             description { state: "default" 0.0;
                rel1.to: "elm.footer.nxt.btn";
                rel2.to: "elm.footer.nxt.btn";
@@ -291,6 +312,7 @@ collections {
       parts {
          part{ name: "base";
             type: RECT;
+            scale: 1;
             description { state: "default" 0.0;
                min: 480 64;
                fixed: 1 0;
@@ -298,6 +320,7 @@ collections {
          }
          part{ name: "left_top_padding";
             type: SPACER;
+            scale: 1;
             description { state: "default" 0.0;
                min: 32 32;
                fixed: 1 1;
@@ -309,6 +332,7 @@ collections {
          }
          part { name: "elm.swallow.entry";
             type: SWALLOW;
+            scale: 1;
             description { state: "default" 0.0;
                rel1.to: "left_top_padding";
                rel1.relative: 1.0 1.0;
@@ -320,6 +344,7 @@ collections {
          }
          part { name: "elm.swallow.go";
             type: SWALLOW;
+            scale: 1;
             description { state: "default" 0.0;
                min: 120 80;
                max: 120 80;
@@ -334,6 +359,7 @@ collections {
          }
          part{ name: "elm.content.padding.left_top";
             type: SPACER;
+            scale: 1;
             description { state: "default" 0.0;
                rel1.to: "elm.swallow.entry";
                rel1.relative: 0.0 1.0;
@@ -346,6 +372,7 @@ collections {
          }
          part{ name: "elm.content.padding.right_bottom";
             type: SPACER;
+            scale: 1;
             description { state: "default" 0.0;
                rel1.to_x: "base";
                rel1.to_y: "elm.swallow.entry";
@@ -359,6 +386,7 @@ collections {
          }
          part{ name: "divider";
          	type: RECT;
+            scale: 1;
          	description { state: "default" 0.0;
          		rel1.to_x: "base";
          		rel1.to_y: "elm.content.padding.right_bottom";
@@ -372,6 +400,7 @@ collections {
          }
          part{ name: "elm.swallow.result";
             type: SWALLOW;
+            scale: 1;
             description { state: "default" 0.0;
                min: 480 0;
                fixed: 1 0;
@@ -387,6 +416,7 @@ collections {
    group{ name: "verse_layout";
       parts {
          part{ name: "base";
+            scale: 1;
             type: RECT;
             description { state: "default" 0.0;
                min: 480 64;
@@ -394,6 +424,7 @@ collections {
             }
          }
          part{ name: "left_top_padding";
+            scale: 1;
             type: SPACER;
             description { state: "default" 0.0;
                min: 32 32;
@@ -405,6 +436,7 @@ collections {
             }
          }
          part{ name: "right_bottom_padding";
+            scale: 1;
             type: SPACER;
             description { state: "default" 0.0;
                min: 32 32;
@@ -416,6 +448,7 @@ collections {
             }
          }
          part{ name: "elm.swallow.verse";
+            scale: 1;
             type: SWALLOW;
             description { state: "default" 0.0;
                rel1.to: "left_top_padding";
@@ -425,6 +458,7 @@ collections {
             }         
          }
          part {name: "elm.text.verse_count";
+            scale: 1;
             type: TEXTBLOCK;
             description {state: "default" 0.0;
                rel1.to: "left_top_padding";
@@ -445,6 +479,7 @@ collections {
       parts {
          part{ name: "base";
             type: RECT;
+            scale: 1;
             description { state: "default" 0.0;
                min: 480 0;
                color: 0 0 0 0;
@@ -453,6 +488,7 @@ collections {
          }
          part{ name: "left_top_padding";
             type: SPACER;
+            scale: 1;
             description { state: "default" 0.0;
                min: 32 24;
                fixed: 1 1;
@@ -464,6 +500,7 @@ collections {
          }
          part{ name: "right_bottom_padding";
             type: SPACER;
+            scale: 1;
             description { state: "default" 0.0;
                min: 32 24;
                fixed: 1 1;
@@ -475,6 +512,7 @@ collections {
          }
          part {name: "elm.text.reference";
             type: TEXTBLOCK;
+            scale: 1;
             description {state: "default" 0.0;
                rel1.to: "left_top_padding";
                rel1.relative: 1.0 1.0;
@@ -490,6 +528,7 @@ collections {
         }
          part{ name: "elm.text.verse";
             type: TEXTBLOCK;
+            scale: 1;
             description { state: "default" 0.0;
                rel1.to_y: "elm.text.reference";
                rel1.to_x: "left_top_padding";
@@ -510,6 +549,7 @@ collections {
       parts {
          part { name: "elm.swallow.content1";
             type: SWALLOW;
+            scale: 1;
             description { state: "default" 0.0;
                fixed: 1 0;
                rel1.relative: 0.0 0.0;
@@ -518,6 +558,7 @@ collections {
          }
          part { name: "divider";
             type: RECT;
+            scale: 1;
             description { state: "default" 0.0;
                fixed: 1 0;
                color_class: "B011";
@@ -529,6 +570,7 @@ collections {
          }
          part { name: "elm.swallow.content2";
             type: SWALLOW;
+            scale: 1;
             description { state: "default" 0.0;
                fixed: 1 0;
                rel1.to : "divider";

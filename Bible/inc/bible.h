@@ -68,3 +68,4 @@ void _change_book(void *, Evas_Object*, char*, char*);
 void _search_word(void *, Evas_Object*,void*);
 void create_ctxpopup_more_button_cb(void*, Evas_Object*, void*);
 int _get_bookcount(char*);
+void _loading_progress(Evas_Object *parent);
