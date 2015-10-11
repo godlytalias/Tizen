@@ -51,9 +51,32 @@ search_gl_del_cb(void *data, Evas_Object *obj)
 }
 
 static void
+_dismiss_verse_popup(void *data, Evas_Object *obj, void *event_info)
+{
+	evas_object_hide(data);
+	evas_object_del(data);
+}
+
+static void
 _search_result_selected(void *data, Evas_Object *obj, void *event_info)
 {
 	bible_verse_item *verse_item = (bible_verse_item*)data;
+	char title[128];
+	Evas_Object *verse_popup = elm_popup_add(verse_item->appdata->search_result_genlist);
+	elm_popup_align_set(verse_popup, ELM_NOTIFY_ALIGN_FILL, 1.0);
+	sprintf(title, "%s %d : %d", Books[verse_item->bookcount], verse_item->chaptercount, verse_item->versecount + 1);
+	elm_object_part_text_set(verse_popup, "title,text", title);
+	Evas_Object *verse_entry = elm_entry_add(verse_popup);
+	evas_object_size_hint_weight_set(verse_entry, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
+	elm_entry_entry_set(verse_entry, verse_item->verse);
+	elm_entry_editable_set(verse_entry, EINA_FALSE);
+	elm_object_content_set(verse_popup, verse_entry);
+	Evas_Object *ok = elm_button_add(verse_popup);
+	elm_object_text_set(ok, "OK");
+	evas_object_smart_callback_add(ok, "clicked", _dismiss_verse_popup, verse_popup);
+	elm_object_part_content_set(verse_popup, "button1", ok);
+	evas_object_show(verse_popup);
+	eext_object_event_callback_add(verse_popup, EEXT_CALLBACK_BACK, eext_popup_back_cb, NULL);
 }
 
 static int

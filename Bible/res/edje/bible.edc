@@ -441,12 +441,13 @@ collections {
      }
    }
    
-      group{ name: "search_verse_layout";
+   group{ name: "search_verse_layout";
       parts {
          part{ name: "base";
             type: RECT;
             description { state: "default" 0.0;
                min: 480 0;
+               color: 0 0 0 0;
                fixed: 1 0;
             }
          }

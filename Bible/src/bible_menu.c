@@ -231,7 +231,8 @@ ctxpopup_item_select_cb(void *data, Evas_Object *obj, void *event_info)
 				sprintf(text_content, _("<align=left><font_size=20>"
 				"User can search a specific keyword and get the verses containing those keywords. "
 				"The Search button in the footer bar takes to the search window. "
-				"User can enter the keyword and press 'Go' to get the list of verses containing the entered keyword.</font_size></align>"));
+				"User can enter the keyword and press 'Go' to get the list of verses containing the entered keyword. "
+				"User can click on the verse to see the verses fully in a popup.</font_size></align>"));
 
 				label = elm_label_add(popup);
 				evas_object_size_hint_weight_set(label, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
