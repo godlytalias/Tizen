@@ -11,6 +11,50 @@ _get_bookcount(char *book)
 	return i;
 }
 
+static int
+_check(void *data, int argc, char **argv, char **azColName)
+{
+	return 0;
+}
+
+static void
+_drop_table(char *table_name, void *data)
+{
+	char query[128];
+	sprintf(query, "DROP TABLE IF EXISTS %s;", table_name);
+	_database_query(query, &_check, data);
+}
+
+static int
+_get_app_data(void *data, int argc, char **argv, char **azColName)
+{
+	appdata_s *ad = (appdata_s*)data;
+	if (!strcmp(azColName[0], "bookcount"))
+		ad->cur_book = atoi(argv[0]);
+	if (!strcmp(azColName[1], "chaptercount"))
+		ad->cur_chapter = atoi(argv[1]);
+	return 0;
+}
+
+void
+_load_appdata(appdata_s *ad)
+{
+	char query[256];
+	sprintf(query, "SELECT bookcount,chaptercount FROM appdata;");
+	_database_query(query, &_get_app_data, ad);
+}
+
+void
+_save_appdata(appdata_s *ad)
+{
+	char query[256];
+	_drop_table("appdata", ad);
+	sprintf(query, "CREATE TABLE appdata(bookcount int, chaptercount int);");
+	_database_query(query, &_check, ad);
+	sprintf(query, "INSERT INTO appdata VALUES(%d, %d);", ad->cur_book, ad->cur_chapter);
+	_database_query(query, &_check, ad);
+}
+
 void
 _database_query(char *query, int func(void*,int,char**,char**), void *data)
 {
@@ -19,8 +63,10 @@ _database_query(char *query, int func(void*,int,char**,char**), void *data)
 
 	if (!ad->db) {
 	   char *db_path = malloc(200);
-	   sprintf(db_path, "%sholybible_eng.db", app_get_resource_path());
+	   char *res_path = app_get_resource_path();
+	   sprintf(db_path, "%sholybible_eng.db", res_path);
 	   sqlite3_open(db_path, &(ad->db));
+	   free(res_path);
 	   free(db_path);
 	   sqlite3_exec(ad->db, query, func, (void*)ad, &err_msg);
 	   sqlite3_free(err_msg);
@@ -72,11 +118,10 @@ static int
 _get_verse_list(void *data, int argc, char **argv, char **azColName)
 {
    appdata_s *ad = (appdata_s*) data;
-   int i;
 
    bible_verse_item *verse_item = malloc(sizeof(bible_verse_item));
    verse_item->versecount = ad->count;
-   verse_item->verse = strdup(argv[i]);
+   verse_item->verse = strdup(argv[0]);
    verse_item->bookcount = ad->cur_book;
    verse_item->chaptercount = ad->cur_chapter;
    verse_item->appdata = ad;

@@ -35,7 +35,6 @@ typedef struct appdata{
 	int count, versecount, chaptercount;
 	int cur_chapter, cur_book;
 	int nxt_chapter, nxt_book;
-	Evas_Coord mouse_down, mouse_up;
 	sqlite3 *db;
 } appdata_s;
 
@@ -69,3 +68,5 @@ void _search_word(void *, Evas_Object*,void*);
 void create_ctxpopup_more_button_cb(void*, Evas_Object*, void*);
 int _get_bookcount(char*);
 void _loading_progress(Evas_Object *parent);
+void _load_appdata(appdata_s *);
+void _save_appdata(appdata_s *);

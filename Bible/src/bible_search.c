@@ -48,6 +48,7 @@ search_gl_del_cb(void *data, Evas_Object *obj)
    bible_verse_item *verse_item = (bible_verse_item*)data;
    free(verse_item->verse);
    free(verse_item);
+   verse_item = NULL;
 }
 
 static void

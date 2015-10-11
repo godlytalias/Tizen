@@ -107,6 +107,7 @@ gl_del_cb(void *data, Evas_Object *obj)
    bible_verse_item *verse_item = (bible_verse_item*)data;
    free(verse_item->verse);
    free(verse_item);
+   verse_item = NULL;
 }
 
 static Evas_Object*
@@ -156,7 +157,8 @@ _home_screen(appdata_s *ad)
 	evas_object_smart_callback_add(ad->genlist, "drag,start,left", _nxt_chapter, ad);
 	evas_object_smart_callback_add(ad->genlist, "drag,start,right", _prev_chapter, ad);
 
-	_query_chapter((void*)ad, 0, 1);
+	//_load_appdata(ad);
+	_query_chapter((void*)ad, ad->cur_book, ad->cur_chapter);
 
 	evas_object_show(ad->genlist);
 	return ad->layout;
@@ -166,6 +168,7 @@ static Eina_Bool
 naviframe_pop_cb(void *data, Elm_Object_Item *it)
 {
 	appdata_s *ad = (appdata_s*)data;
+	//_save_appdata(ad);
 	if (ad->genlist)
 		elm_genlist_clear(ad->genlist);
 	ad->genlist = NULL;
@@ -249,6 +252,9 @@ app_create(void *data)
 	   If this function returns true, the main loop of application starts
 	   If this function returns false, the application is terminated */
 	appdata_s *ad = data;
+	ad->cur_book = 0;
+	ad->cur_chapter = 1;
+	ad->count = 0;
 
 	create_base_gui(ad);
 
@@ -277,6 +283,8 @@ static void
 app_terminate(void *data)
 {
 	/* Release all resources. */
+	appdata_s *ad = (appdata_s*)data;
+	if (ad) free(ad);
 }
 
 static void
