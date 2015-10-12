@@ -83,7 +83,7 @@ _search_result_selected(void *data, Evas_Object *obj, void *event_info)
 	elm_entry_editable_set(verse_entry, EINA_FALSE);
 	evas_object_size_hint_weight_set(verse_entry, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
 	elm_entry_entry_set(verse_entry, verse_item->verse);
-	elm_entry_text_style_user_push(verse_entry, "DEFAULT='font=Tizen:style=Light align=left font_size=25 color=#000000 wrap=mixed'hilight=' + font_weight=Bold'");
+	elm_entry_text_style_user_push(verse_entry, "DEFAULT='font=Tizen:style=Regular align=left font_size=30 color=#000000 wrap=mixed'hilight=' + font_weight=Bold'");
 	evas_object_smart_callback_add(verse_entry,"selection,copy",_copy_verse,(void*)verse_item);
 	elm_object_content_set(verse_popup, verse_entry);
 	Evas_Object *ok = elm_button_add(verse_popup);
@@ -151,6 +151,7 @@ _search_keyword(void *data,
 		elm_popup_timeout_set(toast_popup, 2);
 		elm_object_style_set(toast_popup, "toast");
 		elm_object_text_set(toast_popup, "Search keyword is too large");
+		evas_object_smart_callback_add(toast_popup, "timeout", _dismiss_verse_popup, toast_popup);
 		evas_object_show(toast_popup);
 		return;
 	}
@@ -160,9 +161,12 @@ _search_keyword(void *data,
 			elm_popup_timeout_set(toast_popup, 2);
 			elm_object_style_set(toast_popup, "toast");
 			elm_object_text_set(toast_popup, "Search keyword is too small");
+			evas_object_smart_callback_add(toast_popup, "timeout", _dismiss_verse_popup, toast_popup);
 			evas_object_show(toast_popup);
 			return;
 		}
+
+	_loading_progress(ad->win);
 	if (keyword) {
 		ch = strtok(keyword, " ");
 		sprintf(keyword_query, "e_verse LIKE '%%%s%%'", ch);

@@ -2,6 +2,25 @@
 #include <sqlite3.h>
 #include "bible.h"
 
+static void
+_app_database_query(char *query, int func(void*,int,char**,char**), void *data)
+{
+	appdata_s *ad = (appdata_s*)data;
+	sqlite3 *db;
+	char *err_msg;
+
+	   char *db_path = malloc(200);
+	   char *res_path = app_get_data_path();
+	   sprintf(db_path, "%sappdata.db", res_path);
+	   sqlite3_open_v2(db_path, &db, SQLITE_OPEN_FULLMUTEX | SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE, NULL);
+	   free(res_path);
+	   free(db_path);
+	   sqlite3_exec(db, query, func, (void*)ad, &err_msg);
+	   sqlite3_free(err_msg);
+	   sqlite3_close(db);
+	   db = NULL;
+}
+
 int
 _get_bookcount(char *book)
 {
@@ -22,7 +41,7 @@ _drop_table(char *table_name, void *data)
 {
 	char query[128];
 	sprintf(query, "DROP TABLE IF EXISTS %s;", table_name);
-	_database_query(query, &_check, data);
+	_app_database_query(query, &_check, data);
 }
 
 static int
@@ -40,19 +59,19 @@ void
 _load_appdata(appdata_s *ad)
 {
 	char query[256];
-	sprintf(query, "SELECT bookcount,chaptercount FROM appdata;");
-	_database_query(query, &_get_app_data, ad);
+	sprintf(query, "SELECT bookcount,chaptercount FROM appinitdata;");
+	_app_database_query(query, &_get_app_data, ad);
 }
 
 void
 _save_appdata(appdata_s *ad)
 {
 	char query[256];
-	_drop_table("appdata", ad);
-	sprintf(query, "CREATE TABLE appdata(bookcount int, chaptercount int);");
-	_database_query(query, &_check, ad);
-	sprintf(query, "INSERT INTO appdata VALUES(%d, %d);", ad->cur_book, ad->cur_chapter);
-	_database_query(query, &_check, ad);
+	_drop_table("appinitdata", ad);
+	sprintf(query, "CREATE TABLE appinitdata(bookcount int, chaptercount int);");
+	_app_database_query(query, &_check, ad);
+	sprintf(query, "INSERT INTO appinitdata VALUES(%d, %d);", ad->cur_book, ad->cur_chapter);
+	_app_database_query(query, &_check, ad);
 }
 
 void
@@ -125,7 +144,7 @@ _get_verse_list(void *data, int argc, char **argv, char **azColName)
    verse_item->bookcount = ad->cur_book;
    verse_item->chaptercount = ad->cur_chapter;
    verse_item->appdata = ad;
-   elm_genlist_item_append(ad->genlist, ad->itc, (void*)verse_item, NULL, ELM_GENLIST_ITEM_FIELD_CONTENT, NULL, (void*)verse_item);
+   elm_genlist_item_append(ad->genlist, ad->itc, (void*)verse_item, NULL, ELM_GENLIST_ITEM_NONE, NULL, (void*)verse_item);
    ad->count++;
 
    return 0;
@@ -145,7 +164,6 @@ _query_chapter(void *data, int book, int chapter)
     ad->cur_chapter = chapter;
     sprintf(query, "select e_verse from eng_bible where Book='%s' and Chapter=%d", Books[book], chapter);
 
-	_loading_progress(ad->win);
 	_database_query(query, &_get_verse_list, data);
 
 	sprintf(query, "%s %d", Books[book], chapter);

@@ -12,7 +12,7 @@ collections {
       }
       style {
          name: "verse_style";
-         base: "font=Tizen:style=Light align=left font_size=25 color=#000000 wrap=mixed ellipsis=1.0";
+         base: "font=Tizen:style=Regular align=left font_size=25 color=#000000 wrap=mixed ellipsis=1.0";
          tag: "br" "\n";
          tag: "ps" "ps";
          tag: "hilight" "+ font_weight=Bold";

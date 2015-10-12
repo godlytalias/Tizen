@@ -12,14 +12,6 @@ win_delete_request_cb(void *data, Evas_Object *obj, void *event_info)
 	ui_app_exit();
 }
 
-static void
-layout_back_cb(void *data, Evas_Object *obj, void *event_info)
-{
-	appdata_s *ad = data;
-	/* Let window go to hide state. */
-	elm_win_lower(ad->win);
-}
-
 void
 app_get_resource(const char *edj_file_in, char *edj_path_out, int edj_path_max)
 {
@@ -36,6 +28,8 @@ _prev_chapter(void *data,
               void *event_info EINA_UNUSED)
 {
 	appdata_s *ad = (appdata_s*)data;
+	_loading_progress(ad->win);
+
 	if (ad->cur_book == 0 && ad->cur_chapter == 1) return;
 	if (ad->cur_chapter == 1) {
 		_get_chapter_count_query(data, ad->cur_book - 1);
@@ -52,6 +46,8 @@ _nxt_chapter(void *data,
               void *event_info EINA_UNUSED)
 {
 	appdata_s *ad = (appdata_s*)data;
+	_loading_progress(ad->win);
+
 	if (ad->cur_book == 65 && ad->cur_chapter == 22) return;
 	_get_chapter_count_query(data, ad->cur_book);
 	if (ad->cur_chapter == ad->chaptercount)
@@ -89,7 +85,7 @@ gl_content_get_cb(void *data, Evas_Object *obj, const char *part)
     	evas_object_size_hint_weight_set(entry, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
     	evas_object_size_hint_align_set(entry, EVAS_HINT_FILL, EVAS_HINT_FILL);
     	elm_entry_entry_set(entry, verse_item->verse);
-    	elm_entry_text_style_user_push(entry, "DEFAULT='font=Tizen:style=Light align=left font_size=25 color=#000000 wrap=mixed'hilight=' + font_weight=Bold'");
+    	elm_entry_text_style_user_push(entry, "DEFAULT='font=Tizen:style=Regular align=left font_size=30 color=#000000 wrap=mixed'hilight=' + font_weight=Bold'");
     	evas_object_show(entry);
     	evas_object_smart_callback_add(entry,"selection,copy",_copy_verse,(void*)verse_item);
     	elm_object_part_content_set(layout,"elm.swallow.verse",entry);
@@ -157,7 +153,7 @@ _home_screen(appdata_s *ad)
 	evas_object_smart_callback_add(ad->genlist, "drag,start,left", _nxt_chapter, ad);
 	evas_object_smart_callback_add(ad->genlist, "drag,start,right", _prev_chapter, ad);
 
-	//_load_appdata(ad);
+	_load_appdata(ad);
 	_query_chapter((void*)ad, ad->cur_book, ad->cur_chapter);
 
 	evas_object_show(ad->genlist);
@@ -168,7 +164,6 @@ static Eina_Bool
 naviframe_pop_cb(void *data, Elm_Object_Item *it)
 {
 	appdata_s *ad = (appdata_s*)data;
-	//_save_appdata(ad);
 	if (ad->genlist)
 		elm_genlist_clear(ad->genlist);
 	ad->genlist = NULL;
@@ -195,8 +190,8 @@ _loading_progress(Evas_Object *parent)
 	elm_object_style_set(toast_popup, "toast");
 	elm_popup_align_set(toast_popup, 0.5, 0.5);
 
-	Evas_Object *loading = elm_progressbar_add(toast_popup);
-	elm_object_style_set(loading, "process_large");
+	Evas_Object *loading = elm_progressbar_add(parent);
+	elm_object_style_set(loading, "process_medium");
 	elm_object_content_set(toast_popup, loading);
 	evas_object_size_hint_align_set(loading, EVAS_HINT_FILL, 0.5);
 	evas_object_size_hint_weight_set(loading, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
@@ -214,6 +209,13 @@ create_base_gui(appdata_s *ad)
 	Evas_Object *menu_btn;
 	ad->win = elm_win_util_standard_add(PACKAGE, PACKAGE);
 	elm_win_autodel_set(ad->win, EINA_TRUE);
+
+	Evas_Object *conform = elm_conformant_add(ad->win);
+	evas_object_size_hint_weight_set(conform, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
+	elm_win_resize_object_add(ad->win, conform);
+	evas_object_show(conform);
+	elm_win_indicator_mode_set(ad->win, ELM_WIN_INDICATOR_SHOW);
+	elm_win_indicator_opacity_set(ad->win, ELM_WIN_INDICATOR_OPAQUE);
 
 	if (elm_win_wm_rotation_supported_get(ad->win)) {
 		int rots[4] = { 0, 90, 180, 270 };
@@ -283,8 +285,7 @@ static void
 app_terminate(void *data)
 {
 	/* Release all resources. */
-	appdata_s *ad = (appdata_s*)data;
-	if (ad) free(ad);
+	_save_appdata(data);
 }
 
 static void

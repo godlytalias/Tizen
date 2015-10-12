@@ -130,9 +130,9 @@ ctxpopup_item_select_cb(void *data, Evas_Object *obj, void *event_info)
 		evas_object_show(label);
 		elm_box_pack_end(content_box, label);
 
-		sprintf(text_content, _("<align=center><font_size=25>"
-		"Report the bugs or suggestions to "
-		"Godly T.Alias (<em>godlytalias@yahoo.co.in</em>).</font_size></align>"));
+		sprintf(text_content, _("<align=center><font_size=15>"
+				"Report the bugs or suggestions to "
+				"Godly T.Alias (<em>godlytalias@yahoo.co.in</em>).</font_size></align>"));
 
 		label = elm_label_add(popup);
 		evas_object_size_hint_weight_set(label, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
