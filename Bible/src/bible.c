@@ -22,33 +22,40 @@ app_get_resource(const char *edj_file_in, char *edj_path_out, int edj_path_max)
 	}
 }
 
-static void
-_prev_chapter(void *data,
-              Evas_Object *obj ,
-              void *event_info EINA_UNUSED)
+static Eina_Bool
+_get_prev_chapter(void *data)
 {
 	appdata_s *ad = (appdata_s*)data;
-	_loading_progress(ad->win);
 
-	if (ad->cur_book == 0 && ad->cur_chapter == 1) return;
+	if (ad->cur_book == 0 && ad->cur_chapter == 1) return ECORE_CALLBACK_CANCEL;
+
+	_loading_progress(ad->win);
 	if (ad->cur_chapter == 1) {
 		_get_chapter_count_query(data, ad->cur_book - 1);
 		_query_chapter(data, ad->cur_book - 1, ad->chaptercount);
 	}
 	else
 		_query_chapter(data, ad->cur_book, ad->cur_chapter - 1);
-
+	return ECORE_CALLBACK_CANCEL;
 }
 
 static void
-_nxt_chapter(void *data,
-              Evas_Object *obj ,
+_prev_chapter(void *data,
+              Evas_Object *obj EINA_UNUSED,
               void *event_info EINA_UNUSED)
 {
 	appdata_s *ad = (appdata_s*)data;
-	_loading_progress(ad->win);
+	ecore_idle_enterer_add(_get_prev_chapter, data);
+}
 
-	if (ad->cur_book == 65 && ad->cur_chapter == 22) return;
+static Eina_Bool
+_get_nxt_chapter(void *data)
+{
+	appdata_s *ad = (appdata_s*)data;
+
+	if (ad->cur_book == 65 && ad->cur_chapter == 22) return ECORE_CALLBACK_CANCEL;
+
+	_loading_progress(ad->win);
 	_get_chapter_count_query(data, ad->cur_book);
 	if (ad->cur_chapter == ad->chaptercount)
 	{
@@ -56,6 +63,49 @@ _nxt_chapter(void *data,
 	}
 	else
 		_query_chapter(data, ad->cur_book, ad->cur_chapter + 1);
+	return ECORE_CALLBACK_CANCEL;
+}
+
+static void
+_nxt_chapter(void *data,
+              Evas_Object *obj EINA_UNUSED,
+              void *event_info EINA_UNUSED)
+{
+	appdata_s *ad = (appdata_s*)data;
+	ecore_idle_enterer_add(_get_nxt_chapter, data);
+}
+
+static void
+_content_mouse_down(void *data,
+        Evas *evas EINA_UNUSED,
+        Evas_Object *obj,
+        void *event_info)
+{
+   appdata_s *ad = (appdata_s*)data;
+   Evas_Event_Mouse_Down *ev = (Evas_Event_Mouse_Down*)event_info;
+   ad->mouse_x = ev->canvas.x;
+   ad->mouse_y = ev->canvas.y;
+   ad->mouse_down_time = ev->timestamp;
+}
+
+static void
+_content_mouse_up(void *data,
+        Evas *evas EINA_UNUSED,
+        Evas_Object *obj,
+        void *event_info)
+{
+   appdata_s *ad = (appdata_s*)data;
+   int x_del, y_del;
+   Evas_Event_Mouse_Up *ev = (Evas_Event_Mouse_Up*)event_info;
+   if ((ev->timestamp - ad->mouse_down_time) > 1000) return;
+   x_del = ev->canvas.x - ad->mouse_x;
+   y_del = ev->canvas.y - ad->mouse_y;
+   if (abs(x_del) < (2 * abs(y_del))) return;
+   if (abs(x_del) < 100) return;
+   if (x_del < 0)
+	   _nxt_chapter(data, obj, NULL);
+   else
+	   _prev_chapter(data, obj, NULL);
 }
 
 static void
@@ -150,8 +200,10 @@ _home_screen(appdata_s *ad)
 	elm_genlist_realization_mode_set(ad->genlist, EINA_TRUE);
 	elm_object_part_content_set(ad->layout, "elm.swallow.content", ad->genlist);
 	elm_genlist_mode_set(ad->genlist, ELM_LIST_COMPRESS);
-	evas_object_smart_callback_add(ad->genlist, "drag,start,left", _nxt_chapter, ad);
-	evas_object_smart_callback_add(ad->genlist, "drag,start,right", _prev_chapter, ad);
+	//evas_object_smart_callback_add(ad->genlist, "drag,start,left", _nxt_chapter, ad);
+	//evas_object_smart_callback_add(ad->genlist, "drag,start,right", _prev_chapter, ad);
+    evas_object_event_callback_add(ad->genlist, EVAS_CALLBACK_MOUSE_DOWN, _content_mouse_down, ad);
+    evas_object_event_callback_add(ad->genlist, EVAS_CALLBACK_MOUSE_UP, _content_mouse_up, ad);
 
 	_load_appdata(ad);
 	_query_chapter((void*)ad, ad->cur_book, ad->cur_chapter);

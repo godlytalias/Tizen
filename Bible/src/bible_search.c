@@ -19,6 +19,8 @@ static Eina_Bool
 _search_navi_pop_cb(void *data, Elm_Object_Item *it)
 {
 	ecore_idler_add(_genlist_free_idler, data);
+	appdata_s *ad = (appdata_s*)data;
+	_loading_progress(ad->win);
 	return EINA_TRUE;
 }
 
@@ -125,6 +127,7 @@ _bible_search_query(char* search_query, appdata_s *ad)
 	evas_object_size_hint_weight_set(ad->search_result_genlist, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
 	evas_object_size_hint_align_set(ad->search_result_genlist, EVAS_HINT_FILL, EVAS_HINT_FILL);
 	elm_genlist_select_mode_set(ad->search_result_genlist, ELM_OBJECT_SELECT_MODE_ALWAYS);
+	elm_genlist_homogeneous_set(ad->search_result_genlist, EINA_TRUE);
 	ad->search_itc = elm_genlist_item_class_new();
 	ad->search_itc->item_style = "full";
 	ad->search_itc->func.content_get = search_gl_content_get_cb;

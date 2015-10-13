@@ -21,6 +21,7 @@ static void
 _back_btn_clicked(void *data, Evas_Object *obj, void *event_info)
 {
 	appdata_s *ad = (appdata_s*)data;
+	_loading_progress(ad->win);
 	_clear_item_data(ad->list1);
 	elm_naviframe_item_pop(ad->naviframe);
 }
@@ -29,6 +30,7 @@ static void
 _done_btn_clicked(void *data, Evas_Object *obj, void *event_info)
 {
 	appdata_s *ad = (appdata_s*)data;
+	_loading_progress(ad->win);
 	_clear_item_data(ad->list1);
 	_query_chapter(ad, ad->nxt_book, ad->nxt_chapter);
 	elm_naviframe_item_pop(ad->naviframe);
@@ -104,6 +106,7 @@ _change_book(void *data, Evas_Object *obj, char *emission, char *source)
 {
 	appdata_s *ad = (appdata_s*)data;
 	Elm_Object_Item *nf_it;
+
 	Evas_Object *back_btn = elm_button_add(obj);
 	elm_object_style_set(back_btn, "naviframe/title_cancel");
 	elm_object_text_set(back_btn, "Cancel");
