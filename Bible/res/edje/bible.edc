@@ -38,6 +38,14 @@ collections {
          tag: "tab" "\t";
       }
    }
+   
+   plugins {
+      plugin {
+         name: "touch_sound";
+         source: feedback;
+         param: "FEEDBACK_TYPE_SOUND FEEDBACK_PATTERN_TAP";
+      }
+   }
 
    group { name: "main";
       data.item: "check" "Bible";
@@ -48,6 +56,10 @@ collections {
             description { state: "default" 0.0;
                rel1.relative: 0.0 0.0;
                rel2.relative: 1.0 1.0;
+               color: 0 0 0 255;
+            }
+            description { state: "loaded" 0.0;
+               inherit: "default" 0.0;
                color: 0 0 0 0;
             }
          }
@@ -303,12 +315,24 @@ collections {
         program { name: "change_book";
            signal: "mouse,clicked,1";
            source: "change_book_event";
+           action: RUN_PLUGIN "touch_sound";
+           after: "signal_emit";
+        }
+        program { name: "signal_emit";
            action: SIGNAL_EMIT "elm,book,change" "elm";
+        }
+        program { name: "loading_done";
+           signal: "elm,holy_bible,loading,done";
+           source: "elm";
+           action: STATE_SET "loaded" 0.0;
+           target: "base";
         }
      }
    }
 
    group{ name: "search_layout";
+   images.image: "up_arrow.png" COMP;
+   images.image: "down_arrow.png" COMP;
       parts {
          part{ name: "base";
             type: SPACER;
@@ -316,6 +340,27 @@ collections {
             description { state: "default" 0.0;
                min: 480 64;
                fixed: 1 0;
+            }
+         }
+         part { name: "header_bg";
+            type: RECT;
+            scale: 1;
+            description { state: "default" 0.0;
+               rel1.to: "left_top_padding";
+               rel2.to: "divider";
+               color: 230 230 230 230;
+            }
+         }
+         part { name: "content_bg";
+            type: RECT;
+            scale: 1;
+            description { state: "default" 0.0;
+               rel1.to: "elm.swallow.result";
+               rel2.to: "elm.swallow.result";
+               color: 230 230 230 230;
+            }
+            description { state: "hide" 0.0;
+               visible: 0;
             }
          }
          part{ name: "left_top_padding";
@@ -410,6 +455,88 @@ collections {
                rel2.to: "base";
             }         
          }
+         part { name: "down_arrow";
+            scale: 1;
+            description { state: "default" 0.0;
+               min: 50 50;
+               fixed: 1 1;
+               rel1.to: "elm.swallow.result";
+               rel1.relative: 1.0 1.0;
+               rel2.to: "elm.swallow.result";
+               align: 1.0 1.0;
+               image.normal: "down_arrow.png";
+               visible: 0;
+            }
+            description { state: "show" 0.0;
+               inherit: "default" 0.0;
+               visible: 1;
+            }
+         }
+         part { name: "up_arrow";
+            scale: 1;
+            description { state: "default" 0.0;
+               min: 50 50;
+               fixed: 1 1;
+               rel1.to: "elm.swallow.result";
+               rel1.relative: 1.0 0.0;
+               rel2.to: "elm.swallow.result";
+               rel2.relative: 1.0 0.0;
+               align: 1.0 0.0;
+               image.normal: "up_arrow.png";
+               visible: 0;
+            }
+            description { state: "show" 0.0;
+               inherit: "default" 0.0;
+               visible: 1;
+            }
+         }
+      }
+      
+      programs {
+         program { name: "go_bottom";
+            signal: "mouse,clicked,1";
+            source: "down_arrow";
+            action: SIGNAL_EMIT "elm,holy_bible,bottom" "elm";
+         }
+         program { name: "go_top";
+            signal: "mouse,clicked,1";
+            source: "up_arrow";
+            action: SIGNAL_EMIT "elm,holy_bible,top" "elm";
+         }
+         program { name: "content_bg_hide";
+            signal: "elm,holy_bible,bg,hide";
+            source: "elm";
+            action: STATE_SET "hide" 0.0;
+            target: "content_bg";
+         }
+         program { name: "up_arrow_hide";
+            in: 1.0 0.0;
+            transition: LINEAR 0.2;
+            action: STATE_SET "default" 0.0;
+            target: "up_arrow";
+         }
+         program { name: "down_arrow_hide";
+            in: 1.0 0.0;
+            transition: LINEAR 0.2;
+            action: STATE_SET "default" 0.0;
+            target: "down_arrow";
+         }
+         program { name: "up_arrow_show";
+            signal: "elm,holy_bible,up,show";
+            source: "elm";
+            transition: LINEAR 0.2;
+            action: STATE_SET "show" 0.0;
+            target: "up_arrow";
+            after: "up_arrow_hide";
+         }
+         program { name: "down_arrow_show";
+            signal: "elm,holy_bible,down,show";
+            source: "elm";
+            transition: LINEAR 0.2;
+            action: STATE_SET "show" 0.0;
+            target: "down_arrow";
+            after: "down_arrow_hide";
+         }
       }
    }
    
@@ -417,7 +544,7 @@ collections {
       parts {
          part{ name: "base";
             scale: 1;
-            type: RECT;
+            type: SPACER;
             description { state: "default" 0.0;
                min: 480 64;
                fixed: 1 0;
@@ -483,7 +610,7 @@ collections {
             description { state: "default" 0.0;
                min: 480 158;
                color: 0 0 0 0;
-               fixed: 1 1;
+               fixed: 1 0;
             }
          }
          part{ name: "left_top_padding";

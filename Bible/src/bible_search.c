@@ -15,11 +15,27 @@ _genlist_free_idler(void *data)
 	return ECORE_CALLBACK_CANCEL;
 }
 
+static void
+_go_top(void *data, Evas_Object *obj, const char *emission, const char *source)
+{
+	appdata_s *ad = (appdata_s*)data;
+	elm_genlist_item_bring_in(elm_genlist_first_item_get(ad->search_result_genlist), ELM_GENLIST_ITEM_SCROLLTO_IN);
+}
+
+static void
+_go_bottom(void *data, Evas_Object *obj, const char *emission, const char *source)
+{
+	appdata_s *ad = (appdata_s*)data;
+	elm_genlist_item_bring_in(elm_genlist_last_item_get(ad->search_result_genlist), ELM_GENLIST_ITEM_SCROLLTO_IN);
+}
+
 static Eina_Bool
 _search_navi_pop_cb(void *data, Elm_Object_Item *it)
 {
 	ecore_idler_add(_genlist_free_idler, data);
 	appdata_s *ad = (appdata_s*)data;
+	elm_layout_signal_callback_del(ad->search_layout, "elm,holy_bible,top", "elm", _go_top);
+	elm_layout_signal_callback_del(ad->search_layout, "elm,holy_bible,bottom", "elm", _go_bottom);
 	_loading_progress(ad->win);
 	return EINA_TRUE;
 }
@@ -96,6 +112,20 @@ _search_result_selected(void *data, Evas_Object *obj, void *event_info)
 	eext_object_event_callback_add(verse_popup, EEXT_CALLBACK_BACK, eext_popup_back_cb, NULL);
 }
 
+static void
+_up_arrow_show(void *data, Evas_Object *obj, void *event_info)
+{
+   appdata_s *ad = (appdata_s*)data;
+   elm_layout_signal_emit(ad->search_layout, "elm,holy_bible,up,show", "elm");
+}
+
+static void
+_down_arrow_show(void *data, Evas_Object *obj, void *event_info)
+{
+   appdata_s *ad = (appdata_s*)data;
+   elm_layout_signal_emit(ad->search_layout, "elm,holy_bible,down,show", "elm");
+}
+
 static int
 _get_search_results(void *data, int argc, char **argv, char **azColName)
 {
@@ -135,6 +165,11 @@ _bible_search_query(char* search_query, appdata_s *ad)
 	ad->search_itc->func.del = search_gl_del_cb;
 	_database_query(search_query, _get_search_results, ad);
 	elm_object_part_content_set(ad->search_layout, "elm.swallow.result", ad->search_result_genlist);
+	elm_layout_signal_emit(ad->search_layout, "elm,holy_bible,bg,hide", "elm");
+	evas_object_smart_callback_add(ad->search_result_genlist, "drag,start,up", _down_arrow_show, ad);
+	evas_object_smart_callback_add(ad->search_result_genlist, "drag,start,down", _up_arrow_show, ad);
+	elm_layout_signal_callback_add(ad->search_layout, "elm,holy_bible,top", "elm", _go_top, ad);
+	elm_layout_signal_callback_add(ad->search_layout, "elm,holy_bible,bottom", "elm", _go_bottom, ad);
 	evas_object_show(ad->search_result_genlist);
 }
 

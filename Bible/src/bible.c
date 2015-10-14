@@ -29,13 +29,14 @@ _get_prev_chapter(void *data)
 
 	if (ad->cur_book == 0 && ad->cur_chapter == 1) return ECORE_CALLBACK_CANCEL;
 
-	_loading_progress(ad->win);
+	Evas_Object *popup = _loading_progress_show(ad->win);
 	if (ad->cur_chapter == 1) {
 		_get_chapter_count_query(data, ad->cur_book - 1);
 		_query_chapter(data, ad->cur_book - 1, ad->chaptercount);
 	}
 	else
 		_query_chapter(data, ad->cur_book, ad->cur_chapter - 1);
+	_loading_progress_hide(popup);
 	return ECORE_CALLBACK_CANCEL;
 }
 
@@ -55,7 +56,7 @@ _get_nxt_chapter(void *data)
 
 	if (ad->cur_book == 65 && ad->cur_chapter == 22) return ECORE_CALLBACK_CANCEL;
 
-	_loading_progress(ad->win);
+	Evas_Object *popup = _loading_progress_show(ad->win);
 	_get_chapter_count_query(data, ad->cur_book);
 	if (ad->cur_chapter == ad->chaptercount)
 	{
@@ -63,6 +64,7 @@ _get_nxt_chapter(void *data)
 	}
 	else
 		_query_chapter(data, ad->cur_book, ad->cur_chapter + 1);
+	_loading_progress_hide(popup);
 	return ECORE_CALLBACK_CANCEL;
 }
 
@@ -156,10 +158,22 @@ gl_del_cb(void *data, Evas_Object *obj)
    verse_item = NULL;
 }
 
+static Eina_Bool
+_load_chapter(void *data)
+{
+	appdata_s *ad = (appdata_s*)data;
+	Evas_Object *popup = _loading_progress_show(ad->win);
+	_query_chapter(data, ad->cur_book, ad->cur_chapter);
+	elm_layout_signal_emit(ad->layout, "elm,holy_bible,loading,done", "elm");
+	_loading_progress_hide(popup);
+	return ECORE_CALLBACK_CANCEL;
+}
+
 static Evas_Object*
 _home_screen(appdata_s *ad)
 {
 	Evas_Object *prev_btn, *nxt_btn, *search_btn;
+	char title[64];
 	char edj_path[PATH_MAX] = {0, };
 	/* Base Layout */
 	app_get_resource(EDJ_FILE, edj_path, (int)PATH_MAX);
@@ -206,7 +220,9 @@ _home_screen(appdata_s *ad)
     evas_object_event_callback_add(ad->genlist, EVAS_CALLBACK_MOUSE_UP, _content_mouse_up, ad);
 
 	_load_appdata(ad);
-	_query_chapter((void*)ad, ad->cur_book, ad->cur_chapter);
+	ecore_idler_add(_load_chapter, ad);
+	sprintf(title, "%s %d", Books[ad->cur_book], ad->cur_chapter);
+	elm_object_part_text_set(ad->layout, "elm.text.book_title", title);
 
 	evas_object_show(ad->genlist);
 	return ad->layout;
@@ -216,14 +232,42 @@ static Eina_Bool
 naviframe_pop_cb(void *data, Elm_Object_Item *it)
 {
 	appdata_s *ad = (appdata_s*)data;
+	Evas_Object *popup = _loading_progress_show(ad->win);
 	if (ad->genlist)
 		elm_genlist_clear(ad->genlist);
 	ad->genlist = NULL;
 	if (ad->itc)
 		elm_genlist_item_class_free(ad->itc);
 	ad->itc = NULL;
+	_loading_progress_hide(popup);
 	ui_app_exit();
 	return EINA_FALSE;
+}
+
+void
+_loading_progress_hide(Evas_Object *popup)
+{
+	evas_object_hide(popup);
+	evas_object_del(popup);
+}
+
+Evas_Object *
+_loading_progress_show(Evas_Object *parent)
+{
+	Evas_Object *toast_popup = elm_popup_add(parent);
+	elm_object_style_set(toast_popup, "toast");
+	elm_popup_align_set(toast_popup, 0.5, 0.5);
+
+	Evas_Object *loading = elm_progressbar_add(parent);
+	elm_object_style_set(loading, "process_medium");
+	elm_object_content_set(toast_popup, loading);
+	evas_object_size_hint_align_set(loading, EVAS_HINT_FILL, 0.5);
+	evas_object_size_hint_weight_set(loading, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
+	elm_progressbar_pulse(loading, EINA_TRUE);
+	evas_object_show(loading);
+
+	evas_object_show(toast_popup);
+	return toast_popup;
 }
 
 static Eina_Bool
