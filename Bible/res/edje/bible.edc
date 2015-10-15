@@ -11,6 +11,15 @@ collections {
          tag: "tab" "\t";
       }
       style {
+         name: "main_verse_style";
+         base: "font=Tizen:style=Regular align=left font_size=30 color=#000000 wrap=mixed";
+         tag: "br" "\n";
+         tag: "ps" "ps";
+         tag: "hilight" "+ font_weight=Bold";
+         tag: "b" "+ font_weight=Bold";
+         tag: "tab" "\t";
+      }
+      style {
          name: "verse_style";
          base: "font=Tizen:style=Regular align=left font_size=25 color=#000000 wrap=mixed ellipsis=1.0";
          tag: "br" "\n";
@@ -574,14 +583,17 @@ collections {
                align: 1.0 1.0;
             }
          }
-         part{ name: "elm.swallow.verse";
+         part{ name: "elm.text.verse";
             scale: 1;
-            type: SWALLOW;
+            type: TEXTBLOCK;
             description { state: "default" 0.0;
+               min: 480 40;
                rel1.to: "left_top_padding";
                rel1.relative: 1.0 1.0;
                rel2.to: "right_bottom_padding";
                rel2.relative: 0.0 0.0;
+               text.style: "main_verse_style";
+               text.min: 0 1;
             }         
          }
          part {name: "elm.text.verse_count";
@@ -590,7 +602,7 @@ collections {
             description {state: "default" 0.0;
                rel1.to: "left_top_padding";
                rel1.relative: 0.0 1.0;
-               rel2.to: "elm.swallow.verse";
+               rel2.to: "elm.text.verse";
                rel2.relative: 0.0 0.0;
                text.style: "verse_count_style";
                text.min: 1 1;

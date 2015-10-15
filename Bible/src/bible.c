@@ -132,7 +132,7 @@ gl_content_get_cb(void *data, Evas_Object *obj, const char *part)
     	char edj_path[PATH_MAX] = {0, };
     	app_get_resource(EDJ_FILE, edj_path, (int)PATH_MAX);
     	elm_layout_file_set(layout, edj_path, "verse_layout");
-    	Evas_Object *entry = elm_entry_add(obj);
+    	/*Evas_Object *entry = elm_entry_add(obj);
     	elm_entry_editable_set(entry, EINA_FALSE);
     	evas_object_size_hint_weight_set(entry, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
     	evas_object_size_hint_align_set(entry, EVAS_HINT_FILL, EVAS_HINT_FILL);
@@ -140,13 +140,59 @@ gl_content_get_cb(void *data, Evas_Object *obj, const char *part)
     	elm_entry_text_style_user_push(entry, "DEFAULT='font=Tizen:style=Regular align=left font_size=30 color=#000000 wrap=mixed'hilight=' + font_weight=Bold'");
     	evas_object_show(entry);
     	evas_object_smart_callback_add(entry,"selection,copy",_copy_verse,(void*)verse_item);
-    	elm_object_part_content_set(layout,"elm.swallow.verse",entry);
+    	elm_object_part_content_set(layout,"elm.swallow.verse",entry);*/
+    	elm_object_part_text_set(layout, "elm.text.verse", verse_item->verse);
     	sprintf(edj_path, "%d", verse_item->versecount+1);
     	elm_object_part_text_set(layout, "elm.text.verse_count", edj_path);
     	evas_object_show(layout);
     	return layout;
     }
     else return NULL;
+}
+
+static void
+_copy_verse_cb(void *data, Evas_Object *obj, void *event_info)
+{
+	char buf[] = "verse copied";
+	elm_cnp_selection_set(obj, ELM_SEL_TYPE_CLIPBOARD, ELM_SEL_FORMAT_TEXT, buf, strlen(buf));
+}
+
+static void
+_bookmark_verse_cb(void *data, Evas_Object *obj, void *event_info)
+{
+
+}
+
+static void
+_share_verse_cb(void *data, Evas_Object *obj, void *event_info)
+{
+
+}
+
+static void
+gl_longpressed_cb(void *data, Evas_Object *obj, void *event_info)
+{
+	appdata_s *ad = (appdata_s*)data;
+	Elm_Object_Item *it = (Elm_Object_Item*)event_info;
+	Evas_Coord x, y;
+	elm_genlist_item_selected_set(it, EINA_FALSE);
+	Evas_Object *verse_popup = elm_ctxpopup_add(ad->layout);
+	evas_object_size_hint_align_set(verse_popup, EVAS_HINT_FILL, 0.5);
+	evas_object_size_hint_weight_set(verse_popup, EVAS_HINT_EXPAND, 0.5);
+	elm_ctxpopup_item_append(verse_popup, "Bookmark Verse", NULL, _bookmark_verse_cb, ad);
+	elm_ctxpopup_item_append(verse_popup, "Share Verse", NULL, _share_verse_cb, ad);
+	elm_ctxpopup_item_append(verse_popup, "Copy Verse", NULL, _copy_verse_cb, ad);
+	evas_object_geometry_get(elm_object_item_track(it), &x, &y, NULL, NULL);
+	if (y < 100) y = 100;
+	evas_object_move(verse_popup, x, y);
+	evas_object_show(verse_popup);
+}
+
+static void
+gl_selected_cb(void *data, Evas_Object *obj, void *event_info)
+{
+	Elm_Object_Item *it = (Elm_Object_Item*)event_info;
+	elm_genlist_item_selected_set(it, EINA_FALSE);
 }
 
 static void
@@ -214,8 +260,8 @@ _home_screen(appdata_s *ad)
 	elm_genlist_realization_mode_set(ad->genlist, EINA_TRUE);
 	elm_object_part_content_set(ad->layout, "elm.swallow.content", ad->genlist);
 	elm_genlist_mode_set(ad->genlist, ELM_LIST_COMPRESS);
-	//evas_object_smart_callback_add(ad->genlist, "drag,start,left", _nxt_chapter, ad);
-	//evas_object_smart_callback_add(ad->genlist, "drag,start,right", _prev_chapter, ad);
+	evas_object_smart_callback_add(ad->genlist, "selected", gl_selected_cb, NULL);
+	evas_object_smart_callback_add(ad->genlist, "longpressed", gl_longpressed_cb, ad);
     evas_object_event_callback_add(ad->genlist, EVAS_CALLBACK_MOUSE_DOWN, _content_mouse_down, ad);
     evas_object_event_callback_add(ad->genlist, EVAS_CALLBACK_MOUSE_UP, _content_mouse_up, ad);
 

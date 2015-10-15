@@ -93,6 +93,7 @@ _search_result_selected(void *data, Evas_Object *obj, void *event_info)
 {
 	bible_verse_item *verse_item = (bible_verse_item*)data;
 	char title[128];
+	Elm_Object_Item *item = (Elm_Object_Item*)event_info;
 	Evas_Object *verse_popup = elm_popup_add(verse_item->appdata->search_result_genlist);
 	elm_popup_align_set(verse_popup, ELM_NOTIFY_ALIGN_FILL, 1.0);
 	sprintf(title, "%s %d : %d", Books[verse_item->bookcount], verse_item->chaptercount, verse_item->versecount + 1);
@@ -110,6 +111,7 @@ _search_result_selected(void *data, Evas_Object *obj, void *event_info)
 	elm_object_part_content_set(verse_popup, "button1", ok);
 	evas_object_show(verse_popup);
 	eext_object_event_callback_add(verse_popup, EEXT_CALLBACK_BACK, eext_popup_back_cb, NULL);
+	elm_genlist_item_selected_set(item, EINA_FALSE);
 }
 
 static void
@@ -153,6 +155,7 @@ _bible_search_query(char* search_query, appdata_s *ad)
 {
 	if (ad->search_result_genlist)
 		_genlist_free_idler(ad);
+	char toast[64];
 	ad->search_result_genlist = elm_genlist_add(ad->naviframe);
 	evas_object_size_hint_weight_set(ad->search_result_genlist, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
 	evas_object_size_hint_align_set(ad->search_result_genlist, EVAS_HINT_FILL, EVAS_HINT_FILL);
@@ -171,6 +174,13 @@ _bible_search_query(char* search_query, appdata_s *ad)
 	elm_layout_signal_callback_add(ad->search_layout, "elm,holy_bible,top", "elm", _go_top, ad);
 	elm_layout_signal_callback_add(ad->search_layout, "elm,holy_bible,bottom", "elm", _go_bottom, ad);
 	evas_object_show(ad->search_result_genlist);
+	sprintf(toast, "Got %d results", elm_genlist_items_count(ad->search_result_genlist));
+	Evas_Object *toastp = elm_popup_add(ad->win);
+	elm_object_style_set(toastp, "toast");
+	elm_object_text_set(toastp, toast);
+	evas_object_show(toastp);
+	elm_popup_timeout_set(toastp, 2.0);
+	evas_object_smart_callback_add(toastp, "timeout", eext_popup_back_cb, toastp);
 }
 
 static void
