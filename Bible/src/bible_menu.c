@@ -9,7 +9,7 @@ ctxpopup_dismissed_cb(void *data, Evas_Object *obj, void *event_info)
 	data = NULL;
 }
 
-static void
+void
 _popup_del(void *data, Evas_Object *obj, void *event_info)
 {
 	evas_object_hide(data);
@@ -120,7 +120,7 @@ _remove_bookmark(void *data, Evas_Object *obj, void *event_info)
     _popup_del(popup, NULL, NULL);
 }
 
-static void
+void
 _get_chapter(void *data, Evas_Object *obj, void *event_info)
 {
 	Evas_Object *popup = (Evas_Object*)data;
@@ -239,12 +239,20 @@ ctxpopup_item_select_cb(void *data, Evas_Object *obj, void *event_info)
 	const char *title_label = elm_object_item_text_get((Elm_Object_Item *) event_info);
 	char text_content[2048];
 	Elm_Object_Item *nf_it;
-    appdata_s *ad = (appdata_s*)data;
+	appdata_s *ad = (appdata_s*)data;
+
+	if (!strcmp(title_label, "Search"))
+	{
+		_search_word(ad, NULL, NULL);
+		_popup_del(obj, NULL, NULL);
+		return;
+	}
+
 	if (!strcmp(title_label, "Bookmarks"))
 	{
 	   nf_it = elm_naviframe_item_push(ad->naviframe, "Bookmarks", NULL, NULL, _get_bookmarks(ad), NULL);
 	   elm_naviframe_item_pop_cb_set(nf_it, naviframe_pop_cb, ad);
-       elm_ctxpopup_dismiss(obj);
+		_popup_del(obj, NULL, NULL);
        return;
 	}
 
@@ -278,7 +286,7 @@ ctxpopup_item_select_cb(void *data, Evas_Object *obj, void *event_info)
 		evas_object_size_hint_weight_set(label, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
 		evas_object_size_hint_align_set(label, EVAS_HINT_FILL, EVAS_HINT_FILL);
 		elm_label_line_wrap_set(label, ELM_WRAP_WORD);
-		sprintf(text_content,_("<align=center><em><font_size=20>GTA v0.2</font_size></em></align>"));
+		sprintf(text_content,_("<align=center><em><font_size=20>GTA v0.3</font_size></em></align>"));
 		elm_object_text_set(label, text_content);
 		evas_object_show(label);
 		elm_box_pack_end(content_box, label);
@@ -365,7 +373,7 @@ ctxpopup_item_select_cb(void *data, Evas_Object *obj, void *event_info)
 		evas_object_size_hint_weight_set(label, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
 		evas_object_size_hint_align_set(label, EVAS_HINT_FILL, EVAS_HINT_FILL);
 		elm_label_line_wrap_set(label, ELM_WRAP_WORD);
-		sprintf(text_content,_("<align=center><em><font_size=20>GTA v0.2</font_size></em></align>"));
+		sprintf(text_content,_("<align=center><em><font_size=20>GTA v0.3</font_size></em></align>"));
 		elm_object_text_set(label, text_content);
 		evas_object_show(label);
 		elm_box_pack_end(content_box, label);
@@ -392,11 +400,11 @@ ctxpopup_item_select_cb(void *data, Evas_Object *obj, void *event_info)
 
 
 		sprintf(text_content, _("<align=left><font_size=20>"
-		"Users can change the chapters either by clicking the "
-		"Back / Next buttons available in the bottom bar "
-		"or by swiping left / right in the screen. Also if user clicks "
-		"on the header part, new window with all the chapters will be listed out "
-		"where user can select the Book and Chapter which they want.</font_size></align>"));
+		"Users can change the chapters by swiping "
+		"left / right in the screen. Users can also click on the arrows in the bottom corners to go to previous or next chapters. "
+		"Also if user clicks on the header part of home screen, a new window will be opened "
+		"listing out all the Books and the chapters in the selected book. "
+		"User can select the Book and Chapter which they want.</font_size></align>"));
 
 		label = elm_label_add(popup);
 		evas_object_size_hint_weight_set(label, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
@@ -429,9 +437,13 @@ ctxpopup_item_select_cb(void *data, Evas_Object *obj, void *event_info)
 
 				sprintf(text_content, _("<align=left><font_size=20>"
 				"User can search a specific keyword and get the verses containing those keywords. "
-				"The Search button in the footer bar takes to the search window. "
+				"The Search screen can be opened through 'Search' option in application menu. "
 				"User can enter the keyword and press 'Go' to get the list of verses containing the entered keyword. "
-				"User can click on the verse to see the verses fully in a popup.</font_size></align>"));
+				"The search results will include verses which contain the entered keyword string. "
+				"So user can get variations of a word in the search results just by entering the root word. "
+				"If user want to get the verses which contain the exactly matching words as keyword, user have to search by adding a space before and after the keyword. "
+				"User can click on the verse to see the verses fully in a popup. "
+				"Also if user long press on a search item, user can get option to go to the full chapter of the verse. </font_size></align>"));
 
 				label = elm_label_add(popup);
 				evas_object_size_hint_weight_set(label, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
@@ -451,7 +463,7 @@ ctxpopup_item_select_cb(void *data, Evas_Object *obj, void *event_info)
 				elm_box_pack_end(content_box, label);
 
 		sprintf(text_content, _("<align=left><font_size=25>"
-	"<b>Selecting Books / Chapters</b></font_size></align>"));
+	"<b>Bookmark verse</b></font_size></align>"));
 
 		label = elm_label_add(popup);
 		evas_object_size_hint_weight_set(label, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
@@ -462,9 +474,10 @@ ctxpopup_item_select_cb(void *data, Evas_Object *obj, void *event_info)
 		elm_box_pack_end(content_box, label);
 
 		sprintf(text_content, _("<align=left><font_size=20>"
-		"User can click on the header part which opens a new window with all "
-		"the Books and Chapters listed out "
-		"where user can select the Book and Chapter which they want.</font_size></align>"));
+		"User can long press on a verse and will get options to Bookmark a verse. "
+		"Bookmarked verses will be displayed in red font and with a red strip in left side of verse. "
+		"If user want to remove bookmark of a verse, user can go to the bookmarks list in menu option and "
+		"can remove bookmark by long pressing on the verse to be removed from bookmark list.</font_size></align>"));
 
 		label = elm_label_add(popup);
 		evas_object_size_hint_weight_set(label, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
@@ -484,7 +497,7 @@ ctxpopup_item_select_cb(void *data, Evas_Object *obj, void *event_info)
 		elm_box_pack_end(content_box, label);
 
 		sprintf(text_content, _("<align=left><font_size=25>"
-	"<b>Copy verses</b></font_size></align>"));
+	"<b>Share / Copy verses</b></font_size></align>"));
 
 		label = elm_label_add(popup);
 		evas_object_size_hint_weight_set(label, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
@@ -495,8 +508,8 @@ ctxpopup_item_select_cb(void *data, Evas_Object *obj, void *event_info)
 		elm_box_pack_end(content_box, label);
 
 		sprintf(text_content, _("<align=left><font_size=20>"
-		"User can copy the desired verses fully or partially by double clicking on verses. "
-		"If full verse is selected for copy, the reference of verse also will get appended to verse automatically. "
+		"User can share or copy the desired verses by long pressing on verses. "
+		"Reference of verse also will get appended to verse automatically. "
 		"Users can copy more than one verses one by one and can get the verses from clipboard.</font_size></align>"));
 
 		label = elm_label_add(popup);
@@ -556,7 +569,7 @@ create_ctxpopup_more_button_cb(void *data, Evas_Object *obj, void *event_info)
 	win = elm_object_top_widget_get(ad->naviframe);
 	evas_object_smart_callback_add(win, "rotation,changed", move_more_ctxpopup, ctxpopup);
 
-	elm_ctxpopup_item_append(ctxpopup, "Search", NULL, _search_word, ad);
+	elm_ctxpopup_item_append(ctxpopup, "Search", NULL, ctxpopup_item_select_cb, ad);
 	elm_ctxpopup_item_append(ctxpopup, "Bookmarks", NULL, ctxpopup_item_select_cb, ad);
 	elm_ctxpopup_item_append(ctxpopup, "About", NULL, ctxpopup_item_select_cb, ad);
 	elm_ctxpopup_item_append(ctxpopup, "Help", NULL, ctxpopup_item_select_cb, ad);

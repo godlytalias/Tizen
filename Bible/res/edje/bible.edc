@@ -11,6 +11,15 @@ collections {
          tag: "tab" "\t";
       }
       style {
+         name: "subtitle_style";
+         base: "font=Tizen:style=Light align=center font_size=20 color=#FFFFFF wrap=mixed ellipsis=1.0";
+         tag: "br" "\n";
+         tag: "ps" "ps";
+         tag: "hilight" "+ font_weight=Bold";
+         tag: "b" "+ font_weight=Bold";
+         tag: "tab" "\t";
+      }
+      style {
          name: "main_verse_style";
          base: "font=Tizen:style=Regular align=left font_size=25 color=#000000 wrap=mixed";
          tag: "br" "\n";
@@ -21,7 +30,7 @@ collections {
       }
       style {
          name: "bookmark_style";
-         base: "font=Tizen:style=Regular align=left font_size=25 color=#410000 wrap=mixed";
+         base: "font=Tizen:style=Regular align=left font_size=25 color=#500000 wrap=mixed";
          tag: "br" "\n";
          tag: "ps" "ps";
          tag: "hilight" "+ font_weight=Bold";
@@ -66,7 +75,9 @@ collections {
    }
 
    group { name: "main";
-      data.item: "check" "Bible";
+      images.image: "Bible.png" COMP;
+      images.image: "left_arrow.png" COMP;
+      images.image: "right_arrow.png" COMP;
       parts {
          part {name: "base";
             scale: 1;
@@ -79,6 +90,123 @@ collections {
             description { state: "loaded" 0.0;
                inherit: "default" 0.0;
                color: 0 0 0 0;
+            }
+         }
+         part { name: "app_icon";
+            scale: 1;
+            description { state: "default" 0.0;
+               rel1.to: "base";
+               rel2.to: "base";
+               min: 100 100;
+               max: 100 100;
+               image.normal: "Bible.png";
+            }
+            description { state: "loaded" 0.0;
+               inherit: "default" 0.0;
+               visible: 0;
+            }
+         }
+         part { name: "elm.text.copyright";
+            scale: 1;
+            type: TEXTBLOCK;
+            description { state: "default" 0.0;
+               min: 480 40;
+               fixed: 1 1;
+               rel1.to: "app_icon";
+               rel2.to: "app_icon";
+               rel2.relative: 1.0 0.0;
+               align: 0.5 1.0;
+               text.min: 1 1;
+               text.style: "subtitle_style";
+            }
+            description { state: "loaded" 0.0;
+               inherit: "default" 0.0;
+               visible: 0;
+            }
+         }
+         part { name: "elm.text.version";
+            scale: 1;
+            type: TEXTBLOCK;
+            description { state: "default" 0.0;
+               min: 480 40;
+               fixed: 1 1;
+               rel1.to: "elm.text.copyright";
+               rel2.to: "elm.text.copyright";
+               rel2.relative: 1.0 0.0;
+               align: 0.5 1.0;
+               text.min: 1 1;
+               text.style: "subtitle_style";
+            }
+            description { state: "loaded" 0.0;
+               inherit: "default" 0.0;
+               visible: 0;
+            }
+         }
+         part { name: "elm.text.apptitle";
+            scale: 1;
+            type: TEXTBLOCK;
+            description { state: "default" 0.0;
+               min: 480 80;
+               fixed: 1 1;
+               rel1.to: "elm.text.version";
+               rel2.to: "elm.text.version";
+               rel2.relative: 1.0 0.0;
+               align: 0.5 1.0;
+               text.min: 1 1;
+               text.style: "title_style";
+            }
+            description { state: "loaded" 0.0;
+               inherit: "default" 0.0;
+               visible: 0;
+            }
+         }
+         part { name: "elm.swallow.progressbar";
+            scale: 1;
+            type: SWALLOW;
+            description { state: "default" 0.0;
+               min: 480 80;
+               fixed: 1 1;
+               rel1.to_y: "app_icon";
+               rel1.to_x: "base";
+               rel1.relative: 0.0 1.0;
+               rel2.to_y: "app_icon";
+               rel2.to_x: "base";
+               align: 0.5 0.0;
+            }
+            description { state: "loaded" 0.0;
+               inherit: "default" 0.0;
+               visible: 0;
+            }
+         }
+         part { name: "elm.text.loading";
+            scale: 1;
+            type: TEXTBLOCK;
+            description { state: "default" 0.0;
+               min: 480 40;
+               fixed: 1 1;
+               rel1.to: "elm.swallow.progressbar";
+               rel1.relative: 0.0 1.0;
+               rel2.to: "elm.swallow.progressbar";
+               text.min: 1 1;
+               align: 0.5 0.0;
+               text.style: "subtitle_style";
+            }
+            description { state: "loaded" 0.0;
+               inherit: "default" 0.0;
+               visible: 0;
+            }
+         }
+         part { name: "clipper";
+            type: RECT;
+            scale: 1;
+            description { state: "default" 0.0;
+               rel1.to: "base";
+               rel2.to: "base";
+               color: 0 0 0 0;
+            }
+            description { state: "loaded" 0.0;
+               inherit: "default" 0.0;
+               color: 255 255 255 255;
             }
          }
          part { name: "elm.header.part";
@@ -122,6 +250,7 @@ collections {
          part { name: "elm.text.book_title";
             type: TEXTBLOCK;
             scale: 1;
+            clip_to: "clipper";
             description { state: "default" 0.0;
                text.style: "title_style";
                text.min: 1 1;
@@ -140,11 +269,17 @@ collections {
                color: 0 0 0 0;
                rel1.to: "elm.header.part";
                rel2.to: "elm.header.part";
+               visible: 0;
+            }
+            description { state: "loaded" 0.0;
+               inherit: "default" 0.0;
+               visible: 1;
             }
          }
          part {name: "elm.swallow.content";
             type: SWALLOW;
             scale: 1;
+            clip_to: "clipper";
             description { state: "default" 0.0;
                rel1.to_y: "elm.header.part";
                rel1.to_x: "base";
@@ -155,148 +290,114 @@ collections {
                rel2.relative: 1.0 0.0;*/
             }
         }
- /*        part { name: "elm.footer.part";
-            type: RECT;
-            scale: 1;
-            description { state: "default" 0.0;
-              min: 480 104;
-              fixed:1 0;
+        part { name: "prev_btn";
+           scale: 1;
+           clip_to: "clipper";
+           description { state: "default" 0.0;
               rel1.to: "base";
               rel1.relative: 0.0 1.0;
               rel2.to: "base";
-              color: 0 0 0 230;
-              align: 0.5 1.0;
-            }
-         }
-         part { name: "footer.left_top.padding";
-            type: SPACER;
-            scale: 1;
-            description { state: "default" 0.0;
-              min: 32 32;
+              rel2.relative: 0.0 1.0;
+              color: 255 255 255 80;
+              min: 50 50;
               fixed: 1 1;
-              rel1.to: "elm.footer.part";
-              rel2.to: "elm.footer.part";
-              rel2.relative: 0.0 0.0;
-              align: 0.0 0.0;
-            }
-         }
-         part { name: "footer.right_bottom.padding";
-            type: SPACER;
-            scale: 1;
-            description { state: "default" 0.0;
-              min: 32 32;
-              fixed: 1 1;
-              rel1.to: "elm.footer.part";
+              align: 0.0 1.0;
+              image.normal: "left_arrow.png";
+           }
+          description { state: "clicked" 0.0;
+             inherit: "default" 0.0;
+             color: 255 255 255 200;
+          }
+        }
+        part { name: "nxt_btn";
+           scale: 1;
+           clip_to: "clipper";
+           description { state: "default" 0.0;
+              rel1.to: "base";
               rel1.relative: 1.0 1.0;
-              rel2.to: "elm.footer.part";
+              rel2.to: "base";
               rel2.relative: 1.0 1.0;
+              color: 255 255 255 80;
+              min: 50 50;
+              fixed: 1 1;
               align: 1.0 1.0;
-            }
-         }
-         part {name: "elm.footer.prev.btn";
-            type: SWALLOW;
-            scale: 1;
-            description { state: "default" 0.0;
-               min: 120 40;
-               fixed: 1 1;
-               rel1.to: "footer.left_top.padding";
-               rel1.relative: 1.0 1.0;
-               rel2.to_x: "footer.left_top.padding";
-               rel2.to_y: "footer.right_bottom.padding";
-               rel2.relative: 1.0 0.0;
-               align: 0.0 0.5;
-            }
-         }
-         part {name: "elm.footer.search_btn.left.padding";
-            type: SPACER;
-            scale: 1;
-            description { state: "default" 0.0;
-               rel1.to: "elm.footer.prev.btn";
-               rel1.relative: 1.0 0.0;
-               rel2.to: "elm.footer.prev.btn";
-               min: 32 0;
-               fixed: 1 0;
-               align: 0.0 0.5;
-            }
+              image.normal: "right_arrow.png";
+           }
+          description { state: "clicked" 0.0;
+             inherit: "default" 0.0;
+             color: 255 255 255 200;
+          }
         }
-         part {name: "elm.footer.search_btn.right.padding";
-            type: SPACER;
-            scale: 1;
-            description { state: "default" 0.0;
-               rel1.to: "elm.footer.nxt.btn";
-               rel1.relative: 0.0 0.0;
-               rel2.to: "elm.footer.nxt.btn";
-               rel2.relative: 0.0 1.0;
-               min: 32 0;
-               fixed: 1 0;
-               align: 1.0 0.5;
-            }
-        }
-         part {name: "elm.footer.search.btn";
-            type: SWALLOW;
-            scale: 1;
-            description { state: "default" 0.0;
-               min: 120 40;
-               fixed: 1 1;
-               rel1.to: "elm.footer.search_btn.left.padding";
-               rel1.relative: 1.0 0.0;
-               rel2.to: "elm.footer.search_btn.right.padding";
-               rel2.relative: 0.0 1.0;
-               align: 0.0 0.5;
-            }
-         }
-         part {name: "elm.footer.nxt.btn";
-            type: SWALLOW;
-            scale: 1;
-            description { state: "default" 0.0;
-               min: 120 40;
-               fixed: 1 1;
-               rel1.to_x: "footer.right_bottom.padding";
-               rel1.to_y: "footer.left_top.padding";
-               rel1.relative: 0.0 1.0;
-               rel2.to: "footer.right_bottom.padding";
-               rel2.relative: 0.0 0.0;
-               align: 1.0 0.5;
-            }
-        }
-         part {name: "elm.footer.btn.left.padding";
-            type: SPACER;
-            scale: 1;
-            description { state: "default" 0.0;
-               rel1.to: "elm.footer.prev.btn";
-               rel1.relative: 1.0 0.0;
-               rel2.to: "elm.footer.prev.btn";
-               min: 32 0;
-               align: 0.0 0.5;
-            }
-        }
-         part {name: "elm.footer.btn.right.padding";
-            type: SPACER;
-            scale: 1;
-            description { state: "default" 0.0;
-               rel1.to: "elm.footer.nxt.btn";
-               rel2.to: "elm.footer.nxt.btn";
-               min:32 0;
-               rel2.relative: 0.0 1.0;
-               align: 1.0 0.5;
-            }
-        }*/
      }
      programs {
+        program { name: "signal_emit";
+           action: SIGNAL_EMIT "elm,holy_bible,book,change" "elm";
+        }
         program { name: "change_book";
            signal: "mouse,clicked,1";
            source: "change_book_event";
            action: RUN_PLUGIN "touch_sound";
            after: "signal_emit";
         }
-        program { name: "signal_emit";
-           action: SIGNAL_EMIT "elm,book,change" "elm";
+        program { name: "next_chap_signal";
+           action: SIGNAL_EMIT "elm,holy_bible,next,chapter" "elm";
+        }
+        program { name: "next_chap";
+           signal: "mouse,clicked,1";
+           source: "nxt_btn";
+           action: RUN_PLUGIN "touch_sound";
+           after: "next_chap_signal";
+        }
+        program { name: "prev_chap_signal";
+           action: SIGNAL_EMIT "elm,holy_bible,prev,chapter" "elm";
+        }
+        program { name: "prev_chap";
+           signal: "mouse,clicked,1";
+           source: "prev_btn";
+           action: RUN_PLUGIN "touch_sound";
+           after: "prev_chap_signal";
+        }
+        program { name: "prev_btn_pressed";
+           signal: "mouse,down,*";
+           source: "prev_btn";
+           action: STATE_SET "clicked" 0.0;
+           target: "prev_btn";
+        }
+        program { name: "prev_btn_released";
+           signal: "mouse,up,*";
+           source: "prev_btn";
+           transition: LINEAR 0.3;
+           action: STATE_SET "default" 0.0;
+           target: "prev_btn";
+        }
+        program { name: "nxt_btn_pressed";
+           signal: "mouse,down,*";
+           source: "nxt_btn";
+           action: STATE_SET "clicked" 0.0;
+           target: "nxt_btn";
+        }
+        program { name: "nxt_btn_released";
+           signal: "mouse,up,*";
+           source: "nxt_btn";
+           transition: LINEAR 0.3;
+           action: STATE_SET "default" 0.0;
+           target: "nxt_btn";
         }
         program { name: "loading_done";
            signal: "elm,holy_bible,loading,done";
            source: "elm";
+           in: 2.0 0.0;
+           transition: LINEAR 0.3;
            action: STATE_SET "loaded" 0.0;
            target: "base";
+           target: "clipper";
+           target: "change_book_event";
+           target: "app_icon";
+           target: "elm.text.apptitle";
+           target: "elm.text.version";
+           target: "elm.text.copyright";
+           target: "elm.text.loading";
+           target: "elm.swallow.progressbar";
         }
      }
    }

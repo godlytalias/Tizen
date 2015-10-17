@@ -40,9 +40,7 @@ _get_prev_chapter(void *data)
 }
 
 static void
-_prev_chapter(void *data,
-              Evas_Object *obj EINA_UNUSED,
-              void *event_info EINA_UNUSED)
+_prev_chapter(void *data, Evas_Object *obj, char *emission, char *source)
 {
 	appdata_s *ad = (appdata_s*)data;
 	ecore_idle_enterer_add(_get_prev_chapter, data);
@@ -68,9 +66,7 @@ _get_nxt_chapter(void *data)
 }
 
 static void
-_nxt_chapter(void *data,
-              Evas_Object *obj EINA_UNUSED,
-              void *event_info EINA_UNUSED)
+_nxt_chapter(void *data, Evas_Object *obj, char *emission, char *source)
 {
 	appdata_s *ad = (appdata_s*)data;
 	ecore_idle_enterer_add(_get_nxt_chapter, data);
@@ -104,9 +100,9 @@ _content_mouse_up(void *data,
    if (abs(x_del) < (2 * abs(y_del))) return;
    if (abs(x_del) < 100) return;
    if (x_del < 0)
-	   _nxt_chapter(data, obj, NULL);
+	   _nxt_chapter(data, obj, NULL, NULL);
    else
-	   _prev_chapter(data, obj, NULL);
+	   _prev_chapter(data, obj, NULL, NULL);
 }
 
 static Evas_Object*
@@ -180,12 +176,14 @@ gl_longpressed_cb(void *data, Evas_Object *obj, void *event_info)
 	Elm_Object_Item *it = (Elm_Object_Item*)event_info;
 	bible_verse_item *verse_item = (bible_verse_item*)elm_object_item_data_get(it);
 	elm_genlist_item_selected_set(it, EINA_FALSE);
-	Evas_Object *verse_popup = elm_ctxpopup_add(ad->layout);
+	Evas_Object *verse_popup = elm_ctxpopup_add(ad->naviframe);
+	elm_ctxpopup_auto_hide_disabled_set(verse_popup, EINA_TRUE);
     elm_object_style_set(verse_popup, "more/default");
 	elm_ctxpopup_item_append(verse_popup, "Bookmark Verse", NULL, _bookmark_verse_cb, verse_item);
 	elm_ctxpopup_item_append(verse_popup, "Share Verse", NULL, _share_verse_cb, verse_item);
 	elm_ctxpopup_item_append(verse_popup, "Copy Verse", NULL, _copy_verse_cb, verse_item);
 	evas_object_smart_callback_add(verse_popup, "dismissed", eext_ctxpopup_back_cb, verse_popup);
+	evas_object_smart_callback_add(ad->win, "rotation,changed", move_more_ctxpopup, verse_popup);
 	move_more_ctxpopup(verse_popup, NULL, NULL);
 	evas_object_show(verse_popup);
 }
@@ -221,14 +219,28 @@ _load_chapter(void *data)
 _home_screen(appdata_s *ad)
 {
 	Evas_Object *prev_btn, *nxt_btn, *search_btn;
-	char title[64];
 	/* Base Layout */
 	ad->layout = elm_layout_add(ad->win);
 	elm_layout_file_set(ad->layout, ad->edj_path, GRP_MAIN);
 	evas_object_size_hint_weight_set(ad->layout, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
 	evas_object_show(ad->layout);
 	elm_win_resize_object_add(ad->win, ad->layout);
-	elm_layout_signal_callback_add(ad->layout, "elm,book,change", "elm", _change_book, (void*)ad);
+	elm_layout_signal_callback_add(ad->layout, "elm,holy_bible,book,change", "elm", _change_book, (void*)ad);
+	elm_layout_signal_callback_add(ad->layout, "elm,holy_bible,next,chapter", "elm", _nxt_chapter, (void*)ad);
+	elm_layout_signal_callback_add(ad->layout, "elm,holy_bible,prev,chapter", "elm", _prev_chapter, (void*)ad);
+
+	elm_object_part_text_set(ad->layout, "elm.text.copyright", "Copyright © 2015 Godly T Alias");
+	elm_object_part_text_set(ad->layout, "elm.text.version", "GTA v0.3");
+	elm_object_part_text_set(ad->layout, "elm.text.apptitle", "HOLY BIBLE");
+	elm_object_part_text_set(ad->layout, "elm.text.loading", "Loading Database...");
+	Evas_Object *progressbar = elm_progressbar_add(ad->layout);
+	elm_object_style_set(progressbar, "pending");
+	elm_progressbar_horizontal_set(progressbar, EINA_TRUE);
+	evas_object_size_hint_align_set(progressbar, EVAS_HINT_FILL, EVAS_HINT_FILL);
+	evas_object_size_hint_weight_set(progressbar, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
+	elm_progressbar_pulse(progressbar, EINA_TRUE);
+	elm_object_part_content_set(ad->layout, "elm.swallow.progressbar", progressbar);
+
 /*
 	prev_btn = elm_button_add(ad->win);
 	elm_object_text_set(prev_btn, "Back");
@@ -267,8 +279,6 @@ _home_screen(appdata_s *ad)
 
 	_load_appdata(ad);
 	ecore_idler_add(_load_chapter, ad);
-	sprintf(title, "%s %d", Books[ad->cur_book], ad->cur_chapter);
-	elm_object_part_text_set(ad->layout, "elm.text.book_title", title);
 
 	evas_object_show(ad->genlist);
 	return ad->layout;

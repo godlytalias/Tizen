@@ -114,6 +114,31 @@ _search_result_selected(void *data, Evas_Object *obj, void *event_info)
 }
 
 static void
+_gl_longpressed_cb(void *data, Evas_Object *obj, void *event_info)
+{
+    Elm_Object_Item *item = (Elm_Object_Item*)event_info;
+    char popup_text[128];
+    bible_verse_item *verse_item = (bible_verse_item*)elm_object_item_data_get(item);
+    appdata_s *ad = (appdata_s*)data;
+    Evas_Object *popup = elm_popup_add(ad->win);
+	elm_genlist_item_selected_set(item, EINA_FALSE);
+    elm_popup_align_set(popup, 0.5, 0.5);
+    sprintf(popup_text, "<align='center'>Go to %s %d ?</align>", Books[verse_item->bookcount], verse_item->chaptercount);
+    elm_object_text_set(popup, popup_text);
+    Evas_Object *button1 = elm_button_add(ad->win);
+    elm_object_text_set(button1, "No");
+    evas_object_smart_callback_add(button1, "clicked", _popup_del, popup);
+    Evas_Object *button2 = elm_button_add(ad->win);
+    elm_object_text_set(button2, "Yes");
+    evas_object_smart_callback_add(button2, "clicked", _get_chapter, popup);
+    evas_object_data_set(popup, "verse_item", verse_item);
+    elm_object_part_content_set(popup, "button1", button1);
+    elm_object_part_content_set(popup, "button2", button2);
+    eext_object_event_callback_add(popup, EEXT_CALLBACK_BACK, eext_popup_back_cb, popup);
+    evas_object_show(popup);
+}
+
+static void
 _up_arrow_show(void *data, Evas_Object *obj, void *event_info)
 {
    appdata_s *ad = (appdata_s*)data;
@@ -170,6 +195,7 @@ _bible_search_query(char* search_query, appdata_s *ad)
 	elm_layout_signal_emit(ad->search_layout, "elm,holy_bible,bg,hide", "elm");
 	evas_object_smart_callback_add(ad->search_result_genlist, "drag,start,up", _down_arrow_show, ad);
 	evas_object_smart_callback_add(ad->search_result_genlist, "drag,start,down", _up_arrow_show, ad);
+	evas_object_smart_callback_add(ad->search_result_genlist, "longpressed", _gl_longpressed_cb, ad);
 	elm_layout_signal_callback_add(ad->search_layout, "elm,holy_bible,top", "elm", _go_top, ad);
 	elm_layout_signal_callback_add(ad->search_layout, "elm,holy_bible,bottom", "elm", _go_bottom, ad);
 	evas_object_show(ad->search_result_genlist);
@@ -231,7 +257,7 @@ _search_keyword(void *data,
 
 void
 _search_word(void *data,
-              Evas_Object *obj ,
+              Evas_Object *obj EINA_UNUSED,
               void *event_info EINA_UNUSED)
 {
 	appdata_s *ad = (appdata_s*)data;

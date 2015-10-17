@@ -27,7 +27,6 @@ typedef struct _bible_verse_item bible_verse_item;
 typedef struct appdata{
 	Evas_Object* win;
 	Evas_Object* layout, *search_layout;
-	Evas_Object* book_btn, *chapter_btn;
 	Evas_Object* label, *naviframe;
 	Evas_Object* genlist, *search_result_genlist, *bookmarks_genlist;
 	Evas_Object *list1, *list2, *search_entry;
@@ -80,3 +79,5 @@ void _save_appdata(appdata_s *);
 void move_more_ctxpopup(void*, Evas_Object*, void*);
 void gl_del_cb(void*, Evas_Object*);
 void _check_bookmarks(appdata_s *);
+void _get_chapter(void *, Evas_Object *, void *);
+void _popup_del(void *, Evas_Object *, void *);
