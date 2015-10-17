@@ -5,7 +5,7 @@
 void
 _app_database_query(char *query, int func(void*,int,char**,char**), void *data)
 {
-	sqlite3 *db;
+	sqlite3 *db = NULL;
 	char *err_msg;
 
 	   char *db_path = malloc(200);
@@ -60,6 +60,8 @@ _load_appdata(appdata_s *ad)
 	char query[256];
 	sprintf(query, "SELECT bookcount,chaptercount FROM appinitdata;");
 	_app_database_query(query, &_get_app_data, ad);
+	sprintf(query, "create table if not exists bookmarks(bookcount INT, chaptercount INT, versecount INT);");
+	_app_database_query(query, &_check, ad);
 }
 
 void
@@ -76,7 +78,7 @@ _save_appdata(appdata_s *ad)
 void
 _database_query(char *query, int func(void*,int,char**,char**), void *data)
 {
-	sqlite3 *db;
+	sqlite3 *db = NULL;
 	char *err_msg;
 
 	   char *db_path = malloc(200);
@@ -126,6 +128,31 @@ _get_chapter_count_query(void *data, int book)
 }
 
 static int
+_put_bookmarks(void *data, int argc, char **argv, char **azColName)
+{
+   bible_verse_item *verse_item = (bible_verse_item*)data;
+   if (argc == 1 && (atoi(argv[0]) > 0))
+	   verse_item->bookmark = EINA_TRUE;
+   else
+	   verse_item->bookmark = EINA_FALSE;
+}
+
+static void
+_check_bookmarks(appdata_s *ad)
+{
+   Elm_Object_Item *it = elm_genlist_first_item_get(ad->genlist);
+   bible_verse_item *verse_item;
+   char query[512];
+   while (it)
+   {
+	   verse_item = (bible_verse_item*)elm_object_item_data_get(it);
+	   sprintf(query, "SELECT count(versecount) FROM bookmarks WHERE bookcount = %d AND chaptercount = %d AND versecount = %d", verse_item->bookcount, verse_item->chaptercount, verse_item->versecount + 1);
+	   _app_database_query(query, &_put_bookmarks, verse_item);
+	   it = elm_genlist_item_next_get(it);
+   }
+}
+
+static int
 _get_verse_list(void *data, int argc, char **argv, char **azColName)
 {
    appdata_s *ad = (appdata_s*) data;
@@ -137,8 +164,10 @@ _get_verse_list(void *data, int argc, char **argv, char **azColName)
    verse_item->bookcount = ad->cur_book;
    verse_item->chaptercount = ad->cur_chapter;
    verse_item->appdata = ad;
+   verse_item->bookmark = EINA_FALSE;
    it = elm_genlist_item_append(ad->genlist, ad->itc, (void*)verse_item, NULL, ELM_GENLIST_ITEM_NONE, NULL, (void*)verse_item);
    elm_object_item_data_set(it, (void*)verse_item);
+   verse_item->it = it;
    ad->count++;
 
    return 0;
@@ -159,6 +188,7 @@ _query_chapter(void *data, int book, int chapter)
     sprintf(query, "select e_verse from eng_bible where Book='%s' and Chapter=%d", Books[book], chapter);
 
 	_database_query(query, &_get_verse_list, data);
+	_check_bookmarks(ad);
 
 	sprintf(query, "%s %d", Books[book], chapter);
 	elm_object_part_text_set(ad->layout, "elm.text.book_title", query);

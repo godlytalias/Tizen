@@ -58,6 +58,8 @@ struct _bible_verse_item
 {
    appdata_s *appdata;
    int bookcount, chaptercount, versecount;
+   Eina_Bool bookmark;
+   Elm_Object_Item *it;
    char *verse;
 };
 

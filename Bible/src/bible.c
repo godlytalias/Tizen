@@ -121,6 +121,7 @@ gl_content_get_cb(void *data, Evas_Object *obj, const char *part)
      	elm_object_part_text_set(layout,"elm.text.verse",verse_item->verse);
     	sprintf(verse_count, "%d", verse_item->versecount+1);
     	elm_object_part_text_set(layout, "elm.text.verse_count", verse_count);
+    	if (verse_item->bookmark) elm_layout_signal_emit(layout, "elm,holy_bible,bookmark,show", "elm");
     	evas_object_show(layout);
     	evas_object_smart_calculate(layout);
     	return layout;
@@ -143,13 +144,15 @@ _bookmark_verse_cb(void *data, Evas_Object *obj, void *event_info)
 {
    char query[512];
    bible_verse_item *verse_item = (bible_verse_item*)data;
-   sprintf(query, "INSERT INTO bookmarks VALUES(%d, %d, %d)", verse_item->bookcount, verse_item->chaptercount, verse_item->versecount);
-   _database_query(query, NULL, verse_item->appdata);
+   sprintf(query, "INSERT INTO bookmarks VALUES(%d, %d, %d)", verse_item->bookcount, verse_item->chaptercount, verse_item->versecount + 1);
+   _app_database_query(query, NULL, NULL);
    Evas_Object *toast = elm_popup_add(verse_item->appdata->naviframe);
    elm_object_style_set(toast, "toast");
    sprintf(query, "Bookmarked %s %d : %d", Books[verse_item->bookcount], verse_item->chaptercount, verse_item->versecount + 1);
    elm_object_text_set(toast, query);
    elm_popup_allow_events_set(toast, EINA_TRUE);
+   verse_item->bookmark = EINA_TRUE;
+   elm_genlist_item_update(verse_item->it);
    elm_popup_timeout_set(toast, 2.0);
    evas_object_show(toast);
    evas_object_smart_callback_add(toast, "timeout", eext_popup_back_cb, toast);
@@ -284,7 +287,7 @@ naviframe_pop_cb(void *data, Elm_Object_Item *it)
 	ad->itc = NULL;
 	_loading_progress_hide(popup);
 	ui_app_exit();
-	return EINA_FALSE;
+	return EINA_TRUE;
 }
 
 void

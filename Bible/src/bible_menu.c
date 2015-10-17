@@ -55,7 +55,6 @@ static int
 _get_bookmarks_list(void *data, int argc, char **argv, char **azColName)
 {
     bible_verse_item *verse_item = malloc(sizeof(bible_verse_item));
-    char query[512];
     appdata_s *ad = (appdata_s*)data;
     verse_item->appdata = ad;
     if (azColName[0] && (strcmp(azColName[0], "bookcount") == 0))
@@ -73,10 +72,8 @@ _get_bookmarks_list(void *data, int argc, char **argv, char **azColName)
     	verse_item->versecount = atoi(argv[2]);
     }
 
-    sprintf(query, "SELECT e_verse FROM eng_bible WHERE Book = '%s' AND Chapter = %d AND Verse = %d", Books[verse_item->bookcount], verse_item->chaptercount, verse_item->versecount + 1);
-    _database_query(query, _get_verse, verse_item);
-
-    elm_genlist_item_append(ad->bookmarks_genlist, ad->bookmarks_itc, verse_item, NULL, ELM_GENLIST_ITEM_NONE, NULL, NULL);
+    verse_item->it = elm_genlist_item_append(ad->bookmarks_genlist, ad->bookmarks_itc, verse_item, NULL, ELM_GENLIST_ITEM_NONE, NULL, NULL);
+    elm_object_item_data_set(verse_item->it, verse_item);
 
     return 0;
 }
@@ -85,6 +82,8 @@ static Evas_Object*
 _get_bookmarks(appdata_s *ad)
 {
 	char query[512];
+	Elm_Object_Item *it;
+	bible_verse_item *verse_item;
 	Evas_Object *layout = elm_layout_add(ad->naviframe);
 	elm_layout_file_set(layout, ad->edj_path, "bookmarks_layout");
 	evas_object_size_hint_weight_set(layout, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
@@ -102,6 +101,14 @@ _get_bookmarks(appdata_s *ad)
 
 	sprintf(query, "SELECT bookcount, chaptercount, versecount FROM bookmarks");
     _app_database_query(query, _get_bookmarks_list, ad);
+
+    it = elm_genlist_first_item_get(ad->bookmarks_genlist);
+    while(it) {
+       verse_item = elm_object_item_data_get(it);
+       sprintf(query, "SELECT e_verse FROM eng_bible WHERE Book = '%s' AND Chapter = %d AND Verse = %d", Books[verse_item->bookcount], verse_item->chaptercount, verse_item->versecount + 1);
+       _database_query(query, _get_verse, verse_item);
+       it = elm_genlist_item_next_get(it);
+    }
 	evas_object_show(layout);
 	return layout;
 }
@@ -117,7 +124,7 @@ naviframe_pop_cb(void *data, Elm_Object_Item *it)
 	if (ad->bookmarks_itc)
 		elm_genlist_item_class_free(ad->bookmarks_itc);
 	ad->bookmarks_itc = NULL;
-	return EINA_FALSE;
+	return EINA_TRUE;
 }
 
 static void
@@ -443,9 +450,9 @@ create_ctxpopup_more_button_cb(void *data, Evas_Object *obj, void *event_info)
 	win = elm_object_top_widget_get(ad->naviframe);
 	evas_object_smart_callback_add(win, "rotation,changed", move_more_ctxpopup, ctxpopup);
 
-	elm_ctxpopup_item_append(ctxpopup, "Bookmarks", NULL, ctxpopup_item_select_cb, ctxpopup);
-	elm_ctxpopup_item_append(ctxpopup, "About", NULL, ctxpopup_item_select_cb, ctxpopup);
-	elm_ctxpopup_item_append(ctxpopup, "Help", NULL, ctxpopup_item_select_cb, ctxpopup);
+	elm_ctxpopup_item_append(ctxpopup, "Bookmarks", NULL, ctxpopup_item_select_cb, ad);
+	elm_ctxpopup_item_append(ctxpopup, "About", NULL, ctxpopup_item_select_cb, ad);
+	elm_ctxpopup_item_append(ctxpopup, "Help", NULL, ctxpopup_item_select_cb, ad);
 
 	elm_ctxpopup_direction_priority_set(ctxpopup, ELM_CTXPOPUP_DIRECTION_UP, ELM_CTXPOPUP_DIRECTION_UNKNOWN, ELM_CTXPOPUP_DIRECTION_UNKNOWN, ELM_CTXPOPUP_DIRECTION_UNKNOWN);
 	move_more_ctxpopup(ctxpopup, ctxpopup, NULL);

@@ -20,6 +20,15 @@ collections {
          tag: "tab" "\t";
       }
       style {
+         name: "bookmark_style";
+         base: "font=Tizen:style=Regular align=left font_size=25 color=#410000 wrap=mixed";
+         tag: "br" "\n";
+         tag: "ps" "ps";
+         tag: "hilight" "+ font_weight=Bold";
+         tag: "b" "+ font_weight=Bold";
+         tag: "tab" "\t";
+      }
+      style {
          name: "verse_style";
          base: "font=Tizen:style=Regular align=left font_size=25 color=#000000 wrap=mixed ellipsis=1.0";
          tag: "br" "\n";
@@ -596,7 +605,11 @@ collections {
                rel2.relative: 0.0 0.0;
                text.min: 0 1;
                text.max: 0 1;
-            }         
+            }
+            description { state: "bookmark" 0.0;
+               inherit: "default" 0.0;               
+               text.style: "bookmark_style";
+            }  
          }
          part {name: "elm.text.verse_count";
             scale: 1;
@@ -613,6 +626,33 @@ collections {
                min: 32 0;
                align: 0.0 0.0;
             }
+        }
+         part{ name: "bookmark_label";
+            scale: 1;
+            type: RECT;
+            description { state: "default" 0.0;
+               min: 4 0;
+               fixed: 1 0;
+               color: 255 0 0 255;
+               rel1.to: "base";
+               rel2.to: "base";
+               rel2.relative: 0.0 1.0;
+               align: 0.0 0.0;
+               visible: 0;
+            }
+            description { state: "bookmark" 0.0;
+               inherit: "default" 0.0;
+               visible: 1;
+            }
+         }
+     }
+     programs {
+        program { name: "bookmark_show";
+           signal: "elm,holy_bible,bookmark,show";
+           source: "elm";
+           action: STATE_SET "bookmark" 0.0;
+           target: "bookmark_label";
+           target: "elm.text.verse";
         }
      }
    }
