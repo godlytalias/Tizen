@@ -2,10 +2,9 @@
 #include <sqlite3.h>
 #include "bible.h"
 
-static void
+void
 _app_database_query(char *query, int func(void*,int,char**,char**), void *data)
 {
-	appdata_s *ad = (appdata_s*)data;
 	sqlite3 *db;
 	char *err_msg;
 
@@ -15,7 +14,7 @@ _app_database_query(char *query, int func(void*,int,char**,char**), void *data)
 	   sqlite3_open_v2(db_path, &db, SQLITE_OPEN_FULLMUTEX | SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE, NULL);
 	   free(res_path);
 	   free(db_path);
-	   sqlite3_exec(db, query, func, (void*)ad, &err_msg);
+	   sqlite3_exec(db, query, func, data, &err_msg);
 	   sqlite3_free(err_msg);
 	   sqlite3_close(db);
 	   db = NULL;
@@ -77,26 +76,19 @@ _save_appdata(appdata_s *ad)
 void
 _database_query(char *query, int func(void*,int,char**,char**), void *data)
 {
-	appdata_s *ad = (appdata_s*)data;
+	sqlite3 *db;
 	char *err_msg;
 
-	if (!ad->db) {
 	   char *db_path = malloc(200);
 	   char *res_path = app_get_resource_path();
 	   sprintf(db_path, "%sholybible_eng.db", res_path);
-	   sqlite3_open(db_path, &(ad->db));
+	   sqlite3_open(db_path, &(db));
 	   free(res_path);
 	   free(db_path);
-	   sqlite3_exec(ad->db, query, func, (void*)ad, &err_msg);
+	   sqlite3_exec(db, query, func, data, &err_msg);
 	   sqlite3_free(err_msg);
-	   sqlite3_close(ad->db);
-	   ad->db = NULL;
-	}
-	else
-	{
-	   sqlite3_exec(ad->db, query, func, (void*)ad, &err_msg);
-	   sqlite3_free(err_msg);
-	}
+	   sqlite3_close(db);
+	   db = NULL;
 }
 
 static int
@@ -137,6 +129,7 @@ static int
 _get_verse_list(void *data, int argc, char **argv, char **azColName)
 {
    appdata_s *ad = (appdata_s*) data;
+   Elm_Object_Item *it;
 
    bible_verse_item *verse_item = malloc(sizeof(bible_verse_item));
    verse_item->versecount = ad->count;
@@ -144,7 +137,8 @@ _get_verse_list(void *data, int argc, char **argv, char **azColName)
    verse_item->bookcount = ad->cur_book;
    verse_item->chaptercount = ad->cur_chapter;
    verse_item->appdata = ad;
-   elm_genlist_item_append(ad->genlist, ad->itc, (void*)verse_item, NULL, ELM_GENLIST_ITEM_NONE, NULL, (void*)verse_item);
+   it = elm_genlist_item_append(ad->genlist, ad->itc, (void*)verse_item, NULL, ELM_GENLIST_ITEM_NONE, NULL, (void*)verse_item);
+   elm_object_item_data_set(it, (void*)verse_item);
    ad->count++;
 
    return 0;

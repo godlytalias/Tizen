@@ -76,9 +76,7 @@ _select_chapter_layout(appdata_s *ad)
 	Evas_Object *layout = elm_layout_add(ad->win);
 	Elm_Object_Item *item;
 	int i;
-	char edj_path[PATH_MAX] = {0, };
-	app_get_resource(EDJ_FILE, edj_path, (int)PATH_MAX);
-	elm_layout_file_set(layout, edj_path, "select_chapter_layout");
+	elm_layout_file_set(layout, ad->edj_path, "select_chapter_layout");
 	ad->list1 = elm_list_add(layout);
 	ad->list2 = elm_list_add(layout);
 	for(i = 0; i < 66; i++) {

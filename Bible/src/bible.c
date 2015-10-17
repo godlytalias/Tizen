@@ -6,13 +6,12 @@ static void
 win_delete_request_cb(void *data, Evas_Object *obj, void *event_info)
 {
 	appdata_s *ad = (appdata_s*)data;
-	if (ad->db) sqlite3_close(ad->db);
 	elm_genlist_item_class_free(ad->itc);
 	sqlite3_shutdown();
 	ui_app_exit();
 }
 
-void
+static void
 app_get_resource(const char *edj_file_in, char *edj_path_out, int edj_path_max)
 {
 	char *res_path = app_get_resource_path();
@@ -110,41 +109,20 @@ _content_mouse_up(void *data,
 	   _prev_chapter(data, obj, NULL);
 }
 
-static void
-_copy_verse(void *data, Evas_Object *obj, void *event_info)
-{
-	bible_verse_item *verse_item = (bible_verse_item*)data;
-	char buf[2048];
-	if (strcmp(elm_entry_selection_get(obj), verse_item->verse)) return;
-	elm_entry_select_none(obj);
-	sprintf(buf, "%s ~ %s %d : %d", verse_item->verse, Books[verse_item->bookcount], verse_item->chaptercount, verse_item->versecount + 1);
-	elm_cnp_selection_set(obj, ELM_SEL_TYPE_CLIPBOARD, ELM_SEL_FORMAT_TEXT, buf, strlen(buf));
-	return;
-}
-
-static Evas_Object*
+Evas_Object*
 gl_content_get_cb(void *data, Evas_Object *obj, const char *part)
 {
     bible_verse_item *verse_item = (bible_verse_item*)data;
     if(strcmp(part, "elm.swallow.content") == 0)
     {
     	Evas_Object *layout = elm_layout_add(obj);
-    	char edj_path[PATH_MAX] = {0, };
-    	app_get_resource(EDJ_FILE, edj_path, (int)PATH_MAX);
-    	elm_layout_file_set(layout, edj_path, "verse_layout");
-    	/*Evas_Object *entry = elm_entry_add(obj);
-    	elm_entry_editable_set(entry, EINA_FALSE);
-    	evas_object_size_hint_weight_set(entry, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
-    	evas_object_size_hint_align_set(entry, EVAS_HINT_FILL, EVAS_HINT_FILL);
-    	elm_entry_entry_set(entry, verse_item->verse);
-    	elm_entry_text_style_user_push(entry, "DEFAULT='font=Tizen:style=Regular align=left font_size=30 color=#000000 wrap=mixed'hilight=' + font_weight=Bold'");
-    	evas_object_show(entry);
-    	evas_object_smart_callback_add(entry,"selection,copy",_copy_verse,(void*)verse_item);
-    	elm_object_part_content_set(layout,"elm.swallow.verse",entry);*/
-    	elm_object_part_text_set(layout, "elm.text.verse", verse_item->verse);
-    	sprintf(edj_path, "%d", verse_item->versecount+1);
-    	elm_object_part_text_set(layout, "elm.text.verse_count", edj_path);
+    	char verse_count[5];
+    	elm_layout_file_set(layout, verse_item->appdata->edj_path, "verse_layout");
+     	elm_object_part_text_set(layout,"elm.text.verse",verse_item->verse);
+    	sprintf(verse_count, "%d", verse_item->versecount+1);
+    	elm_object_part_text_set(layout, "elm.text.verse_count", verse_count);
     	evas_object_show(layout);
+    	evas_object_smart_calculate(layout);
     	return layout;
     }
     else return NULL;
@@ -153,20 +131,43 @@ gl_content_get_cb(void *data, Evas_Object *obj, const char *part)
 static void
 _copy_verse_cb(void *data, Evas_Object *obj, void *event_info)
 {
-	char buf[] = "verse copied";
+	char buf[2048];
+	bible_verse_item *verse_item = (bible_verse_item*)data;
+	sprintf(buf, "%s ~ %s %d : %d", verse_item->verse, Books[verse_item->bookcount], verse_item->chaptercount, verse_item->versecount + 1);
 	elm_cnp_selection_set(obj, ELM_SEL_TYPE_CLIPBOARD, ELM_SEL_FORMAT_TEXT, buf, strlen(buf));
+    elm_ctxpopup_dismiss(obj);
 }
 
 static void
 _bookmark_verse_cb(void *data, Evas_Object *obj, void *event_info)
 {
-
+   char query[512];
+   bible_verse_item *verse_item = (bible_verse_item*)data;
+   sprintf(query, "INSERT INTO bookmarks VALUES(%d, %d, %d)", verse_item->bookcount, verse_item->chaptercount, verse_item->versecount);
+   _database_query(query, NULL, verse_item->appdata);
+   Evas_Object *toast = elm_popup_add(verse_item->appdata->naviframe);
+   elm_object_style_set(toast, "toast");
+   sprintf(query, "Bookmarked %s %d : %d", Books[verse_item->bookcount], verse_item->chaptercount, verse_item->versecount + 1);
+   elm_object_text_set(toast, query);
+   elm_popup_allow_events_set(toast, EINA_TRUE);
+   elm_popup_timeout_set(toast, 2.0);
+   evas_object_show(toast);
+   evas_object_smart_callback_add(toast, "timeout", eext_popup_back_cb, toast);
+   elm_ctxpopup_dismiss(obj);
 }
 
 static void
 _share_verse_cb(void *data, Evas_Object *obj, void *event_info)
 {
-
+	char buf[2048];
+	bible_verse_item *verse_item = (bible_verse_item*)data;
+	sprintf(buf,"%s ~ %s %d : %d", verse_item->verse, Books[verse_item->bookcount], verse_item->chaptercount, verse_item->versecount + 1);
+	app_control_h handler;
+	app_control_create(&handler);
+	app_control_set_operation(handler, APP_CONTROL_OPERATION_SHARE_TEXT);
+	app_control_add_extra_data(handler, APP_CONTROL_DATA_TEXT, buf);
+	app_control_send_launch_request(handler, NULL, NULL);
+	elm_ctxpopup_dismiss(obj);
 }
 
 static void
@@ -174,17 +175,15 @@ gl_longpressed_cb(void *data, Evas_Object *obj, void *event_info)
 {
 	appdata_s *ad = (appdata_s*)data;
 	Elm_Object_Item *it = (Elm_Object_Item*)event_info;
-	Evas_Coord x, y;
+	bible_verse_item *verse_item = (bible_verse_item*)elm_object_item_data_get(it);
 	elm_genlist_item_selected_set(it, EINA_FALSE);
 	Evas_Object *verse_popup = elm_ctxpopup_add(ad->layout);
-	evas_object_size_hint_align_set(verse_popup, EVAS_HINT_FILL, 0.5);
-	evas_object_size_hint_weight_set(verse_popup, EVAS_HINT_EXPAND, 0.5);
-	elm_ctxpopup_item_append(verse_popup, "Bookmark Verse", NULL, _bookmark_verse_cb, ad);
-	elm_ctxpopup_item_append(verse_popup, "Share Verse", NULL, _share_verse_cb, ad);
-	elm_ctxpopup_item_append(verse_popup, "Copy Verse", NULL, _copy_verse_cb, ad);
-	evas_object_geometry_get(elm_object_item_track(it), &x, &y, NULL, NULL);
-	if (y < 100) y = 100;
-	evas_object_move(verse_popup, x, y);
+    elm_object_style_set(verse_popup, "more/default");
+	elm_ctxpopup_item_append(verse_popup, "Bookmark Verse", NULL, _bookmark_verse_cb, verse_item);
+	elm_ctxpopup_item_append(verse_popup, "Share Verse", NULL, _share_verse_cb, verse_item);
+	elm_ctxpopup_item_append(verse_popup, "Copy Verse", NULL, _copy_verse_cb, verse_item);
+	evas_object_smart_callback_add(verse_popup, "dismissed", eext_ctxpopup_back_cb, verse_popup);
+	move_more_ctxpopup(verse_popup, NULL, NULL);
 	evas_object_show(verse_popup);
 }
 
@@ -195,7 +194,7 @@ gl_selected_cb(void *data, Evas_Object *obj, void *event_info)
 	elm_genlist_item_selected_set(it, EINA_FALSE);
 }
 
-static void
+void
 gl_del_cb(void *data, Evas_Object *obj)
 {
    bible_verse_item *verse_item = (bible_verse_item*)data;
@@ -215,16 +214,14 @@ _load_chapter(void *data)
 	return ECORE_CALLBACK_CANCEL;
 }
 
-static Evas_Object*
+/*static*/ Evas_Object*
 _home_screen(appdata_s *ad)
 {
 	Evas_Object *prev_btn, *nxt_btn, *search_btn;
 	char title[64];
-	char edj_path[PATH_MAX] = {0, };
 	/* Base Layout */
-	app_get_resource(EDJ_FILE, edj_path, (int)PATH_MAX);
 	ad->layout = elm_layout_add(ad->win);
-	elm_layout_file_set(ad->layout, edj_path, GRP_MAIN);
+	elm_layout_file_set(ad->layout, ad->edj_path, GRP_MAIN);
 	evas_object_size_hint_weight_set(ad->layout, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
 	evas_object_show(ad->layout);
 	elm_win_resize_object_add(ad->win, ad->layout);
@@ -257,9 +254,9 @@ _home_screen(appdata_s *ad)
 	ad->genlist = elm_genlist_add(ad->layout);
 	evas_object_size_hint_align_set(ad->genlist, EVAS_HINT_FILL, EVAS_HINT_FILL);
 	evas_object_size_hint_weight_set(ad->genlist, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
-	elm_genlist_realization_mode_set(ad->genlist, EINA_TRUE);
 	elm_object_part_content_set(ad->layout, "elm.swallow.content", ad->genlist);
 	elm_genlist_mode_set(ad->genlist, ELM_LIST_COMPRESS);
+	elm_genlist_homogeneous_set(ad->genlist, EINA_FALSE);
 	evas_object_smart_callback_add(ad->genlist, "selected", gl_selected_cb, NULL);
 	evas_object_smart_callback_add(ad->genlist, "longpressed", gl_longpressed_cb, ad);
     evas_object_event_callback_add(ad->genlist, EVAS_CALLBACK_MOUSE_DOWN, _content_mouse_down, ad);
@@ -351,6 +348,7 @@ create_base_gui(appdata_s *ad)
 	Evas_Object *menu_btn;
 	ad->win = elm_win_util_standard_add(PACKAGE, PACKAGE);
 	elm_win_autodel_set(ad->win, EINA_TRUE);
+	app_get_resource(EDJ_FILE, ad->edj_path, (int)PATH_MAX);
 
 	Evas_Object *conform = elm_conformant_add(ad->win);
 	evas_object_size_hint_weight_set(conform, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);

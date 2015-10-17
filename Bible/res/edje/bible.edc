@@ -12,7 +12,7 @@ collections {
       }
       style {
          name: "main_verse_style";
-         base: "font=Tizen:style=Regular align=left font_size=30 color=#000000 wrap=mixed";
+         base: "font=Tizen:style=Regular align=left font_size=25 color=#000000 wrap=mixed";
          tag: "br" "\n";
          tag: "ps" "ps";
          tag: "hilight" "+ font_weight=Bold";
@@ -587,27 +587,30 @@ collections {
             scale: 1;
             type: TEXTBLOCK;
             description { state: "default" 0.0;
-               min: 480 40;
+               min: 416 0;
+               fixed: 1 0;
+               text.style: "main_verse_style";
                rel1.to: "left_top_padding";
                rel1.relative: 1.0 1.0;
                rel2.to: "right_bottom_padding";
                rel2.relative: 0.0 0.0;
-               text.style: "main_verse_style";
                text.min: 0 1;
+               text.max: 0 1;
             }         
          }
          part {name: "elm.text.verse_count";
             scale: 1;
             type: TEXTBLOCK;
             description {state: "default" 0.0;
-               rel1.to: "left_top_padding";
-               rel1.relative: 0.0 1.0;
+               rel1.to_x: "left_top_padding";
+               rel1.to_y: "elm.text.verse";
+               rel1.relative: 0.0 0.0;
                rel2.to: "elm.text.verse";
                rel2.relative: 0.0 0.0;
                text.style: "verse_count_style";
                text.min: 1 1;
                fixed: 1 1;
-               min: 32 40;
+               min: 32 0;
                align: 0.0 0.0;
             }
         }
@@ -682,6 +685,17 @@ collections {
             }         
          }
      }
+   }
+   
+  group { name: "bookmarks_layout";
+      parts {
+         part { name: "elm.swallow.content";
+            type: SWALLOW;
+            scale: 1;
+            description { state: "default" 0.0;
+            }
+         }
+      }
    }
 
    group { name: "select_chapter_layout";

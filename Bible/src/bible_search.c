@@ -46,13 +46,12 @@ search_gl_content_get_cb(void *data, Evas_Object *obj, const char *part)
     bible_verse_item *verse_item = (bible_verse_item*)data;
     if(strcmp(part, "elm.swallow.content") == 0)
     {
+    	char reference[512];
     	Evas_Object *layout = elm_layout_add(obj);
     	evas_object_size_hint_min_set(layout, 480, 158);
-    	char edj_path[PATH_MAX] = {0, };
-    	app_get_resource(EDJ_FILE, edj_path, (int)PATH_MAX);
-    	elm_layout_file_set(layout, edj_path, "search_verse_layout");
-    	sprintf(edj_path, "%s %d : %d", Books[verse_item->bookcount], verse_item->chaptercount, verse_item->versecount+1);
-    	elm_object_part_text_set(layout, "elm.text.reference", edj_path);
+    	elm_layout_file_set(layout, verse_item->appdata->edj_path, "search_verse_layout");
+    	sprintf(reference, "%s %d : %d", Books[verse_item->bookcount], verse_item->chaptercount, verse_item->versecount+1);
+    	elm_object_part_text_set(layout, "elm.text.reference", reference);
     	elm_object_part_text_set(layout, "elm.text.verse", verse_item->verse);
     	evas_object_show(layout);
     	return layout;
@@ -176,6 +175,7 @@ _bible_search_query(char* search_query, appdata_s *ad)
 	evas_object_show(ad->search_result_genlist);
 	sprintf(toast, "Got %d results", elm_genlist_items_count(ad->search_result_genlist));
 	Evas_Object *toastp = elm_popup_add(ad->win);
+	elm_popup_allow_events_set(toastp, EINA_TRUE);
 	elm_object_style_set(toastp, "toast");
 	elm_object_text_set(toastp, toast);
 	evas_object_show(toastp);
@@ -236,10 +236,8 @@ _search_word(void *data,
 {
 	appdata_s *ad = (appdata_s*)data;
 	Elm_Object_Item *nf_it;
-	char edj_path[PATH_MAX] = {0, };
-	app_get_resource(EDJ_FILE, edj_path, (int)PATH_MAX);
 	ad->search_layout = elm_layout_add(ad->win);
-	elm_layout_file_set(ad->search_layout, edj_path, "search_layout");
+	elm_layout_file_set(ad->search_layout, ad->edj_path, "search_layout");
 	evas_object_size_hint_align_set(ad->search_layout, EVAS_HINT_FILL, EVAS_HINT_FILL);
 	evas_object_size_hint_weight_set(ad->search_layout, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
 	evas_object_show(ad->search_layout);

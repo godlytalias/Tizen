@@ -16,8 +16,8 @@ _popup_del(void *data, Evas_Object *obj, void *event_info)
 	data = NULL;
 }
 
-static void
-move_more_ctxpopup(void *data, Evas_Object *obj, void *event_info)
+void
+move_more_ctxpopup(void *data, Evas_Object *obj EINA_UNUSED, void *event_info EINA_UNUSED)
 {
 	Evas_Object *win;
 	Evas_Coord w, h;
@@ -43,12 +43,98 @@ move_more_ctxpopup(void *data, Evas_Object *obj, void *event_info)
 	}
 }
 
+static int
+_get_verse(void *data, int argc, char **argv, char **azColName)
+{
+	bible_verse_item *verse_item = (bible_verse_item*)data;
+	verse_item->verse = strdup(argv[0]);
+	return 0;
+}
+
+static int
+_get_bookmarks_list(void *data, int argc, char **argv, char **azColName)
+{
+    bible_verse_item *verse_item = malloc(sizeof(bible_verse_item));
+    char query[512];
+    appdata_s *ad = (appdata_s*)data;
+    verse_item->appdata = ad;
+    if (azColName[0] && (strcmp(azColName[0], "bookcount") == 0))
+    {
+    	verse_item->bookcount = atoi(argv[0]);
+    }
+
+    if (azColName[1] && (strcmp(azColName[1], "chaptercount") == 0))
+    {
+    	verse_item->chaptercount = atoi(argv[1]);
+    }
+
+    if (azColName[2] && (strcmp(azColName[2], "versecount") == 0))
+    {
+    	verse_item->versecount = atoi(argv[2]);
+    }
+
+    sprintf(query, "SELECT e_verse FROM eng_bible WHERE Book = '%s' AND Chapter = %d AND Verse = %d", Books[verse_item->bookcount], verse_item->chaptercount, verse_item->versecount + 1);
+    _database_query(query, _get_verse, verse_item);
+
+    elm_genlist_item_append(ad->bookmarks_genlist, ad->bookmarks_itc, verse_item, NULL, ELM_GENLIST_ITEM_NONE, NULL, NULL);
+
+    return 0;
+}
+
+static Evas_Object*
+_get_bookmarks(appdata_s *ad)
+{
+	char query[512];
+	Evas_Object *layout = elm_layout_add(ad->naviframe);
+	elm_layout_file_set(layout, ad->edj_path, "bookmarks_layout");
+	evas_object_size_hint_weight_set(layout, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
+	evas_object_size_hint_align_set(layout, EVAS_HINT_FILL, EVAS_HINT_FILL);
+	ad->bookmarks_genlist = elm_genlist_add(layout);
+	evas_object_size_hint_weight_set(ad->bookmarks_genlist, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
+	evas_object_size_hint_align_set(ad->bookmarks_genlist, EVAS_HINT_FILL, EVAS_HINT_FILL);
+	elm_layout_content_set(layout, "elm.swallow.content", ad->bookmarks_genlist);
+
+	ad->bookmarks_itc = elm_genlist_item_class_new();
+	ad->bookmarks_itc->item_style = "full";
+	ad->bookmarks_itc->func.content_get = gl_content_get_cb;
+	ad->bookmarks_itc->func.text_get = NULL;
+	ad->bookmarks_itc->func.del = gl_del_cb;
+
+	sprintf(query, "SELECT bookcount, chaptercount, versecount FROM bookmarks");
+    _app_database_query(query, _get_bookmarks_list, ad);
+	evas_object_show(layout);
+	return layout;
+}
+
+static Eina_Bool
+naviframe_pop_cb(void *data, Elm_Object_Item *it)
+{
+	appdata_s *ad = (appdata_s*)data;
+	_loading_progress(ad->win);
+	if (ad->bookmarks_genlist)
+		elm_genlist_clear(ad->bookmarks_genlist);
+	ad->bookmarks_genlist = NULL;
+	if (ad->bookmarks_itc)
+		elm_genlist_item_class_free(ad->bookmarks_itc);
+	ad->bookmarks_itc = NULL;
+	return EINA_FALSE;
+}
+
 static void
 ctxpopup_item_select_cb(void *data, Evas_Object *obj, void *event_info)
 {
 	const char *title_label = elm_object_item_text_get((Elm_Object_Item *) event_info);
 	char text_content[2048];
-	Evas_Object *ctxpopup = (Evas_Object*)data;
+	Elm_Object_Item *nf_it;
+    appdata_s *ad = (appdata_s*)data;
+	if (!strcmp(title_label, "Bookmarks"))
+	{
+	   nf_it = elm_naviframe_item_push(ad->naviframe, "Bookmarks", NULL, NULL, _get_bookmarks(ad), NULL);
+	   elm_naviframe_item_pop_cb_set(nf_it, naviframe_pop_cb, ad);
+       elm_ctxpopup_dismiss(obj);
+       return;
+	}
+
 	Evas_Object *popup = elm_popup_add(elm_object_top_widget_get(obj));
 	elm_popup_align_set(popup, ELM_NOTIFY_ALIGN_FILL, 0.5);
 	elm_object_part_text_set(popup, "title,text", title_label);
@@ -338,7 +424,7 @@ ctxpopup_item_select_cb(void *data, Evas_Object *obj, void *event_info)
 	evas_object_show(popup);
 	evas_object_smart_callback_add(button, "clicked", _popup_del, popup);
 	eext_object_event_callback_add(popup, EEXT_CALLBACK_BACK, eext_popup_back_cb, NULL);
-	elm_ctxpopup_dismiss(ctxpopup);
+	elm_ctxpopup_dismiss(obj);
 }
 
 void
@@ -347,7 +433,7 @@ create_ctxpopup_more_button_cb(void *data, Evas_Object *obj, void *event_info)
 	Evas_Object *win;
 	appdata_s *ad = (appdata_s*)data;
 
-	Evas_Object *ctxpopup = elm_ctxpopup_add(ad->win);
+	Evas_Object *ctxpopup = elm_ctxpopup_add(ad->naviframe);
 	elm_ctxpopup_auto_hide_disabled_set(ctxpopup, EINA_TRUE);
 	elm_object_style_set(ctxpopup, "more/default");
 	eext_object_event_callback_add(ctxpopup, EEXT_CALLBACK_BACK, eext_ctxpopup_back_cb, NULL);
@@ -357,6 +443,7 @@ create_ctxpopup_more_button_cb(void *data, Evas_Object *obj, void *event_info)
 	win = elm_object_top_widget_get(ad->naviframe);
 	evas_object_smart_callback_add(win, "rotation,changed", move_more_ctxpopup, ctxpopup);
 
+	elm_ctxpopup_item_append(ctxpopup, "Bookmarks", NULL, ctxpopup_item_select_cb, ctxpopup);
 	elm_ctxpopup_item_append(ctxpopup, "About", NULL, ctxpopup_item_select_cb, ctxpopup);
 	elm_ctxpopup_item_append(ctxpopup, "Help", NULL, ctxpopup_item_select_cb, ctxpopup);
 

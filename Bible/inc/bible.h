@@ -29,14 +29,15 @@ typedef struct appdata{
 	Evas_Object* layout, *search_layout;
 	Evas_Object* book_btn, *chapter_btn;
 	Evas_Object* label, *naviframe;
-	Evas_Object* genlist, *search_result_genlist;
+	Evas_Object* genlist, *search_result_genlist, *bookmarks_genlist;
 	Evas_Object *list1, *list2, *search_entry;
-	Elm_Genlist_Item_Class *itc, *search_itc;
+	Elm_Genlist_Item_Class *itc, *search_itc, *bookmarks_itc;
 	Evas_Coord mouse_x, mouse_y;
 	uint mouse_down_time;
 	int count, versecount, chaptercount;
 	int cur_chapter, cur_book;
 	int nxt_chapter, nxt_book;
+	char edj_path[PATH_MAX];
 	sqlite3 *db;
 } appdata_s;
 
@@ -60,10 +61,10 @@ struct _bible_verse_item
    char *verse;
 };
 
-void app_get_resource(const char *, char *, int);
 void _query_chapter(void*, int, int);
 void _get_chapter_count_query(void*, int);
 void _get_verse_count_query(void*, int,int);
+void _app_database_query(char*, int func(void*,int,char**,char**), void*);
 void _database_query(char*, int func(void*,int,char**,char**), void*);
 void _change_book(void *, Evas_Object*, char*, char*);
 void _search_word(void *, Evas_Object*,void*);
@@ -74,3 +75,6 @@ Evas_Object* _loading_progress_show(Evas_Object *);
 void _loading_progress_hide(Evas_Object*);
 void _load_appdata(appdata_s *);
 void _save_appdata(appdata_s *);
+void move_more_ctxpopup(void*, Evas_Object*, void*);
+void gl_del_cb(void*, Evas_Object*);
+Evas_Object* gl_content_get_cb(void *, Evas_Object *, const char *);
