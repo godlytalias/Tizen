@@ -79,6 +79,25 @@ _get_bookmarks_list(void *data, int argc, char **argv, char **azColName)
 }
 
 static Evas_Object*
+gl_content_get_cb(void *data, Evas_Object *obj, const char *part)
+{
+    bible_verse_item *verse_item = (bible_verse_item*)data;
+    if(strcmp(part, "elm.swallow.content") == 0)
+    {
+    	Evas_Object *layout = elm_layout_add(obj);
+    	char verse_ref[64];
+    	elm_layout_file_set(layout, verse_item->appdata->edj_path, "bookmark_verse_layout");
+     	elm_object_part_text_set(layout,"elm.text.verse",verse_item->verse);
+    	sprintf(verse_ref, "%s %d : %d", Books[verse_item->bookcount], verse_item->chaptercount, verse_item->versecount);
+    	elm_object_part_text_set(layout, "elm.text.reference", verse_ref);
+    	evas_object_show(layout);
+    	evas_object_smart_calculate(layout);
+    	return layout;
+    }
+    else return NULL;
+}
+
+static Evas_Object*
 _get_bookmarks(appdata_s *ad)
 {
 	char query[512];
@@ -105,7 +124,7 @@ _get_bookmarks(appdata_s *ad)
     it = elm_genlist_first_item_get(ad->bookmarks_genlist);
     while(it) {
        verse_item = elm_object_item_data_get(it);
-       sprintf(query, "SELECT e_verse FROM eng_bible WHERE Book = '%s' AND Chapter = %d AND Verse = %d", Books[verse_item->bookcount], verse_item->chaptercount, verse_item->versecount + 1);
+       sprintf(query, "SELECT e_verse FROM eng_bible WHERE Book = '%s' AND Chapter = %d AND Versecount = %d", Books[verse_item->bookcount], verse_item->chaptercount, verse_item->versecount);
        _database_query(query, _get_verse, verse_item);
        it = elm_genlist_item_next_get(it);
     }

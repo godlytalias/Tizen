@@ -109,7 +109,7 @@ _content_mouse_up(void *data,
 	   _prev_chapter(data, obj, NULL);
 }
 
-Evas_Object*
+static Evas_Object*
 gl_content_get_cb(void *data, Evas_Object *obj, const char *part)
 {
     bible_verse_item *verse_item = (bible_verse_item*)data;
@@ -352,6 +352,8 @@ create_base_gui(appdata_s *ad)
 	ad->win = elm_win_util_standard_add(PACKAGE, PACKAGE);
 	elm_win_autodel_set(ad->win, EINA_TRUE);
 	app_get_resource(EDJ_FILE, ad->edj_path, (int)PATH_MAX);
+	int i = 1;
+	ecore_evas_data_set(ecore_evas_ecore_evas_get(evas_object_evas_get(ad->win)), "changeable", &i);
 
 	Evas_Object *conform = elm_conformant_add(ad->win);
 	evas_object_size_hint_weight_set(conform, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
