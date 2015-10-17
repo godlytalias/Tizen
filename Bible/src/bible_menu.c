@@ -12,6 +12,7 @@ ctxpopup_dismissed_cb(void *data, Evas_Object *obj, void *event_info)
 static void
 _popup_del(void *data, Evas_Object *obj, void *event_info)
 {
+	evas_object_hide(data);
 	evas_object_del(data);
 	data = NULL;
 }
@@ -97,6 +98,90 @@ gl_content_get_cb(void *data, Evas_Object *obj, const char *part)
     else return NULL;
 }
 
+static void
+_remove_bookmark(void *data, Evas_Object *obj, void *event_info)
+{
+	Evas_Object *popup = (Evas_Object*)data;
+	char query[256];
+	bible_verse_item *verse_item = (bible_verse_item*)evas_object_data_get(popup, "verse_item");
+    sprintf(query, "DELETE FROM bookmarks WHERE bookcount = %d AND chaptercount = %d AND versecount = %d", verse_item->bookcount, verse_item->chaptercount, verse_item->versecount);
+    _app_database_query(query, NULL, NULL);
+    _check_bookmarks(verse_item->appdata);
+    Evas_Object *toast = elm_popup_add(verse_item->appdata->win);
+    elm_object_style_set(toast, "toast");
+    sprintf(query, "Removed %s %d : %d", Books[verse_item->bookcount], verse_item->chaptercount, verse_item->versecount);
+    elm_object_text_set(toast, query);
+    elm_popup_allow_events_set(toast, EINA_TRUE);
+    evas_object_show(toast);
+    elm_popup_timeout_set(toast, 2.0);
+    evas_object_smart_callback_add(toast, "timeout", _popup_del, toast);
+    elm_genlist_realized_items_update(verse_item->appdata->genlist);
+    elm_object_item_del(verse_item->it);
+    _popup_del(popup, NULL, NULL);
+}
+
+static void
+_get_chapter(void *data, Evas_Object *obj, void *event_info)
+{
+	Evas_Object *popup = (Evas_Object*)data;
+	char query[256];
+	bible_verse_item *verse_item = (bible_verse_item*)evas_object_data_get(popup, "verse_item");
+	_query_chapter(verse_item->appdata, verse_item->bookcount, verse_item->chaptercount);
+	elm_naviframe_item_pop(verse_item->appdata->naviframe);
+	_popup_del(popup, NULL, NULL);
+}
+
+static void
+gl_selected_cb(void *data, Evas_Object *obj, void *event_info)
+{
+	Elm_Object_Item *it = (Elm_Object_Item*)event_info;
+	elm_genlist_item_selected_set(it, EINA_FALSE);
+    char popup_text[128];
+    bible_verse_item *verse_item = (bible_verse_item*)elm_object_item_data_get(it);
+    appdata_s *ad = (appdata_s*)data;
+    Evas_Object *popup = elm_popup_add(ad->win);
+    elm_popup_align_set(popup, 0.5, 0.5);
+    sprintf(popup_text, "<align='center'>Go to %s %d ?</align>", Books[verse_item->bookcount], verse_item->chaptercount);
+    elm_object_text_set(popup, popup_text);
+    Evas_Object *button1 = elm_button_add(ad->win);
+    elm_object_text_set(button1, "No");
+    evas_object_smart_callback_add(button1, "clicked", _popup_del, popup);
+    Evas_Object *button2 = elm_button_add(ad->win);
+    elm_object_text_set(button2, "Yes");
+    evas_object_smart_callback_add(button2, "clicked", _get_chapter, popup);
+    evas_object_data_set(popup, "verse_item", verse_item);
+    elm_object_part_content_set(popup, "button1", button1);
+    elm_object_part_content_set(popup, "button2", button2);
+    eext_object_event_callback_add(popup, EEXT_CALLBACK_BACK, eext_popup_back_cb, popup);
+    evas_object_show(popup);
+}
+
+static void
+gl_longpressed_cb(void *data, Evas_Object *obj, void *event_info)
+{
+    Elm_Object_Item *item = (Elm_Object_Item*)event_info;
+    char popup_text[128];
+    bible_verse_item *verse_item = (bible_verse_item*)elm_object_item_data_get(item);
+    appdata_s *ad = (appdata_s*)data;
+    Evas_Object *popup = elm_popup_add(ad->win);
+	elm_genlist_item_selected_set(item, EINA_FALSE);
+    elm_popup_align_set(popup, 0.5, 0.5);
+    sprintf(popup_text, "<align='center'>Remove %s %d : %d ?</align>", Books[verse_item->bookcount], verse_item->chaptercount, verse_item->versecount);
+    elm_object_text_set(popup, popup_text);
+    elm_object_part_text_set(popup, "title,text", "Bookmark!");
+    Evas_Object *button1 = elm_button_add(ad->win);
+    elm_object_text_set(button1, "No");
+    evas_object_smart_callback_add(button1, "clicked", _popup_del, popup);
+    Evas_Object *button2 = elm_button_add(ad->win);
+    elm_object_text_set(button2, "Yes");
+    evas_object_smart_callback_add(button2, "clicked", _remove_bookmark, popup);
+    evas_object_data_set(popup, "verse_item", verse_item);
+    elm_object_part_content_set(popup, "button1", button1);
+    elm_object_part_content_set(popup, "button2", button2);
+    eext_object_event_callback_add(popup, EEXT_CALLBACK_BACK, eext_popup_back_cb, popup);
+    evas_object_show(popup);
+}
+
 static Evas_Object*
 _get_bookmarks(appdata_s *ad)
 {
@@ -111,6 +196,8 @@ _get_bookmarks(appdata_s *ad)
 	evas_object_size_hint_weight_set(ad->bookmarks_genlist, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
 	evas_object_size_hint_align_set(ad->bookmarks_genlist, EVAS_HINT_FILL, EVAS_HINT_FILL);
 	elm_layout_content_set(layout, "elm.swallow.content", ad->bookmarks_genlist);
+	evas_object_smart_callback_add(ad->bookmarks_genlist, "selected", gl_selected_cb, ad);
+	evas_object_smart_callback_add(ad->bookmarks_genlist, "longpressed", gl_longpressed_cb, ad);
 
 	ad->bookmarks_itc = elm_genlist_item_class_new();
 	ad->bookmarks_itc->item_style = "full";
@@ -469,6 +556,7 @@ create_ctxpopup_more_button_cb(void *data, Evas_Object *obj, void *event_info)
 	win = elm_object_top_widget_get(ad->naviframe);
 	evas_object_smart_callback_add(win, "rotation,changed", move_more_ctxpopup, ctxpopup);
 
+	elm_ctxpopup_item_append(ctxpopup, "Search", NULL, _search_word, ad);
 	elm_ctxpopup_item_append(ctxpopup, "Bookmarks", NULL, ctxpopup_item_select_cb, ad);
 	elm_ctxpopup_item_append(ctxpopup, "About", NULL, ctxpopup_item_select_cb, ad);
 	elm_ctxpopup_item_append(ctxpopup, "Help", NULL, ctxpopup_item_select_cb, ad);

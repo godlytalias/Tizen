@@ -94,7 +94,7 @@ collections {
               rel2.relative: 1.0 0.0;
             }
          }
-         part { name: "header.left_top.padding";
+         part { name: "elm.header.left_top.padding";
             type: SPACER;
             scale: 1;
             description { state: "default" 0.0;
@@ -106,7 +106,7 @@ collections {
               align: 0.0 0.0;
             }
          }
-         part { name: "header.right_bottom.padding";
+         part { name: "elm.header.right_bottom.padding";
             type: SPACER;
             scale: 1;
             description { state: "default" 0.0;
@@ -119,63 +119,15 @@ collections {
               align: 1.0 1.0;
             }
          }
-         part {name: "elm.header.prev.btn";
-            type: SWALLOW;
-            scale: 1;
-            description { state: "default" 0.0;
-               rel1.to: "header.left_top.padding";
-               rel1.relative: 1.0 1.0;
-               rel2.to_x: "header.left_top.padding";
-               rel2.to_y: "header.right_bottom.padding";
-               rel2.relative: 1.0 0.0;
-               align: 0.0 0.5;
-            }
-         }
-         part {name: "elm.header.nxt.btn";
-            type: SWALLOW;
-            scale: 1;
-            description { state: "default" 0.0;
-               rel1.to_x: "header.right_bottom.padding";
-               rel1.to_y: "header.left_top.padding";
-               rel1.relative: 0.0 1.0;
-               rel2.to: "header.right_bottom.padding";
-               rel2.relative: 0.0 0.0;
-               align: 1.0 0.5;
-            }
-         }
-         part {name: "elm.header.book.left.padding";
-            type: SPACER;
-            scale: 1;
-            description { state: "default" 0.0;
-               rel1.to: "elm.header.prev.btn";
-               rel1.relative: 1.0 0.0;
-               rel2.to: "elm.header.prev.btn";
-               align: 0.0 0.5;
-               min: 32 0;
-               fixed: 1 0;
-            }
-         }
-         part {name: "elm.header.book.right.padding";
-            type: SPACER;
-            scale: 1;
-            description { state: "default" 0.0;
-               rel1.to: "elm.header.nxt.btn";
-               rel2.to: "elm.header.nxt.btn";
-               rel2.relative: 0.0 1.0;
-               align: 1.0 0.5;
-               min: 32 0;
-               fixed: 1 0;
-            }
-         }
          part { name: "elm.text.book_title";
             type: TEXTBLOCK;
             scale: 1;
             description { state: "default" 0.0;
                text.style: "title_style";
                text.min: 1 1;
-               rel1.to: "elm.header.book.left.padding";
+               rel1.to: "elm.header.left_top.padding";
                rel1.relative: 1.0 0.0;
-               rel2.to: "elm.header.book.right.padding";
+               rel2.to: "elm.header.right_bottom.padding";
                rel2.relative: 0.0 1.0;
             }
          }
@@ -197,12 +149,13 @@ collections {
                rel1.to_y: "elm.header.part";
                rel1.to_x: "base";
                rel1.relative: 0.0 1.0;
-               rel2.to_y: "elm.footer.part";
+               rel2.to: "base";
+               /*rel2.to_y: "elm.footer.part";
                rel2.to_x: "base";
-               rel2.relative: 1.0 0.0;
+               rel2.relative: 1.0 0.0;*/
             }
         }
-         part { name: "elm.footer.part";
+ /*        part { name: "elm.footer.part";
             type: RECT;
             scale: 1;
             description { state: "default" 0.0;
@@ -327,7 +280,7 @@ collections {
                rel2.relative: 0.0 1.0;
                align: 1.0 0.5;
             }
-        }
+        }*/
      }
      programs {
         program { name: "change_book";

@@ -79,3 +79,4 @@ void _load_appdata(appdata_s *);
 void _save_appdata(appdata_s *);
 void move_more_ctxpopup(void*, Evas_Object*, void*);
 void gl_del_cb(void*, Evas_Object*);
+void _check_bookmarks(appdata_s *);

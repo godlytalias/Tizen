@@ -137,7 +137,7 @@ _put_bookmarks(void *data, int argc, char **argv, char **azColName)
 	   verse_item->bookmark = EINA_FALSE;
 }
 
-static void
+void
 _check_bookmarks(appdata_s *ad)
 {
    Elm_Object_Item *it = elm_genlist_first_item_get(ad->genlist);

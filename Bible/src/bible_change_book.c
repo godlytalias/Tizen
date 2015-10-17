@@ -62,13 +62,16 @@ _book_selected(void *data, Evas_Object *obj, void *event_info)
 	Elm_Object_Item *item;
 	appdata_s *ad = item_v->appdata;
 	book = item_v->bookcount;
+
+	if (book == ad->nxt_book) return;
+
 	_get_chapter_count_query(ad, book);
 	elm_list_clear(ad->list2);
 	for(i = 0; i < ad->chaptercount; i++) {
 		sprintf(chapter, "%d", i+1);
 		item = elm_list_item_append(ad->list2, chapter, NULL, NULL, _chapter_selected, data);
-		if ((i + 1) == ad->cur_chapter) elm_list_item_selected_set(item, EINA_TRUE);
 	}
+	elm_list_item_selected_set(elm_list_first_item_get(ad->list2), EINA_TRUE);
 	elm_list_go(ad->list2);
 	evas_object_show(ad->list2);
 	item = elm_list_selected_item_get(ad->list2);
@@ -81,9 +84,13 @@ _select_chapter_layout(appdata_s *ad)
 	Evas_Object *layout = elm_layout_add(ad->win);
 	Elm_Object_Item *item;
 	int i;
+	ad->nxt_book = -1;
+	ad->nxt_chapter = -1;
 	elm_layout_file_set(layout, ad->edj_path, "select_chapter_layout");
 	ad->list1 = elm_list_add(layout);
+	elm_list_select_mode_set(ad->list1, ELM_OBJECT_SELECT_MODE_ALWAYS);
 	ad->list2 = elm_list_add(layout);
+	elm_list_select_mode_set(ad->list2, ELM_OBJECT_SELECT_MODE_ALWAYS);
 	for(i = 0; i < 66; i++) {
 		bible_verse_item *item_v = malloc(sizeof(bible_verse_item));
 		item_v->appdata = ad;

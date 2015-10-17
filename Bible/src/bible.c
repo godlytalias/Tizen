@@ -229,7 +229,7 @@ _home_screen(appdata_s *ad)
 	evas_object_show(ad->layout);
 	elm_win_resize_object_add(ad->win, ad->layout);
 	elm_layout_signal_callback_add(ad->layout, "elm,book,change", "elm", _change_book, (void*)ad);
-
+/*
 	prev_btn = elm_button_add(ad->win);
 	elm_object_text_set(prev_btn, "Back");
 	elm_object_part_content_set(ad->layout, "elm.footer.prev.btn", prev_btn);
@@ -247,7 +247,7 @@ _home_screen(appdata_s *ad)
 	elm_object_part_content_set(ad->layout, "elm.footer.search.btn", search_btn);
 	evas_object_smart_callback_add(search_btn, "clicked", _search_word, (void*)ad);
 	evas_object_show(search_btn);
-
+*/
 	ad->itc = elm_genlist_item_class_new();
 	ad->itc->item_style = "full";
 	ad->itc->func.content_get = gl_content_get_cb;
