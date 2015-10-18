@@ -386,7 +386,7 @@ collections {
         program { name: "loading_done";
            signal: "elm,holy_bible,loading,done";
            source: "elm";
-           in: 2.0 0.0;
+           in: 1.0 0.0;
            transition: LINEAR 0.3;
            action: STATE_SET "loaded" 0.0;
            target: "base";
@@ -537,11 +537,16 @@ collections {
                rel2.to: "elm.swallow.result";
                align: 1.0 1.0;
                image.normal: "down_arrow.png";
+               color: 255 255 255 50;
                visible: 0;
             }
-            description { state: "show" 0.0;
+            description { state: "visible" 0.0;
                inherit: "default" 0.0;
                visible: 1;
+            }
+            description { state: "show" 0.0;
+               inherit: "visible" 0.0;
+               color: 255 255 255 200;
             }
          }
          part { name: "up_arrow";
@@ -555,42 +560,58 @@ collections {
                rel2.relative: 1.0 0.0;
                align: 1.0 0.0;
                image.normal: "up_arrow.png";
+               color: 255 255 255 50;
                visible: 0;
             }
-            description { state: "show" 0.0;
+            description { state: "visible" 0.0;
                inherit: "default" 0.0;
                visible: 1;
+            }
+            description { state: "show" 0.0;
+               inherit: "visible" 0.0;
+               color: 255 255 255 200;
             }
          }
       }
       
       programs {
+         program { name: "click_sound";
+            action: RUN_PLUGIN "touch_sound";
+         }
          program { name: "go_bottom";
             signal: "mouse,clicked,1";
             source: "down_arrow";
             action: SIGNAL_EMIT "elm,holy_bible,bottom" "elm";
+            after: "click_sound";
          }
          program { name: "go_top";
             signal: "mouse,clicked,1";
             source: "up_arrow";
             action: SIGNAL_EMIT "elm,holy_bible,top" "elm";
+            after: "click_sound";
+         }
+         program { name: "arrow_visible";
+            action: STATE_SET "visible" 0.0;
+            target: "up_arrow";
+            target: "down_arrow";
          }
          program { name: "content_bg_hide";
             signal: "elm,holy_bible,bg,hide";
             source: "elm";
             action: STATE_SET "hide" 0.0;
             target: "content_bg";
+            after: "arrow_visible";
          }
          program { name: "up_arrow_hide";
             in: 1.0 0.0;
             transition: LINEAR 0.2;
-            action: STATE_SET "default" 0.0;
+            action: STATE_SET "visible" 0.0;
             target: "up_arrow";
          }
          program { name: "down_arrow_hide";
             in: 1.0 0.0;
             transition: LINEAR 0.2;
-            action: STATE_SET "default" 0.0;
+            action: STATE_SET "visible" 0.0;
             target: "down_arrow";
          }
          program { name: "up_arrow_show";
@@ -786,9 +807,9 @@ collections {
             type: RECT;
             scale: 1;
             description { state: "default" 0.0;
-               min: 480 158;
+               min: 480 168;
                color: 0 0 0 0;
-               fixed: 1 0;
+               fixed: 1 1;
             }
          }
          part{ name: "left_top_padding";
@@ -826,8 +847,8 @@ collections {
                rel2.relative: 0.0 1.0;
                text.style: "verse_reference_style";
                fixed: 1 1;
-               min: 416 30;
-               text.min: 0 1;
+               text.min: 0 0;
+               min: 416 40;
                align: 0.0 0.0;
             }
         }
@@ -842,9 +863,9 @@ collections {
                rel2.relative: 0.0 0.0;
                text.style: "verse_style";
                fixed: 1 1;
-               text.min: 0 1;
+               text.min: 0 0;
                min: 416 80;
-               align: 0.0 0.0;
+               align: 0.0 1.0;
             }         
          }
      }

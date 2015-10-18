@@ -25,16 +25,20 @@ static Eina_Bool
 _get_prev_chapter(void *data)
 {
 	appdata_s *ad = (appdata_s*)data;
-
-	if (ad->cur_book == 0 && ad->cur_chapter == 1) return ECORE_CALLBACK_CANCEL;
-
 	Evas_Object *popup = _loading_progress_show(ad->win);
-	if (ad->cur_chapter == 1) {
-		_get_chapter_count_query(data, ad->cur_book - 1);
-		_query_chapter(data, ad->cur_book - 1, ad->chaptercount);
+
+	if (ad->cur_book == 0 && ad->cur_chapter == 1) {
+		_get_chapter_count_query(data, 65);
+		_query_chapter(data, 65, 22);
 	}
-	else
-		_query_chapter(data, ad->cur_book, ad->cur_chapter - 1);
+	else {
+		if (ad->cur_chapter == 1) {
+			_get_chapter_count_query(data, ad->cur_book - 1);
+			_query_chapter(data, ad->cur_book - 1, ad->chaptercount);
+		}
+		else
+			_query_chapter(data, ad->cur_book, ad->cur_chapter - 1);
+	}
 	_loading_progress_hide(popup);
 	return ECORE_CALLBACK_CANCEL;
 }
@@ -42,7 +46,6 @@ _get_prev_chapter(void *data)
 static void
 _prev_chapter(void *data, Evas_Object *obj, char *emission, char *source)
 {
-	appdata_s *ad = (appdata_s*)data;
 	ecore_idle_enterer_add(_get_prev_chapter, data);
 }
 
@@ -50,17 +53,21 @@ static Eina_Bool
 _get_nxt_chapter(void *data)
 {
 	appdata_s *ad = (appdata_s*)data;
-
-	if (ad->cur_book == 65 && ad->cur_chapter == 22) return ECORE_CALLBACK_CANCEL;
-
 	Evas_Object *popup = _loading_progress_show(ad->win);
-	_get_chapter_count_query(data, ad->cur_book);
-	if (ad->cur_chapter == ad->chaptercount)
-	{
-		_query_chapter(data, ad->cur_book + 1, 1);
+
+	if (ad->cur_book == 65 && ad->cur_chapter == 22) {
+		_get_chapter_count_query(data, 0);
+		_query_chapter(data, 0, 1);
 	}
-	else
-		_query_chapter(data, ad->cur_book, ad->cur_chapter + 1);
+	else {
+		if (ad->cur_chapter == ad->chaptercount)
+		{
+			_get_chapter_count_query(data, ad->cur_book + 1);
+			_query_chapter(data, ad->cur_book + 1, 1);
+		}
+		else
+			_query_chapter(data, ad->cur_book, ad->cur_chapter + 1);
+	}
 	_loading_progress_hide(popup);
 	return ECORE_CALLBACK_CANCEL;
 }
@@ -68,7 +75,6 @@ _get_nxt_chapter(void *data)
 static void
 _nxt_chapter(void *data, Evas_Object *obj, char *emission, char *source)
 {
-	appdata_s *ad = (appdata_s*)data;
 	ecore_idle_enterer_add(_get_nxt_chapter, data);
 }
 
@@ -208,10 +214,9 @@ static Eina_Bool
 _load_chapter(void *data)
 {
 	appdata_s *ad = (appdata_s*)data;
-	Evas_Object *popup = _loading_progress_show(ad->win);
 	_query_chapter(data, ad->cur_book, ad->cur_chapter);
 	elm_layout_signal_emit(ad->layout, "elm,holy_bible,loading,done", "elm");
-	_loading_progress_hide(popup);
+	eext_object_event_callback_add(ad->naviframe, EEXT_CALLBACK_MORE, eext_naviframe_more_cb, NULL);
 	return ECORE_CALLBACK_CANCEL;
 }
 
@@ -393,9 +398,7 @@ create_base_gui(appdata_s *ad)
 	evas_object_smart_callback_add(menu_btn, "clicked", create_ctxpopup_more_button_cb, ad);
 	elm_object_item_part_content_set(nf_item, "toolbar_more_btn", menu_btn);
 	evas_object_show(menu_btn);
-
 	eext_object_event_callback_add(ad->naviframe, EEXT_CALLBACK_BACK, eext_naviframe_back_cb, NULL);
-	eext_object_event_callback_add(ad->naviframe, EEXT_CALLBACK_MORE, eext_naviframe_more_cb, NULL);
 
 	evas_object_show(ad->win);
 
