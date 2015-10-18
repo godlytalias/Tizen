@@ -112,7 +112,7 @@ _select_chapter_layout(appdata_s *ad)
 }
 
 void
-_change_book(void *data, Evas_Object *obj, char *emission, char *source)
+_change_book(void *data, Evas_Object *obj, const char *emission, const char *source)
 {
 	appdata_s *ad = (appdata_s*)data;
 	Elm_Object_Item *nf_it;

@@ -44,7 +44,7 @@ _get_prev_chapter(void *data)
 }
 
 static void
-_prev_chapter(void *data, Evas_Object *obj, char *emission, char *source)
+_prev_chapter(void *data, Evas_Object *obj, const char *emission, const char *source)
 {
 	ecore_idle_enterer_add(_get_prev_chapter, data);
 }
@@ -73,7 +73,7 @@ _get_nxt_chapter(void *data)
 }
 
 static void
-_nxt_chapter(void *data, Evas_Object *obj, char *emission, char *source)
+_nxt_chapter(void *data, Evas_Object *obj, const char *emission, const char *source)
 {
 	ecore_idle_enterer_add(_get_nxt_chapter, data);
 }
@@ -89,6 +89,7 @@ _content_mouse_down(void *data,
    ad->mouse_x = ev->canvas.x;
    ad->mouse_y = ev->canvas.y;
    ad->mouse_down_time = ev->timestamp;
+   elm_layout_signal_emit(ad->layout, "elm,holy_bible,arrow,highlight", "elm");
 }
 
 static void
@@ -142,19 +143,43 @@ _copy_verse_cb(void *data, Evas_Object *obj, void *event_info)
 }
 
 static void
+_remove_bookmark_query(void *data, Evas_Object *obj, void *event_info)
+{
+	char query[256];
+	bible_verse_item *verse_item = (bible_verse_item*)data;
+    sprintf(query, "DELETE FROM bookmarks WHERE bookcount = %d AND chaptercount = %d AND versecount = %d", verse_item->bookcount, verse_item->chaptercount, verse_item->versecount + 1);
+    _app_database_query(query, NULL, NULL);
+    verse_item->bookmark = EINA_FALSE;
+    elm_genlist_item_update(verse_item->it);
+    Evas_Object *toast = elm_popup_add(verse_item->appdata->naviframe);
+    elm_object_style_set(toast, "toast");
+    elm_popup_allow_events_set(toast, EINA_TRUE);
+    elm_popup_timeout_set(toast, 2.0);
+    evas_object_show(toast);
+    elm_object_text_set(toast, "Bookmark removed");
+    evas_object_smart_callback_add(toast, "timeout", eext_popup_back_cb, toast);
+    elm_ctxpopup_dismiss(obj);
+    return;
+}
+
+static void
 _bookmark_verse_cb(void *data, Evas_Object *obj, void *event_info)
 {
-   char query[512];
    bible_verse_item *verse_item = (bible_verse_item*)data;
-   sprintf(query, "INSERT INTO bookmarks VALUES(%d, %d, %d)", verse_item->bookcount, verse_item->chaptercount, verse_item->versecount + 1);
-   _app_database_query(query, NULL, NULL);
    Evas_Object *toast = elm_popup_add(verse_item->appdata->naviframe);
    elm_object_style_set(toast, "toast");
-   sprintf(query, "Bookmarked %s %d : %d", Books[verse_item->bookcount], verse_item->chaptercount, verse_item->versecount + 1);
-   elm_object_text_set(toast, query);
    elm_popup_allow_events_set(toast, EINA_TRUE);
-   verse_item->bookmark = EINA_TRUE;
-   elm_genlist_item_update(verse_item->it);
+   if (!verse_item->bookmark)
+   {
+	   char query[512];
+	   sprintf(query, "INSERT INTO bookmarks VALUES(%d, %d, %d)", verse_item->bookcount, verse_item->chaptercount, verse_item->versecount + 1);
+	   _app_database_query(query, NULL, NULL);
+	   sprintf(query, "Bookmarked %s %d : %d", Books[verse_item->bookcount], verse_item->chaptercount, verse_item->versecount + 1);
+	   elm_object_text_set(toast, query);
+	   verse_item->bookmark = EINA_TRUE;
+	   elm_genlist_item_update(verse_item->it);
+   }
+   else elm_object_text_set(toast, "Verse already bookmarked!");
    elm_popup_timeout_set(toast, 2.0);
    evas_object_show(toast);
    evas_object_smart_callback_add(toast, "timeout", eext_popup_back_cb, toast);
@@ -185,7 +210,10 @@ gl_longpressed_cb(void *data, Evas_Object *obj, void *event_info)
 	Evas_Object *verse_popup = elm_ctxpopup_add(ad->naviframe);
 	elm_ctxpopup_auto_hide_disabled_set(verse_popup, EINA_TRUE);
     elm_object_style_set(verse_popup, "more/default");
-	elm_ctxpopup_item_append(verse_popup, "Bookmark Verse", NULL, _bookmark_verse_cb, verse_item);
+    if (!verse_item->bookmark)
+    	elm_ctxpopup_item_append(verse_popup, "Bookmark Verse", NULL, _bookmark_verse_cb, verse_item);
+    else
+    	elm_ctxpopup_item_append(verse_popup, "Remove bookmark", NULL, _remove_bookmark_query, verse_item);
 	elm_ctxpopup_item_append(verse_popup, "Share Verse", NULL, _share_verse_cb, verse_item);
 	elm_ctxpopup_item_append(verse_popup, "Copy Verse", NULL, _copy_verse_cb, verse_item);
 	evas_object_smart_callback_add(verse_popup, "dismissed", eext_ctxpopup_back_cb, verse_popup);
@@ -223,7 +251,6 @@ _load_chapter(void *data)
 /*static*/ Evas_Object*
 _home_screen(appdata_s *ad)
 {
-	Evas_Object *prev_btn, *nxt_btn, *search_btn;
 	/* Base Layout */
 	ad->layout = elm_layout_add(ad->win);
 	elm_layout_file_set(ad->layout, ad->edj_path, GRP_MAIN);
@@ -246,25 +273,6 @@ _home_screen(appdata_s *ad)
 	elm_progressbar_pulse(progressbar, EINA_TRUE);
 	elm_object_part_content_set(ad->layout, "elm.swallow.progressbar", progressbar);
 
-/*
-	prev_btn = elm_button_add(ad->win);
-	elm_object_text_set(prev_btn, "Back");
-	elm_object_part_content_set(ad->layout, "elm.footer.prev.btn", prev_btn);
-	evas_object_smart_callback_add(prev_btn, "clicked", _prev_chapter, (void*)ad);
-	evas_object_show(prev_btn);
-
-	nxt_btn = elm_button_add(ad->win);
-	elm_object_text_set(nxt_btn, "Next");
-	elm_object_part_content_set(ad->layout, "elm.footer.nxt.btn", nxt_btn);
-	evas_object_smart_callback_add(nxt_btn, "clicked", _nxt_chapter, (void*)ad);
-	evas_object_show(nxt_btn);
-
-	search_btn = elm_button_add(ad->win);
-	elm_object_text_set(search_btn, "Search");
-	elm_object_part_content_set(ad->layout, "elm.footer.search.btn", search_btn);
-	evas_object_smart_callback_add(search_btn, "clicked", _search_word, (void*)ad);
-	evas_object_show(search_btn);
-*/
 	ad->itc = elm_genlist_item_class_new();
 	ad->itc->item_style = "full";
 	ad->itc->func.content_get = gl_content_get_cb;
@@ -279,6 +287,7 @@ _home_screen(appdata_s *ad)
 	elm_genlist_homogeneous_set(ad->genlist, EINA_FALSE);
 	evas_object_smart_callback_add(ad->genlist, "selected", gl_selected_cb, NULL);
 	evas_object_smart_callback_add(ad->genlist, "longpressed", gl_longpressed_cb, ad);
+	evas_object_smart_callback_add(ad->genlist, "clicked,double", gl_longpressed_cb, ad);
     evas_object_event_callback_add(ad->genlist, EVAS_CALLBACK_MOUSE_DOWN, _content_mouse_down, ad);
     evas_object_event_callback_add(ad->genlist, EVAS_CALLBACK_MOUSE_UP, _content_mouse_up, ad);
 

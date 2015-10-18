@@ -135,6 +135,7 @@ _put_bookmarks(void *data, int argc, char **argv, char **azColName)
 	   verse_item->bookmark = EINA_TRUE;
    else
 	   verse_item->bookmark = EINA_FALSE;
+   return 0;
 }
 
 void

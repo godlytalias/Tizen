@@ -285,9 +285,6 @@ collections {
                rel1.to_x: "base";
                rel1.relative: 0.0 1.0;
                rel2.to: "base";
-               /*rel2.to_y: "elm.footer.part";
-               rel2.to_x: "base";
-               rel2.relative: 1.0 0.0;*/
             }
         }
         part { name: "prev_btn";
@@ -298,12 +295,16 @@ collections {
               rel1.relative: 0.0 1.0;
               rel2.to: "base";
               rel2.relative: 0.0 1.0;
-              color: 255 255 255 80;
+              color: 255 255 255 50;
               min: 50 50;
               fixed: 1 1;
               align: 0.0 1.0;
               image.normal: "left_arrow.png";
            }
+          description { state: "highlight" 0.0;
+             inherit: "default" 0.0;
+             color: 255 255 255 100;
+          }
           description { state: "clicked" 0.0;
              inherit: "default" 0.0;
              color: 255 255 255 200;
@@ -317,12 +318,16 @@ collections {
               rel1.relative: 1.0 1.0;
               rel2.to: "base";
               rel2.relative: 1.0 1.0;
-              color: 255 255 255 80;
+              color: 255 255 255 50;
               min: 50 50;
               fixed: 1 1;
               align: 1.0 1.0;
               image.normal: "right_arrow.png";
            }
+          description { state: "highlight" 0.0;
+             inherit: "default" 0.0;
+             color: 255 255 255 100;
+          }
           description { state: "clicked" 0.0;
              inherit: "default" 0.0;
              color: 255 255 255 200;
@@ -382,6 +387,21 @@ collections {
            transition: LINEAR 0.3;
            action: STATE_SET "default" 0.0;
            target: "nxt_btn";
+        }
+        program { name: "arrow_unhighlight";
+           action: STATE_SET "default" 0.0;
+           in: 0.5 0;
+           transition: LINEAR 0.3;
+           target: "nxt_btn";
+           target: "prev_btn";
+        }
+        program { name: "arrow_highlight";
+           signal: "elm,holy_bible,arrow,highlight";
+           source: "elm";
+           action: STATE_SET "highlight" 0.0;
+           target: "nxt_btn";
+           target: "prev_btn";
+           after: "arrow_unhighlight";
         }
         program { name: "loading_done";
            signal: "elm,holy_bible,loading,done";
@@ -809,7 +829,7 @@ collections {
             description { state: "default" 0.0;
                min: 480 168;
                color: 0 0 0 0;
-               fixed: 1 1;
+               fixed: 1 0;
             }
          }
          part{ name: "left_top_padding";

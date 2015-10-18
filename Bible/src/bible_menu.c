@@ -257,7 +257,7 @@ ctxpopup_item_select_cb(void *data, Evas_Object *obj, void *event_info)
 	}
 
 	Evas_Object *popup = elm_popup_add(elm_object_top_widget_get(obj));
-	elm_popup_align_set(popup, ELM_NOTIFY_ALIGN_FILL, 0.5);
+	elm_popup_align_set(popup, ELM_NOTIFY_ALIGN_FILL, 1.0);
 	elm_object_part_text_set(popup, "title,text", title_label);
 	Evas_Object *content_box = elm_box_add(popup);
 	evas_object_size_hint_weight_set(content_box, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
@@ -438,11 +438,9 @@ ctxpopup_item_select_cb(void *data, Evas_Object *obj, void *event_info)
 				sprintf(text_content, _("<align=left><font_size=20>"
 				"User can search a specific keyword and get the verses containing those keywords. "
 				"The Search screen can be opened through 'Search' option in application menu. "
-				"User can enter the keyword and press 'Go' to get the list of verses containing the entered keyword. "
-				"The search results will include verses which contain the entered keyword string. "
-				"So user can get variations of a word in the search results just by entering the root word. "
-				"If user want to get the verses which contain the exactly matching words as keyword, user have to search by adding a space before and after the keyword. "
-				"User can click on the verse to see the verses fully in a popup. "
+				"Keywords can be entered in the text field and press 'Go' to get the list of verses containing the entered keywords. "
+				"User can search with more than one keyword seperated by space and can get results which contain all the enetered keywords. "
+				"If clicked on a search result item a popup will come with the full verse. "
 				"Also if user long press on a search item, user can get option to go to the full chapter of the verse. </font_size></align>"));
 
 				label = elm_label_add(popup);
@@ -474,10 +472,11 @@ ctxpopup_item_select_cb(void *data, Evas_Object *obj, void *event_info)
 		elm_box_pack_end(content_box, label);
 
 		sprintf(text_content, _("<align=left><font_size=20>"
-		"User can long press on a verse and will get options to Bookmark a verse. "
+		"User can long press / double click on a verse and will get options to Bookmark a verse. "
 		"Bookmarked verses will be displayed in red font and with a red strip in left side of verse. "
 		"If user want to remove bookmark of a verse, user can go to the bookmarks list in menu option and "
-		"can remove bookmark by long pressing on the verse to be removed from bookmark list.</font_size></align>"));
+		"can remove bookmark by long pressing on the verse to be removed from bookmark list or by selecting "
+		"Remove Bookmark option from the menu on double clicking or long pressing the respective verse on the reading screen.</font_size></align>"));
 
 		label = elm_label_add(popup);
 		evas_object_size_hint_weight_set(label, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
@@ -508,7 +507,7 @@ ctxpopup_item_select_cb(void *data, Evas_Object *obj, void *event_info)
 		elm_box_pack_end(content_box, label);
 
 		sprintf(text_content, _("<align=left><font_size=20>"
-		"User can share or copy the desired verses by long pressing on verses. "
+		"User can share or copy the desired verses by long pressing / double click on verses. "
 		"Reference of verse also will get appended to verse automatically. "
 		"Users can copy more than one verses one by one and can get the verses from clipboard.</font_size></align>"));
 

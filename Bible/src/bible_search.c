@@ -48,12 +48,15 @@ search_gl_content_get_cb(void *data, Evas_Object *obj, const char *part)
     {
     	char reference[512];
     	Evas_Object *layout = elm_layout_add(obj);
-    	evas_object_size_hint_min_set(layout, 480, 158);
     	elm_layout_file_set(layout, verse_item->appdata->edj_path, "search_verse_layout");
+    	evas_object_size_hint_weight_set(layout, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
+    	evas_object_size_hint_align_set(layout, EVAS_HINT_FILL, EVAS_HINT_FILL);
     	sprintf(reference, "%s %d : %d", Books[verse_item->bookcount], verse_item->chaptercount, verse_item->versecount+1);
     	elm_object_part_text_set(layout, "elm.text.reference", reference);
     	elm_object_part_text_set(layout, "elm.text.verse", verse_item->verse);
     	evas_object_show(layout);
+    	if (!verse_item->appdata->calc) evas_object_smart_calculate(layout);
+    	verse_item->appdata->calc = EINA_TRUE;
     	return layout;
     }
     else return NULL;
@@ -219,6 +222,7 @@ _search_keyword(void *data,
 	char *ch;
 	char keyword_query[2048];
 	char search_query[2048];
+	ad->calc = EINA_FALSE;
 	if (keyword && (strlen(keyword) > 1024))
 	{
 		Evas_Object *toast_popup = elm_popup_add(ad->win);
@@ -243,12 +247,12 @@ _search_keyword(void *data,
 	_loading_progress(ad->win);
 	if (keyword) {
 		ch = strtok(keyword, " ");
-		sprintf(keyword_query, "e_verse LIKE '%%%s%%'", ch);
+		sprintf(keyword_query, "e_verse LIKE '%% %s %%'", ch);
 	}
 	ch = strtok(NULL, " ");
 	while (ch)
 	{
-		sprintf(keyword_query, "%s AND e_verse LIKE '%%%s%%'", keyword_query, ch);
+		sprintf(keyword_query, "%s AND e_verse LIKE '%% %s %%'", keyword_query, ch);
 		ch = strtok(NULL, " ");
 	}
 	sprintf(search_query, "SELECT Book, Chapter, Versecount, e_verse FROM eng_bible WHERE %s;", keyword_query);

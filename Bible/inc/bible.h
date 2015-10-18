@@ -32,6 +32,7 @@ typedef struct appdata{
 	Evas_Object *list1, *list2, *search_entry;
 	Elm_Genlist_Item_Class *itc, *search_itc, *bookmarks_itc;
 	Evas_Coord mouse_x, mouse_y;
+	Eina_Bool calc;
 	uint mouse_down_time;
 	int count, versecount, chaptercount;
 	int cur_chapter, cur_book;
@@ -67,7 +68,7 @@ void _get_chapter_count_query(void*, int);
 void _get_verse_count_query(void*, int,int);
 void _app_database_query(char*, int func(void*,int,char**,char**), void*);
 void _database_query(char*, int func(void*,int,char**,char**), void*);
-void _change_book(void *, Evas_Object*, char*, char*);
+void _change_book(void *, Evas_Object*, const char*, const char*);
 void _search_word(void *, Evas_Object*,void*);
 void create_ctxpopup_more_button_cb(void*, Evas_Object*, void*);
 int _get_bookcount(char*);
