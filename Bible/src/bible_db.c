@@ -147,7 +147,7 @@ _check_bookmarks(appdata_s *ad)
    while (it)
    {
 	   verse_item = (bible_verse_item*)elm_object_item_data_get(it);
-	   sprintf(query, "SELECT count(versecount) FROM bookmarks WHERE bookcount = %d AND chaptercount = %d AND versecount = %d", verse_item->bookcount, verse_item->chaptercount, verse_item->versecount + 1);
+	   sprintf(query, "SELECT count(versecount) FROM bookmarks WHERE bookcount = %d AND chaptercount = %d AND versecount = %d", verse_item->bookcount, verse_item->chaptercount, verse_item->versecount);
 	   _app_database_query(query, &_put_bookmarks, verse_item);
 	   it = elm_genlist_item_next_get(it);
    }

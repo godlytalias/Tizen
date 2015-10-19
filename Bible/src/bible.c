@@ -49,6 +49,14 @@ _prev_chapter(void *data, Evas_Object *obj, const char *emission, const char *so
 	ecore_idle_enterer_add(_get_prev_chapter, data);
 }
 
+void _show_verse(void *data, int verse)
+{
+	appdata_s *ad = (appdata_s*)data;
+	Elm_Object_Item *item = elm_genlist_nth_item_get(ad->genlist, verse); //verse count start from 0
+	if (item) elm_genlist_item_show(item, ELM_GENLIST_ITEM_SCROLLTO_TOP);
+	return;
+}
+
 static Eina_Bool
 _get_nxt_chapter(void *data)
 {
@@ -172,7 +180,7 @@ _bookmark_verse_cb(void *data, Evas_Object *obj, void *event_info)
    if (!verse_item->bookmark)
    {
 	   char query[512];
-	   sprintf(query, "INSERT INTO bookmarks VALUES(%d, %d, %d)", verse_item->bookcount, verse_item->chaptercount, verse_item->versecount + 1);
+	   sprintf(query, "INSERT INTO bookmarks VALUES(%d, %d, %d)", verse_item->bookcount, verse_item->chaptercount, verse_item->versecount);
 	   _app_database_query(query, NULL, NULL);
 	   sprintf(query, "Bookmarked %s %d : %d", Books[verse_item->bookcount], verse_item->chaptercount, verse_item->versecount + 1);
 	   elm_object_text_set(toast, query);
@@ -218,6 +226,8 @@ gl_longpressed_cb(void *data, Evas_Object *obj, void *event_info)
 	elm_ctxpopup_item_append(verse_popup, "Copy Verse", NULL, _copy_verse_cb, verse_item);
 	evas_object_smart_callback_add(verse_popup, "dismissed", eext_ctxpopup_back_cb, verse_popup);
 	evas_object_smart_callback_add(ad->win, "rotation,changed", move_more_ctxpopup, verse_popup);
+	eext_object_event_callback_add(verse_popup, EEXT_CALLBACK_BACK, eext_ctxpopup_back_cb, verse_popup);
+	eext_object_event_callback_add(verse_popup, EEXT_CALLBACK_MORE, eext_ctxpopup_back_cb, verse_popup);
 	move_more_ctxpopup(verse_popup, NULL, NULL);
 	evas_object_show(verse_popup);
 }

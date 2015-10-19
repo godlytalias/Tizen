@@ -89,7 +89,7 @@ gl_content_get_cb(void *data, Evas_Object *obj, const char *part)
     	char verse_ref[64];
     	elm_layout_file_set(layout, verse_item->appdata->edj_path, "bookmark_verse_layout");
      	elm_object_part_text_set(layout,"elm.text.verse",verse_item->verse);
-    	sprintf(verse_ref, "%s %d : %d", Books[verse_item->bookcount], verse_item->chaptercount, verse_item->versecount);
+    	sprintf(verse_ref, "%s %d : %d", Books[verse_item->bookcount], verse_item->chaptercount, verse_item->versecount + 1);
     	elm_object_part_text_set(layout, "elm.text.reference", verse_ref);
     	evas_object_show(layout);
     	evas_object_smart_calculate(layout);
@@ -109,7 +109,7 @@ _remove_bookmark(void *data, Evas_Object *obj, void *event_info)
     _check_bookmarks(verse_item->appdata);
     Evas_Object *toast = elm_popup_add(verse_item->appdata->win);
     elm_object_style_set(toast, "toast");
-    sprintf(query, "Removed %s %d : %d", Books[verse_item->bookcount], verse_item->chaptercount, verse_item->versecount);
+    sprintf(query, "Removed %s %d : %d", Books[verse_item->bookcount], verse_item->chaptercount, verse_item->versecount + 1);
     elm_object_text_set(toast, query);
     elm_popup_allow_events_set(toast, EINA_TRUE);
     evas_object_show(toast);
@@ -124,10 +124,10 @@ void
 _get_chapter(void *data, Evas_Object *obj, void *event_info)
 {
 	Evas_Object *popup = (Evas_Object*)data;
-	char query[256];
 	bible_verse_item *verse_item = (bible_verse_item*)evas_object_data_get(popup, "verse_item");
 	_query_chapter(verse_item->appdata, verse_item->bookcount, verse_item->chaptercount);
 	elm_naviframe_item_pop(verse_item->appdata->naviframe);
+	_show_verse(verse_item->appdata, verse_item->versecount);
 	_popup_del(popup, NULL, NULL);
 }
 
@@ -141,7 +141,7 @@ gl_selected_cb(void *data, Evas_Object *obj, void *event_info)
     appdata_s *ad = (appdata_s*)data;
     Evas_Object *popup = elm_popup_add(ad->win);
     elm_popup_align_set(popup, 0.5, 0.5);
-    sprintf(popup_text, "<align='center'>Go to %s %d ?</align>", Books[verse_item->bookcount], verse_item->chaptercount);
+    sprintf(popup_text, "<align='center'>Go to %s %d : %d ?</align>", Books[verse_item->bookcount], verse_item->chaptercount, verse_item->versecount + 1);
     elm_object_text_set(popup, popup_text);
     Evas_Object *button1 = elm_button_add(ad->win);
     elm_object_text_set(button1, "No");
@@ -166,7 +166,7 @@ gl_longpressed_cb(void *data, Evas_Object *obj, void *event_info)
     Evas_Object *popup = elm_popup_add(ad->win);
 	elm_genlist_item_selected_set(item, EINA_FALSE);
     elm_popup_align_set(popup, 0.5, 0.5);
-    sprintf(popup_text, "<align='center'>Remove %s %d : %d ?</align>", Books[verse_item->bookcount], verse_item->chaptercount, verse_item->versecount);
+    sprintf(popup_text, "<align='center'>Remove %s %d : %d ?</align>", Books[verse_item->bookcount], verse_item->chaptercount, verse_item->versecount + 1);
     elm_object_text_set(popup, popup_text);
     elm_object_part_text_set(popup, "title,text", "Bookmark!");
     Evas_Object *button1 = elm_button_add(ad->win);
@@ -211,7 +211,7 @@ _get_bookmarks(appdata_s *ad)
     it = elm_genlist_first_item_get(ad->bookmarks_genlist);
     while(it) {
        verse_item = elm_object_item_data_get(it);
-       sprintf(query, "SELECT e_verse FROM eng_bible WHERE Book = '%s' AND Chapter = %d AND Versecount = %d", Books[verse_item->bookcount], verse_item->chaptercount, verse_item->versecount);
+       sprintf(query, "SELECT e_verse FROM eng_bible WHERE Book = '%s' AND Chapter = %d AND Versecount = %d", Books[verse_item->bookcount], verse_item->chaptercount, verse_item->versecount + 1);
        _database_query(query, _get_verse, verse_item);
        it = elm_genlist_item_next_get(it);
     }
@@ -220,16 +220,24 @@ _get_bookmarks(appdata_s *ad)
 }
 
 static Eina_Bool
-naviframe_pop_cb(void *data, Elm_Object_Item *it)
+_genlist_free_idler(void *data)
 {
 	appdata_s *ad = (appdata_s*)data;
-	_loading_progress(ad->win);
 	if (ad->bookmarks_genlist)
 		elm_genlist_clear(ad->bookmarks_genlist);
 	ad->bookmarks_genlist = NULL;
 	if (ad->bookmarks_itc)
 		elm_genlist_item_class_free(ad->bookmarks_itc);
 	ad->bookmarks_itc = NULL;
+	return ECORE_CALLBACK_CANCEL;
+}
+
+static Eina_Bool
+naviframe_pop_cb(void *data, Elm_Object_Item *it)
+{
+	appdata_s *ad = (appdata_s*)data;
+	ecore_idler_add(_genlist_free_idler, data);
+	_loading_progress(ad->win);
 	return EINA_TRUE;
 }
 

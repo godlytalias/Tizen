@@ -126,7 +126,7 @@ _gl_longpressed_cb(void *data, Evas_Object *obj, void *event_info)
     Evas_Object *popup = elm_popup_add(ad->win);
 	elm_genlist_item_selected_set(item, EINA_FALSE);
     elm_popup_align_set(popup, 0.5, 0.5);
-    sprintf(popup_text, "<align='center'>Go to %s %d ?</align>", Books[verse_item->bookcount], verse_item->chaptercount);
+    sprintf(popup_text, "<align='center'>Go to %s %d : %d ?</align>", Books[verse_item->bookcount], verse_item->chaptercount, verse_item->versecount + 1);
     elm_object_text_set(popup, popup_text);
     Evas_Object *button1 = elm_button_add(ad->win);
     elm_object_text_set(button1, "No");
@@ -167,8 +167,10 @@ _get_search_results(void *data, int argc, char **argv, char **azColName)
 			   verse_item->bookcount = _get_bookcount(argv[i]);
 		   if (!strcmp(azColName[i], "Chapter"))
 			   verse_item->chaptercount = atoi(argv[i]);
-		   if (!strcmp(azColName[i], "Versecount"))
+		   if (!strcmp(azColName[i], "Versecount")) {
 			   verse_item->versecount = atoi(argv[i]);
+			   verse_item->versecount--;
+		   }
 		   if (!strcmp(azColName[i], "e_verse"))
 			   verse_item->verse = strdup(argv[i]);
 	   }
