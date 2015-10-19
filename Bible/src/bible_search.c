@@ -125,7 +125,7 @@ _gl_longpressed_cb(void *data, Evas_Object *obj, void *event_info)
     appdata_s *ad = (appdata_s*)data;
     Evas_Object *popup = elm_popup_add(ad->win);
 	elm_genlist_item_selected_set(item, EINA_FALSE);
-    elm_popup_align_set(popup, 0.5, 0.5);
+    elm_popup_align_set(popup, ELM_NOTIFY_ALIGN_FILL, 0.5);
     sprintf(popup_text, "<align='center'>Go to %s %d : %d ?</align>", Books[verse_item->bookcount], verse_item->chaptercount, verse_item->versecount + 1);
     elm_object_text_set(popup, popup_text);
     Evas_Object *button1 = elm_button_add(ad->win);
@@ -185,6 +185,7 @@ _bible_search_query(char* search_query, appdata_s *ad)
 	if (ad->search_result_genlist)
 		_genlist_free_idler(ad);
 	char toast[64];
+	int res_count = 0;
 	ad->search_result_genlist = elm_genlist_add(ad->naviframe);
 	evas_object_size_hint_weight_set(ad->search_result_genlist, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
 	evas_object_size_hint_align_set(ad->search_result_genlist, EVAS_HINT_FILL, EVAS_HINT_FILL);
@@ -197,17 +198,19 @@ _bible_search_query(char* search_query, appdata_s *ad)
 	ad->search_itc->func.del = search_gl_del_cb;
 	_database_query(search_query, _get_search_results, ad);
 	elm_object_part_content_set(ad->search_layout, "elm.swallow.result", ad->search_result_genlist);
-	elm_layout_signal_emit(ad->search_layout, "elm,holy_bible,bg,hide", "elm");
 	evas_object_smart_callback_add(ad->search_result_genlist, "drag,start,up", _down_arrow_show, ad);
 	evas_object_smart_callback_add(ad->search_result_genlist, "drag,start,down", _up_arrow_show, ad);
 	evas_object_smart_callback_add(ad->search_result_genlist, "longpressed", _gl_longpressed_cb, ad);
 	elm_layout_signal_callback_add(ad->search_layout, "elm,holy_bible,top", "elm", _go_top, ad);
 	elm_layout_signal_callback_add(ad->search_layout, "elm,holy_bible,bottom", "elm", _go_bottom, ad);
 	evas_object_show(ad->search_result_genlist);
-	sprintf(toast, "Got %d results", elm_genlist_items_count(ad->search_result_genlist));
+	res_count = elm_genlist_items_count(ad->search_result_genlist);
+	if (res_count > 0)
+		elm_layout_signal_emit(ad->search_layout, "elm,holy_bible,bg,hide", "elm");
+	sprintf(toast, "Got %d results", res_count);
 	Evas_Object *toastp = elm_popup_add(ad->win);
-	elm_popup_allow_events_set(toastp, EINA_TRUE);
 	elm_object_style_set(toastp, "toast");
+	elm_popup_allow_events_set(toastp, EINA_TRUE);
 	elm_object_text_set(toastp, toast);
 	evas_object_show(toastp);
 	elm_popup_timeout_set(toastp, 2.0);

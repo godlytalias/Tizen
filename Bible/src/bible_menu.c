@@ -140,7 +140,7 @@ gl_selected_cb(void *data, Evas_Object *obj, void *event_info)
     bible_verse_item *verse_item = (bible_verse_item*)elm_object_item_data_get(it);
     appdata_s *ad = (appdata_s*)data;
     Evas_Object *popup = elm_popup_add(ad->win);
-    elm_popup_align_set(popup, 0.5, 0.5);
+    elm_popup_align_set(popup, ELM_NOTIFY_ALIGN_FILL, 0.5);
     sprintf(popup_text, "<align='center'>Go to %s %d : %d ?</align>", Books[verse_item->bookcount], verse_item->chaptercount, verse_item->versecount + 1);
     elm_object_text_set(popup, popup_text);
     Evas_Object *button1 = elm_button_add(ad->win);
@@ -165,7 +165,7 @@ gl_longpressed_cb(void *data, Evas_Object *obj, void *event_info)
     appdata_s *ad = (appdata_s*)data;
     Evas_Object *popup = elm_popup_add(ad->win);
 	elm_genlist_item_selected_set(item, EINA_FALSE);
-    elm_popup_align_set(popup, 0.5, 0.5);
+    elm_popup_align_set(popup, ELM_NOTIFY_ALIGN_FILL, 0.5);
     sprintf(popup_text, "<align='center'>Remove %s %d : %d ?</align>", Books[verse_item->bookcount], verse_item->chaptercount, verse_item->versecount + 1);
     elm_object_text_set(popup, popup_text);
     elm_object_part_text_set(popup, "title,text", "Bookmark!");
@@ -260,6 +260,13 @@ ctxpopup_item_select_cb(void *data, Evas_Object *obj, void *event_info)
 	{
 	   nf_it = elm_naviframe_item_push(ad->naviframe, "Bookmarks", NULL, NULL, _get_bookmarks(ad), NULL);
 	   elm_naviframe_item_pop_cb_set(nf_it, naviframe_pop_cb, ad);
+		_popup_del(obj, NULL, NULL);
+       return;
+	}
+
+	if (!strcmp(title_label, "Select Chapter"))
+	{
+	   _change_book(data, ad->layout, NULL, NULL);
 		_popup_del(obj, NULL, NULL);
        return;
 	}
@@ -578,8 +585,9 @@ create_ctxpopup_more_button_cb(void *data, Evas_Object *obj, void *event_info)
 
 	elm_ctxpopup_item_append(ctxpopup, "Search", NULL, ctxpopup_item_select_cb, ad);
 	elm_ctxpopup_item_append(ctxpopup, "Bookmarks", NULL, ctxpopup_item_select_cb, ad);
-	elm_ctxpopup_item_append(ctxpopup, "About", NULL, ctxpopup_item_select_cb, ad);
+	elm_ctxpopup_item_append(ctxpopup, "Select Chapter", NULL, ctxpopup_item_select_cb, ad);
 	elm_ctxpopup_item_append(ctxpopup, "Help", NULL, ctxpopup_item_select_cb, ad);
+	elm_ctxpopup_item_append(ctxpopup, "About", NULL, ctxpopup_item_select_cb, ad);
 
 	elm_ctxpopup_direction_priority_set(ctxpopup, ELM_CTXPOPUP_DIRECTION_UP, ELM_CTXPOPUP_DIRECTION_UNKNOWN, ELM_CTXPOPUP_DIRECTION_UNKNOWN, ELM_CTXPOPUP_DIRECTION_UNKNOWN);
 	move_more_ctxpopup(ctxpopup, ctxpopup, NULL);

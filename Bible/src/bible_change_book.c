@@ -71,7 +71,18 @@ _book_selected(void *data, Evas_Object *obj, void *event_info)
 		sprintf(chapter, "%d", i+1);
 		item = elm_list_item_append(ad->list2, chapter, NULL, NULL, _chapter_selected, data);
 	}
-	elm_list_item_selected_set(elm_list_first_item_get(ad->list2), EINA_TRUE);
+	if (ad->nxt_book == -1) {
+		int count = 0;
+		item = elm_list_first_item_get(ad->list2);
+		while(item && (count < (ad->cur_chapter - 1)))
+		{
+			item = elm_list_item_next(item);
+			count ++;
+		}
+		if (item) elm_list_item_selected_set(item, EINA_TRUE);
+	}
+	else
+	  elm_list_item_selected_set(elm_list_first_item_get(ad->list2), EINA_TRUE);
 	elm_list_go(ad->list2);
 	evas_object_show(ad->list2);
 	item = elm_list_selected_item_get(ad->list2);

@@ -628,6 +628,32 @@ collections {
             action: STATE_SET "visible" 0.0;
             target: "up_arrow";
          }
+         program { name: "down_arrow_press";
+            signal: "mouse,down,*";
+            source: "down_arrow";
+            action: STATE_SET "show" 0.0;
+            target: "down_arrow";
+         }
+         program { name: "down_arrow_unpress";
+            signal: "mouse,up,*";
+            source: "down_arrow";
+            transition: LINEAR 0.3;
+            action: STATE_SET "visible" 0.0;
+            target: "down_arrow";
+         }
+         program { name: "up_arrow_press";
+            signal: "mouse,down,*";
+            source: "up_arrow";
+            action: STATE_SET "show" 0.0;
+            target: "up_arrow";
+         }
+         program { name: "up_arrow_unpress";
+            signal: "mouse,up,*";
+            source: "up_arrow";
+            transition: LINEAR 0.3;
+            action: STATE_SET "visible" 0.0;
+            target: "up_arrow";
+         }
          program { name: "down_arrow_hide";
             in: 1.0 0.0;
             transition: LINEAR 0.2;
