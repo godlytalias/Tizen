@@ -20,7 +20,9 @@ _clear_item_data(void *data)
 static Eina_Bool
 naviframe_pop_cb(void *data, Elm_Object_Item *it)
 {
-    _clear_item_data(data);
+	appdata_s *ad = (appdata_s*)data;
+	_get_chapter_count_query(data, ad->cur_book);
+    _clear_item_data(ad->list1);
 	return EINA_TRUE;
 }
 
@@ -29,7 +31,6 @@ _back_btn_clicked(void *data, Evas_Object *obj, void *event_info)
 {
 	appdata_s *ad = (appdata_s*)data;
 	_loading_progress(ad->win);
-	_get_chapter_count_query(ad, ad->cur_book);
 	elm_naviframe_item_pop(ad->naviframe);
 }
 
@@ -138,7 +139,7 @@ _change_book(void *data, Evas_Object *obj, const char *emission, const char *sou
 	elm_object_text_set(done_btn, "Done");
 	evas_object_show(done_btn);
 	nf_it = elm_naviframe_item_push(ad->naviframe, "Select Chapter", NULL, NULL, _select_chapter_layout(ad), NULL);
-	elm_naviframe_item_pop_cb_set(nf_it, naviframe_pop_cb, ad->list1);
+	elm_naviframe_item_pop_cb_set(nf_it, naviframe_pop_cb, ad);
 	elm_object_item_part_content_set(nf_it, "title_left_btn", back_btn);
 	elm_object_item_part_content_set(nf_it, "title_right_btn", done_btn);
 	evas_object_smart_callback_add(back_btn, "clicked", _back_btn_clicked, ad);
