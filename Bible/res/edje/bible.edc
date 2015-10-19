@@ -930,6 +930,15 @@ collections {
 
    group { name: "select_chapter_layout";
       parts {
+         part{ name: "base";
+            type: RECT;
+            scale: 1;
+            description { state: "default" 0.0;
+               min: 480 0;
+               fixed: 1 0;
+               color: 230 230 230 230;
+            }
+         }
          part { name: "elm.swallow.content1";
             type: SWALLOW;
             scale: 1;
