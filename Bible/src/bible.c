@@ -253,6 +253,7 @@ _load_chapter(void *data)
 {
 	appdata_s *ad = (appdata_s*)data;
 	_query_chapter(data, ad->cur_book, ad->cur_chapter);
+	_get_chapter_count_query(data, ad->cur_book);
 	elm_layout_signal_emit(ad->layout, "elm,holy_bible,loading,done", "elm");
 	eext_object_event_callback_add(ad->naviframe, EEXT_CALLBACK_MORE, eext_naviframe_more_cb, NULL);
 	return ECORE_CALLBACK_CANCEL;

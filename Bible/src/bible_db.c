@@ -190,7 +190,6 @@ _query_chapter(void *data, int book, int chapter)
 
 	_database_query(query, &_get_verse_list, data);
 	_check_bookmarks(ad);
-	_get_chapter_count_query(ad, ad->cur_book);
 
 	sprintf(query, "%s %d", Books[book], chapter);
 	elm_object_part_text_set(ad->layout, "elm.text.book_title", query);

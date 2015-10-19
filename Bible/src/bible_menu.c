@@ -128,6 +128,7 @@ _get_chapter(void *data, Evas_Object *obj, void *event_info)
 	_query_chapter(verse_item->appdata, verse_item->bookcount, verse_item->chaptercount);
 	elm_naviframe_item_pop(verse_item->appdata->naviframe);
 	_show_verse(verse_item->appdata, verse_item->versecount);
+	_get_chapter_count_query(verse_item->appdata, verse_item->bookcount);
 	_popup_del(popup, NULL, NULL);
 }
 
