@@ -187,6 +187,7 @@ static Evas_Object*
 _get_bookmarks(appdata_s *ad)
 {
 	char query[512];
+	int res_count;
 	Elm_Object_Item *it;
 	bible_verse_item *verse_item;
 	Evas_Object *layout = elm_layout_add(ad->naviframe);
@@ -216,6 +217,9 @@ _get_bookmarks(appdata_s *ad)
        _database_query(query, _get_verse, verse_item);
        it = elm_genlist_item_next_get(it);
     }
+    res_count = elm_genlist_items_count(ad->bookmarks_genlist);
+    if (res_count > 0)
+    	elm_layout_signal_emit(layout, "elm,holy_bible,bg,hide", "elm");
 	evas_object_show(layout);
 	return layout;
 }
@@ -284,7 +288,7 @@ ctxpopup_item_select_cb(void *data, Evas_Object *obj, void *event_info)
 		evas_object_size_hint_weight_set(label, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
 		evas_object_size_hint_align_set(label, EVAS_HINT_FILL, EVAS_HINT_FILL);
 		elm_label_line_wrap_set(label, ELM_WRAP_WORD);
-		sprintf(text_content,_("<align=center><b>HOLY BIBLE (MKJV)</b></align>"));
+		sprintf(text_content, "<align=center><b>HOLY BIBLE (MKJV)</b></align>");
 		elm_object_text_set(label, text_content);
 		evas_object_show(label);
 		elm_box_pack_end(content_box, label);
@@ -293,7 +297,7 @@ ctxpopup_item_select_cb(void *data, Evas_Object *obj, void *event_info)
 		evas_object_size_hint_weight_set(label, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
 		evas_object_size_hint_align_set(label, EVAS_HINT_FILL, EVAS_HINT_FILL);
 		elm_label_line_wrap_set(label, ELM_WRAP_WORD);
-		sprintf(text_content,_("<align=center><font_size=20>Copyright © 2015</font_size></align>"));
+		sprintf(text_content, "<align=center><font_size=20>Copyright © 2015</font_size></align>");
 		elm_object_text_set(label, text_content);
 		evas_object_show(label);
 		elm_box_pack_end(content_box, label);
@@ -302,7 +306,7 @@ ctxpopup_item_select_cb(void *data, Evas_Object *obj, void *event_info)
 		evas_object_size_hint_weight_set(label, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
 		evas_object_size_hint_align_set(label, EVAS_HINT_FILL, EVAS_HINT_FILL);
 		elm_label_line_wrap_set(label, ELM_WRAP_WORD);
-		sprintf(text_content,_("<align=center><em><font_size=20>GTA v0.3</font_size></em></align>"));
+		sprintf(text_content, "<align=center><em><font_size=20>GTA v0.3</font_size></em></align>");
 		elm_object_text_set(label, text_content);
 		evas_object_show(label);
 		elm_box_pack_end(content_box, label);
@@ -311,16 +315,16 @@ ctxpopup_item_select_cb(void *data, Evas_Object *obj, void *event_info)
 		evas_object_size_hint_weight_set(label, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
 		evas_object_size_hint_align_set(label, EVAS_HINT_FILL, EVAS_HINT_FILL);
 		elm_label_line_wrap_set(label, ELM_WRAP_WORD);
-		sprintf(text_content,_(" "));
+		sprintf(text_content, " ");
 		elm_object_text_set(label, text_content);
 		evas_object_show(label);
 		elm_box_pack_end(content_box, label);
 
-		sprintf(text_content, _("<align=center><font_size=20>"
+		sprintf(text_content, "<align=center><font_size=20>"
 	"This program is free software: you can redistribute it and/or modify "
 	"it under the terms of the GNU General Public License as published by "
 	"the Free Software Foundation, either version 3 of the License, or "
-	"(at your option) any later version.</font_size></align>"));
+	"(at your option) any later version.</font_size></align>");
 
 		label = elm_label_add(popup);
 		evas_object_size_hint_weight_set(label, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
@@ -330,11 +334,11 @@ ctxpopup_item_select_cb(void *data, Evas_Object *obj, void *event_info)
 		evas_object_show(label);
 		elm_box_pack_end(content_box, label);
 
-		sprintf(text_content, _("<align=center><font_size=20>"
+		sprintf(text_content, "<align=center><font_size=20>"
 		"This program is distributed in the hope that it will be useful, "
 		"but WITHOUT ANY WARRANTY; without even the implied warranty of "
 		"MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the "
-		"GNU General Public License for more details.</font_size></align>"));
+		"GNU General Public License for more details.</font_size></align>");
 
 		label = elm_label_add(popup);
 		evas_object_size_hint_weight_set(label, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
@@ -348,14 +352,14 @@ ctxpopup_item_select_cb(void *data, Evas_Object *obj, void *event_info)
 		evas_object_size_hint_weight_set(label, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
 		evas_object_size_hint_align_set(label, EVAS_HINT_FILL, EVAS_HINT_FILL);
 		elm_label_line_wrap_set(label, ELM_WRAP_WORD);
-		sprintf(text_content,_(" "));
+		sprintf(text_content, " ");
 		elm_object_text_set(label, text_content);
 		evas_object_show(label);
 		elm_box_pack_end(content_box, label);
 
-		sprintf(text_content, _("<align=center><font_size=15>"
+		sprintf(text_content, "<align=center><font_size=15>"
 				"Report the bugs or suggestions to "
-				"Godly T.Alias (<em>godlytalias@yahoo.co.in</em>).</font_size></align>"));
+				"Godly T.Alias (<em>godlytalias@yahoo.co.in</em>).</font_size></align>");
 
 		label = elm_label_add(popup);
 		evas_object_size_hint_weight_set(label, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
@@ -371,7 +375,7 @@ ctxpopup_item_select_cb(void *data, Evas_Object *obj, void *event_info)
 		evas_object_size_hint_weight_set(label, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
 		evas_object_size_hint_align_set(label, EVAS_HINT_FILL, EVAS_HINT_FILL);
 		elm_label_line_wrap_set(label, ELM_WRAP_WORD);
-		sprintf(text_content,_("<align=center><b>HOLY BIBLE (MKJV)</b></align>"));
+		sprintf(text_content, "<align=center><b>HOLY BIBLE (MKJV)</b></align>");
 		elm_object_text_set(label, text_content);
 		evas_object_show(label);
 		elm_box_pack_end(content_box, label);
@@ -380,7 +384,7 @@ ctxpopup_item_select_cb(void *data, Evas_Object *obj, void *event_info)
 		evas_object_size_hint_weight_set(label, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
 		evas_object_size_hint_align_set(label, EVAS_HINT_FILL, EVAS_HINT_FILL);
 		elm_label_line_wrap_set(label, ELM_WRAP_WORD);
-		sprintf(text_content,_("<align=center><font_size=20>Copyright © 2015</font_size></align>"));
+		sprintf(text_content, "<align=center><font_size=20>Copyright © 2015</font_size></align>");
 		elm_object_text_set(label, text_content);
 		evas_object_show(label);
 		elm_box_pack_end(content_box, label);
@@ -389,7 +393,7 @@ ctxpopup_item_select_cb(void *data, Evas_Object *obj, void *event_info)
 		evas_object_size_hint_weight_set(label, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
 		evas_object_size_hint_align_set(label, EVAS_HINT_FILL, EVAS_HINT_FILL);
 		elm_label_line_wrap_set(label, ELM_WRAP_WORD);
-		sprintf(text_content,_("<align=center><em><font_size=20>GTA v0.3</font_size></em></align>"));
+		sprintf(text_content, "<align=center><em><font_size=20>GTA v0.3</font_size></em></align>");
 		elm_object_text_set(label, text_content);
 		evas_object_show(label);
 		elm_box_pack_end(content_box, label);
@@ -398,13 +402,13 @@ ctxpopup_item_select_cb(void *data, Evas_Object *obj, void *event_info)
 		evas_object_size_hint_weight_set(label, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
 		evas_object_size_hint_align_set(label, EVAS_HINT_FILL, EVAS_HINT_FILL);
 		elm_label_line_wrap_set(label, ELM_WRAP_WORD);
-		sprintf(text_content,_(" "));
+		sprintf(text_content, " ");
 		elm_object_text_set(label, text_content);
 		evas_object_show(label);
 		elm_box_pack_end(content_box, label);
 
-		sprintf(text_content, _("<align=left><font_size=25>"
-	"<b>Changing chapters</b></font_size></align>"));
+		sprintf(text_content, "<align=left><font_size=25>"
+	"<b>Changing chapters</b></font_size></align>");
 
 		label = elm_label_add(popup);
 		evas_object_size_hint_weight_set(label, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
@@ -415,12 +419,12 @@ ctxpopup_item_select_cb(void *data, Evas_Object *obj, void *event_info)
 		elm_box_pack_end(content_box, label);
 
 
-		sprintf(text_content, _("<align=left><font_size=20>"
+		sprintf(text_content, "<align=left><font_size=20>"
 		"Users can change the chapters by swiping "
 		"left / right in the screen. Users can also click on the arrows in the bottom corners to go to previous or next chapters. "
 		"Also if user clicks on the header part of home screen, a new window will be opened "
 		"listing out all the Books and the chapters in the selected book. "
-		"User can select the Book and Chapter which they want.</font_size></align>"));
+		"User can select the Book and Chapter which they want.</font_size></align>");
 
 		label = elm_label_add(popup);
 		evas_object_size_hint_weight_set(label, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
@@ -434,13 +438,13 @@ ctxpopup_item_select_cb(void *data, Evas_Object *obj, void *event_info)
 		evas_object_size_hint_weight_set(label, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
 		evas_object_size_hint_align_set(label, EVAS_HINT_FILL, EVAS_HINT_FILL);
 		elm_label_line_wrap_set(label, ELM_WRAP_WORD);
-		sprintf(text_content,_(" "));
+		sprintf(text_content, " ");
 		elm_object_text_set(label, text_content);
 		evas_object_show(label);
 		elm_box_pack_end(content_box, label);
 
-		sprintf(text_content, _("<align=left><font_size=25>"
-			"<b>Searching keywords</b></font_size></align>"));
+		sprintf(text_content, "<align=left><font_size=25>"
+			"<b>Searching keywords</b></font_size></align>");
 
 				label = elm_label_add(popup);
 				evas_object_size_hint_weight_set(label, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
@@ -451,13 +455,13 @@ ctxpopup_item_select_cb(void *data, Evas_Object *obj, void *event_info)
 				elm_box_pack_end(content_box, label);
 
 
-				sprintf(text_content, _("<align=left><font_size=20>"
+				sprintf(text_content, "<align=left><font_size=20>"
 				"User can search a specific keyword and get the verses containing those keywords. "
 				"The Search screen can be opened through 'Search' option in application menu. "
 				"Keywords can be entered in the text field and press 'Go' to get the list of verses containing the entered keywords. "
 				"User can search with more than one keyword seperated by space and can get results which contain all the enetered keywords. "
 				"If clicked on a search result item a popup will come with the full verse. "
-				"Also if user long press on a search item, user can get option to go to the full chapter of the verse. </font_size></align>"));
+				"Also if user long press on a search item, user can get option to go to the full chapter of the verse. </font_size></align>");
 
 				label = elm_label_add(popup);
 				evas_object_size_hint_weight_set(label, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
@@ -471,13 +475,13 @@ ctxpopup_item_select_cb(void *data, Evas_Object *obj, void *event_info)
 				evas_object_size_hint_weight_set(label, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
 				evas_object_size_hint_align_set(label, EVAS_HINT_FILL, EVAS_HINT_FILL);
 				elm_label_line_wrap_set(label, ELM_WRAP_WORD);
-				sprintf(text_content,_(" "));
+				sprintf(text_content, " ");
 				elm_object_text_set(label, text_content);
 				evas_object_show(label);
 				elm_box_pack_end(content_box, label);
 
-		sprintf(text_content, _("<align=left><font_size=25>"
-	"<b>Bookmark verse</b></font_size></align>"));
+		sprintf(text_content, "<align=left><font_size=25>"
+	"<b>Bookmark verse</b></font_size></align>");
 
 		label = elm_label_add(popup);
 		evas_object_size_hint_weight_set(label, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
@@ -487,12 +491,12 @@ ctxpopup_item_select_cb(void *data, Evas_Object *obj, void *event_info)
 		evas_object_show(label);
 		elm_box_pack_end(content_box, label);
 
-		sprintf(text_content, _("<align=left><font_size=20>"
+		sprintf(text_content, "<align=left><font_size=20>"
 		"User can long press / double click on a verse and will get options to Bookmark a verse. "
 		"Bookmarked verses will be displayed in red font and with a red strip in left side of verse. "
 		"If user want to remove bookmark of a verse, user can go to the bookmarks list in menu option and "
 		"can remove bookmark by long pressing on the verse to be removed from bookmark list or by selecting "
-		"Remove Bookmark option from the menu on double clicking or long pressing the respective verse on the reading screen.</font_size></align>"));
+		"Remove Bookmark option from the menu on double clicking or long pressing the respective verse on the reading screen.</font_size></align>");
 
 		label = elm_label_add(popup);
 		evas_object_size_hint_weight_set(label, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
@@ -506,13 +510,13 @@ ctxpopup_item_select_cb(void *data, Evas_Object *obj, void *event_info)
 		evas_object_size_hint_weight_set(label, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
 		evas_object_size_hint_align_set(label, EVAS_HINT_FILL, EVAS_HINT_FILL);
 		elm_label_line_wrap_set(label, ELM_WRAP_WORD);
-		sprintf(text_content,_(" "));
+		sprintf(text_content, " ");
 		elm_object_text_set(label, text_content);
 		evas_object_show(label);
 		elm_box_pack_end(content_box, label);
 
-		sprintf(text_content, _("<align=left><font_size=25>"
-	"<b>Share / Copy verses</b></font_size></align>"));
+		sprintf(text_content, "<align=left><font_size=25>"
+	"<b>Share / Copy verses</b></font_size></align>");
 
 		label = elm_label_add(popup);
 		evas_object_size_hint_weight_set(label, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
@@ -522,10 +526,10 @@ ctxpopup_item_select_cb(void *data, Evas_Object *obj, void *event_info)
 		evas_object_show(label);
 		elm_box_pack_end(content_box, label);
 
-		sprintf(text_content, _("<align=left><font_size=20>"
+		sprintf(text_content, "<align=left><font_size=20>"
 		"User can share or copy the desired verses by long pressing / double click on verses. "
 		"Reference of verse also will get appended to verse automatically. "
-		"Users can copy more than one verses one by one and can get the verses from clipboard.</font_size></align>"));
+		"Users can copy more than one verses one by one and can get the verses from clipboard.</font_size></align>");
 
 		label = elm_label_add(popup);
 		evas_object_size_hint_weight_set(label, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
@@ -539,14 +543,14 @@ ctxpopup_item_select_cb(void *data, Evas_Object *obj, void *event_info)
 		evas_object_size_hint_weight_set(label, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
 		evas_object_size_hint_align_set(label, EVAS_HINT_FILL, EVAS_HINT_FILL);
 		elm_label_line_wrap_set(label, ELM_WRAP_WORD);
-		sprintf(text_content,_(" "));
+		sprintf(text_content, " ");
 		elm_object_text_set(label, text_content);
 		evas_object_show(label);
 		elm_box_pack_end(content_box, label);
 
-		sprintf(text_content, _("<align=center><font_size=15>"
+		sprintf(text_content, "<align=center><font_size=15>"
 		"Report the bugs or suggestions to "
-		"Godly T.Alias (<em>godlytalias@yahoo.co.in</em>).</font_size></align>"));
+		"Godly T.Alias (<em>godlytalias@yahoo.co.in</em>).</font_size></align>");
 
 		label = elm_label_add(popup);
 		evas_object_size_hint_weight_set(label, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);

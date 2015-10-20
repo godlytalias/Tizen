@@ -439,7 +439,7 @@ collections {
             scale: 1;
             description { state: "default" 0.0;
                rel1.to: "left_top_padding";
-               rel2.to: "divider";
+               rel2.to: "elm.content.padding.right_top";
                color: 230 230 230 230;
             }
          }
@@ -488,7 +488,7 @@ collections {
                fixed: 1 1;
                rel1.to: "elm.swallow.entry";
                rel1.relative: 1.0 0.0;
-               rel2.to_x: "elm.content.padding.right_bottom";
+               rel2.to_x: "elm.content.padding.right_top";
                rel2.to_y: "elm.swallow.entry";
                rel2.relative: 0.0 1.0;
                align: 1.0 0.0;
@@ -507,7 +507,7 @@ collections {
                align: 0.0 0.0;
             }
          }
-         part{ name: "elm.content.padding.right_bottom";
+         part{ name: "elm.content.padding.right_top";
             type: SPACER;
             scale: 1;
             description { state: "default" 0.0;
@@ -521,20 +521,6 @@ collections {
                align: 1.0 0.0;
             }
          }
-         part{ name: "divider";
-         	type: RECT;
-            scale: 1;
-         	description { state: "default" 0.0;
-         		rel1.to_x: "base";
-         		rel1.to_y: "elm.content.padding.right_bottom";
-         		rel1.relative: 0.0 1.0;
-         		rel2.to: "elm.content.padding.right_bottom";
-         		min: 0 2;
-         		fixed: 0 1;
-         		align: 0.0 1.0;
-         		color_class: "B011";
-         	}
-         }
          part{ name: "elm.swallow.result";
             type: SWALLOW;
             scale: 1;
@@ -542,7 +528,7 @@ collections {
                min: 480 0;
                fixed: 1 0;
                rel1.to_x: "base";
-               rel1.to_y: "elm.content.padding.right_bottom";
+               rel1.to_y: "elm.content.padding.right_top";
                rel1.relative: 0.0 1.0;
                rel2.to: "base";
             }         
@@ -919,11 +905,29 @@ collections {
    
   group { name: "bookmarks_layout";
       parts {
+         part { name: "content_bg";
+            type: RECT;
+            scale: 1;
+            description { state: "default" 0.0;
+               color: 230 230 230 230;
+            }
+            description { state: "hide" 0.0;
+               visible: 0;
+            }
+         }
          part { name: "elm.swallow.content";
             type: SWALLOW;
             scale: 1;
             description { state: "default" 0.0;
             }
+         }
+      }
+      programs {
+         program { name: "content_bg_hide";
+            signal: "elm,holy_bible,bg,hide";
+            source: "elm";
+            action: STATE_SET "hide" 0.0;
+            target: "content_bg";
          }
       }
    }
@@ -948,24 +952,12 @@ collections {
                rel2.relative: 0.70 1.0;
             }
          }
-         part { name: "divider";
-            type: RECT;
-            scale: 1;
-            description { state: "default" 0.0;
-               fixed: 1 0;
-               color_class: "B011";
-               rel1.to: "elm.swallow.content1";
-               rel1.relative: 1.0 0.0;
-               rel2.to: "elm.swallow.content1";
-               min: 2 0;
-            }
-         }
          part { name: "elm.swallow.content2";
             type: SWALLOW;
             scale: 1;
             description { state: "default" 0.0;
                fixed: 1 0;
-               rel1.to : "divider";
+               rel1.to : "elm.swallow.content1";
                rel1.relative: 1.0 0.0;
                rel2.relative: 1.0 1.0;
             }
