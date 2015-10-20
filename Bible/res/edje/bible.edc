@@ -69,7 +69,7 @@ collections {
    plugins {
       plugin {
          name: "touch_sound";
-         source: feedback;
+         source: "feedback";
          param: "FEEDBACK_TYPE_SOUND FEEDBACK_PATTERN_TAP";
       }
    }
