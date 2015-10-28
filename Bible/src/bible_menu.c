@@ -92,7 +92,6 @@ gl_content_get_cb(void *data, Evas_Object *obj, const char *part)
     	sprintf(verse_ref, "%s %d : %d", Books[verse_item->bookcount], verse_item->chaptercount, verse_item->versecount + 1);
     	elm_object_part_text_set(layout, "elm.text.reference", verse_ref);
     	evas_object_show(layout);
-    	evas_object_smart_calculate(layout);
     	return layout;
     }
     else return NULL;

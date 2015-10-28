@@ -32,7 +32,6 @@ typedef struct appdata{
 	Evas_Object *list1, *list2, *search_entry;
 	Elm_Genlist_Item_Class *itc, *search_itc, *bookmarks_itc;
 	Evas_Coord mouse_x, mouse_y;
-	Eina_Bool calc;
 	uint mouse_down_time;
 	int count, versecount, chaptercount;
 	int cur_chapter, cur_book;

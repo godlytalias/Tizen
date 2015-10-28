@@ -55,8 +55,6 @@ search_gl_content_get_cb(void *data, Evas_Object *obj, const char *part)
     	elm_object_part_text_set(layout, "elm.text.reference", reference);
     	elm_object_part_text_set(layout, "elm.text.verse", verse_item->verse);
     	evas_object_show(layout);
-    	if (!verse_item->appdata->calc) evas_object_smart_calculate(layout);
-    	verse_item->appdata->calc = EINA_TRUE;
     	return layout;
     }
     else return NULL;
@@ -227,7 +225,6 @@ _search_keyword(void *data,
 	char *ch;
 	char keyword_query[2048];
 	char search_query[2048];
-	ad->calc = EINA_FALSE;
 	if (keyword && (strlen(keyword) > 1024))
 	{
 		Evas_Object *toast_popup = elm_popup_add(ad->win);

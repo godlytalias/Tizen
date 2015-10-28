@@ -134,7 +134,6 @@ gl_content_get_cb(void *data, Evas_Object *obj, const char *part)
     	elm_object_part_text_set(layout, "elm.text.verse_count", verse_count);
     	if (verse_item->bookmark) elm_layout_signal_emit(layout, "elm,holy_bible,bookmark,show", "elm");
     	evas_object_show(layout);
-    	evas_object_smart_calculate(layout);
     	return layout;
     }
     else return NULL;
@@ -387,8 +386,6 @@ create_base_gui(appdata_s *ad)
 	ad->win = elm_win_util_standard_add(PACKAGE, PACKAGE);
 	elm_win_autodel_set(ad->win, EINA_TRUE);
 	app_get_resource(EDJ_FILE, ad->edj_path, (int)PATH_MAX);
-	int i = 1;
-	ecore_evas_data_set(ecore_evas_ecore_evas_get(evas_object_evas_get(ad->win)), "changeable_ui", &i);
 
 	Evas_Object *conform = elm_conformant_add(ad->win);
 	evas_object_size_hint_weight_set(conform, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
