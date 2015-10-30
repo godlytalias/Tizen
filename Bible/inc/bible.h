@@ -29,7 +29,7 @@ typedef struct appdata{
 	Evas_Object* layout, *search_layout;
 	Evas_Object* label, *naviframe;
 	Evas_Object* genlist, *search_result_genlist, *bookmarks_genlist;
-	Evas_Object *list1, *list2, *search_entry;
+	Evas_Object *list1, *list2, *search_entry, *note_entry;
 	Elm_Genlist_Item_Class *itc, *search_itc, *bookmarks_itc;
 	Evas_Coord mouse_x, mouse_y;
 	uint mouse_down_time;
@@ -57,7 +57,7 @@ struct _bible_verse_item
 {
    appdata_s *appdata;
    int bookcount, chaptercount, versecount;
-   Eina_Bool bookmark;
+   Eina_Bool bookmark, note;
    Elm_Object_Item *it;
    char *verse;
 };

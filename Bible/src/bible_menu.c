@@ -589,6 +589,7 @@ create_ctxpopup_more_button_cb(void *data, Evas_Object *obj, void *event_info)
 
 	elm_ctxpopup_item_append(ctxpopup, "Search", NULL, ctxpopup_item_select_cb, ad);
 	elm_ctxpopup_item_append(ctxpopup, "Bookmarks", NULL, ctxpopup_item_select_cb, ad);
+	elm_ctxpopup_item_append(ctxpopup, "Notes", NULL, ctxpopup_item_select_cb, ad);
 	elm_ctxpopup_item_append(ctxpopup, "Select Chapter", NULL, ctxpopup_item_select_cb, ad);
 	elm_ctxpopup_item_append(ctxpopup, "Help", NULL, ctxpopup_item_select_cb, ad);
 	elm_ctxpopup_item_append(ctxpopup, "About", NULL, ctxpopup_item_select_cb, ad);

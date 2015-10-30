@@ -279,11 +279,13 @@ _search_word(void *data,
 	elm_entry_single_line_set(ad->search_entry, EINA_TRUE);
 	elm_entry_scrollable_set(ad->search_entry, EINA_TRUE);
 	elm_object_part_text_set(ad->search_entry, "elm.guide", "Enter the keyword");
+	elm_entry_input_panel_return_key_type_set(ad->search_entry, ELM_INPUT_PANEL_RETURN_KEY_TYPE_SEARCH);
 	evas_object_show(ad->search_entry);
 	elm_object_part_content_set(ad->search_layout, "elm.swallow.entry", ad->search_entry);
 	Evas_Object *go_btn = elm_button_add(ad->search_layout);
 	elm_object_text_set(go_btn, "Go");
 	evas_object_smart_callback_add(go_btn, "clicked", _search_keyword, (void*)ad);
+	evas_object_smart_callback_add(ad->search_entry, "activated", _search_keyword, (void*)ad);
 	evas_object_show(go_btn);
 	elm_object_part_content_set(ad->search_layout, "elm.swallow.go", go_btn);
 	nf_it = elm_naviframe_item_push(ad->naviframe, "Search", NULL, NULL, ad->search_layout, NULL);

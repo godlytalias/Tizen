@@ -929,6 +929,12 @@ collections {
             action: STATE_SET "hide" 0.0;
             target: "content_bg";
          }
+         program { name: "content_bg_show";
+            signal: "elm,holy_bible,bg,show";
+            source: "elm";
+            action: STATE_SET "default" 0.0;
+            target: "content_bg";
+         }
       }
    }
 
@@ -952,12 +958,24 @@ collections {
                rel2.relative: 0.70 1.0;
             }
          }
+         part { name: "divider";
+            type: RECT;
+            scale: 1;
+            description { state: "default" 0.0;
+               fixed: 1 0;
+               color_class: "F057";
+               rel1.to: "elm.swallow.content1";
+               rel1.relative: 1.0 0.0;
+               rel2.to: "elm.swallow.content1";
+               min: 2 0;
+            }
+         }
          part { name: "elm.swallow.content2";
             type: SWALLOW;
             scale: 1;
             description { state: "default" 0.0;
                fixed: 1 0;
-               rel1.to : "elm.swallow.content1";
+               rel1.to : "divider";
                rel1.relative: 1.0 0.0;
                rel2.relative: 1.0 1.0;
             }

@@ -62,6 +62,8 @@ _load_appdata(appdata_s *ad)
 	_app_database_query(query, &_get_app_data, ad);
 	sprintf(query, "create table if not exists bookmarks(bookcount INT, chaptercount INT, versecount INT);");
 	_app_database_query(query, &_check, ad);
+	sprintf(query, "create table if not exists notes(bookcount INT, chaptercount INT, versecount INT, note VARCHAR(8192));");
+	_app_database_query(query, &_check, ad);
 }
 
 void
@@ -166,6 +168,7 @@ _get_verse_list(void *data, int argc, char **argv, char **azColName)
    verse_item->chaptercount = ad->cur_chapter;
    verse_item->appdata = ad;
    verse_item->bookmark = EINA_FALSE;
+   verse_item->note = EINA_FALSE;
    it = elm_genlist_item_append(ad->genlist, ad->itc, (void*)verse_item, NULL, ELM_GENLIST_ITEM_NONE, NULL, (void*)verse_item);
    elm_object_item_data_set(it, (void*)verse_item);
    verse_item->it = it;
