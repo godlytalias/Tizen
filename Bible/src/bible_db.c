@@ -130,6 +130,17 @@ _get_chapter_count_query(void *data, int book)
 }
 
 static int
+_put_notes(void *data, int argc, char **argv, char **azColName)
+{
+   bible_verse_item *verse_item = (bible_verse_item*)data;
+   if (argc == 1 && (atoi(argv[0]) > 0))
+	   verse_item->note = EINA_TRUE;
+   else
+	   verse_item->note = EINA_FALSE;
+   return 0;
+}
+
+static int
 _put_bookmarks(void *data, int argc, char **argv, char **azColName)
 {
    bible_verse_item *verse_item = (bible_verse_item*)data;
@@ -138,6 +149,21 @@ _put_bookmarks(void *data, int argc, char **argv, char **azColName)
    else
 	   verse_item->bookmark = EINA_FALSE;
    return 0;
+}
+
+void
+_check_notes(appdata_s *ad)
+{
+   Elm_Object_Item *it = elm_genlist_first_item_get(ad->genlist);
+   bible_verse_item *verse_item;
+   char query[512];
+   while (it)
+   {
+	   verse_item = (bible_verse_item*)elm_object_item_data_get(it);
+	   sprintf(query, "SELECT count(note) FROM notes WHERE bookcount = %d AND chaptercount = %d AND versecount = %d", verse_item->bookcount, verse_item->chaptercount, verse_item->versecount);
+	   _app_database_query(query, &_put_notes, verse_item);
+	   it = elm_genlist_item_next_get(it);
+   }
 }
 
 void
@@ -193,6 +219,7 @@ _query_chapter(void *data, int book, int chapter)
 
 	_database_query(query, &_get_verse_list, data);
 	_check_bookmarks(ad);
+	_check_notes(ad);
 
 	sprintf(query, "%s %d", Books[book], chapter);
 	elm_object_part_text_set(ad->layout, "elm.text.book_title", query);

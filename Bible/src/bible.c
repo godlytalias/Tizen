@@ -133,6 +133,7 @@ gl_content_get_cb(void *data, Evas_Object *obj, const char *part)
     	sprintf(verse_count, "%d", verse_item->versecount+1);
     	elm_object_part_text_set(layout, "elm.text.verse_count", verse_count);
     	if (verse_item->bookmark) elm_layout_signal_emit(layout, "elm,holy_bible,bookmark,show", "elm");
+    	if (verse_item->note) elm_layout_signal_emit(layout, "elm,holy_bible,note,show", "elm");
     	evas_object_show(layout);
     	return layout;
     }
@@ -225,6 +226,7 @@ _save_note_query(void *data, Evas_Object *obj, void *event_info)
 	elm_popup_timeout_set(toast, 2.0);
 	evas_object_smart_callback_add(toast, "timeout", _popup_del, toast);
 	evas_object_show(toast);
+	elm_genlist_item_update(verse_item->it);
 }
 
 static void
