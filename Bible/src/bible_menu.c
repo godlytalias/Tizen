@@ -73,7 +73,7 @@ _get_bookmarks_list(void *data, int argc, char **argv, char **azColName)
     	verse_item->versecount = atoi(argv[2]);
     }
 
-    verse_item->it = elm_genlist_item_append(ad->bookmarks_genlist, ad->bookmarks_itc, verse_item, NULL, ELM_GENLIST_ITEM_NONE, NULL, NULL);
+    verse_item->it = elm_genlist_item_append(ad->bookmarks_notes_genlist, ad->bookmarks_itc, verse_item, NULL, ELM_GENLIST_ITEM_NONE, NULL, NULL);
     elm_object_item_data_set(verse_item->it, verse_item);
 
     return 0;
@@ -95,6 +95,46 @@ gl_content_get_cb(void *data, Evas_Object *obj, const char *part)
     	return layout;
     }
     else return NULL;
+}
+
+static Evas_Object*
+note_gl_content_get_cb(void *data, Evas_Object *obj, const char *part)
+{
+    bible_verse_item *verse_item = (bible_verse_item*)data;
+    if(strcmp(part, "elm.swallow.content") == 0)
+    {
+    	Evas_Object *layout = elm_layout_add(obj);
+    	char verse_ref[64];
+    	elm_layout_file_set(layout, verse_item->appdata->edj_path, "note_item_layout");
+     	elm_object_part_text_set(layout,"elm.text.verse",verse_item->verse);
+    	sprintf(verse_ref, "%s %d : %d", Books[verse_item->bookcount], verse_item->chaptercount, verse_item->versecount + 1);
+    	elm_object_part_text_set(layout, "elm.text.reference", verse_ref);
+    	evas_object_show(layout);
+    	return layout;
+    }
+    else return NULL;
+}
+
+static void
+_remove_note(void *data, Evas_Object *obj, void *event_info)
+{
+	Evas_Object *popup = (Evas_Object*)data;
+	char query[256];
+	bible_verse_item *verse_item = (bible_verse_item*)evas_object_data_get(popup, "verse_item");
+    sprintf(query, "DELETE FROM notes WHERE bookcount = %d AND chaptercount = %d AND versecount = %d", verse_item->bookcount, verse_item->chaptercount, verse_item->versecount);
+    _app_database_query(query, NULL, NULL);
+    verse_item->note = EINA_FALSE;
+    Evas_Object *toast = elm_popup_add(verse_item->appdata->win);
+    elm_object_style_set(toast, "toast");
+    sprintf(query, "Note Deleted!");
+    elm_object_text_set(toast, query);
+    elm_popup_allow_events_set(toast, EINA_TRUE);
+    evas_object_show(toast);
+    elm_popup_timeout_set(toast, 2.0);
+    evas_object_smart_callback_add(toast, "timeout", _popup_del, toast);
+    elm_genlist_item_update(verse_item->it);
+    if (verse_item->appdata->bookmarks_notes_genlist) elm_object_item_del(verse_item->it);
+    _popup_del(popup, NULL, NULL);
 }
 
 static void
@@ -129,6 +169,64 @@ _get_chapter(void *data, Evas_Object *obj, void *event_info)
 	_show_verse(verse_item->appdata, verse_item->versecount);
 	_get_chapter_count_query(verse_item->appdata, verse_item->bookcount);
 	_popup_del(popup, NULL, NULL);
+}
+
+static void
+note_gl_selected_cb(void *data, Evas_Object *obj, void *event_info)
+{
+	Elm_Object_Item *it = (Elm_Object_Item*)event_info;
+	elm_genlist_item_selected_set(it, EINA_FALSE);
+    char popup_text[128];
+    bible_verse_item *verse_item = (bible_verse_item*)elm_object_item_data_get(it);
+    appdata_s *ad = (appdata_s*)data;
+    Evas_Object *popup = elm_popup_add(ad->win);
+    elm_popup_align_set(popup, ELM_NOTIFY_ALIGN_FILL, 1.0);
+    sprintf(popup_text, "%s %d : %d", Books[verse_item->bookcount], verse_item->chaptercount, verse_item->versecount + 1);
+    elm_object_part_text_set(popup, "title,text", popup_text);
+    elm_object_text_set(popup, verse_item->verse);
+    Evas_Object *button1 = elm_button_add(ad->win);
+    elm_object_text_set(button1, "Close");
+    evas_object_smart_callback_add(button1, "clicked", _popup_del, popup);
+    Evas_Object *button2 = elm_button_add(ad->win);
+    elm_object_text_set(button2, "Get Verse");
+    evas_object_smart_callback_add(button2, "clicked", _get_chapter, popup);
+    evas_object_data_set(popup, "verse_item", verse_item);
+    elm_object_part_content_set(popup, "button1", button1);
+    elm_object_part_content_set(popup, "button2", button2);
+    eext_object_event_callback_add(popup, EEXT_CALLBACK_BACK, eext_popup_back_cb, popup);
+    evas_object_show(popup);
+}
+
+void
+note_remove_cb(void *data, Evas_Object *obj, void *event_info)
+{
+    char popup_text[128];
+    bible_verse_item *verse_item;
+    if (data)
+    	verse_item = (bible_verse_item*)data;
+    else
+    {
+    	Elm_Object_Item *item = (Elm_Object_Item*)event_info;
+    	verse_item = (bible_verse_item*)elm_object_item_data_get(item);
+    	elm_genlist_item_selected_set(item, EINA_FALSE);
+    }
+    Evas_Object *popup = elm_popup_add(verse_item->appdata->win);
+    elm_popup_align_set(popup, ELM_NOTIFY_ALIGN_FILL, 0.5);
+    sprintf(popup_text, "<align='center'>Delete Note ?</align>");
+    elm_object_text_set(popup, popup_text);
+    sprintf(popup_text, "<align='center'>%s %d : %d</align>", Books[verse_item->bookcount], verse_item->chaptercount, verse_item->versecount + 1);
+    elm_object_part_text_set(popup, "title,text", popup_text);
+    Evas_Object *button1 = elm_button_add(verse_item->appdata->win);
+    elm_object_text_set(button1, "No");
+    evas_object_smart_callback_add(button1, "clicked", _popup_del, popup);
+    Evas_Object *button2 = elm_button_add(verse_item->appdata->win);
+    elm_object_text_set(button2, "Yes");
+    evas_object_smart_callback_add(button2, "clicked", _remove_note, popup);
+    evas_object_data_set(popup, "verse_item", verse_item);
+    elm_object_part_content_set(popup, "button1", button1);
+    elm_object_part_content_set(popup, "button2", button2);
+    eext_object_event_callback_add(popup, EEXT_CALLBACK_BACK, eext_popup_back_cb, popup);
+    evas_object_show(popup);
 }
 
 static void
@@ -193,12 +291,12 @@ _get_bookmarks(appdata_s *ad)
 	elm_layout_file_set(layout, ad->edj_path, "bookmarks_layout");
 	evas_object_size_hint_weight_set(layout, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
 	evas_object_size_hint_align_set(layout, EVAS_HINT_FILL, EVAS_HINT_FILL);
-	ad->bookmarks_genlist = elm_genlist_add(layout);
-	evas_object_size_hint_weight_set(ad->bookmarks_genlist, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
-	evas_object_size_hint_align_set(ad->bookmarks_genlist, EVAS_HINT_FILL, EVAS_HINT_FILL);
-	elm_layout_content_set(layout, "elm.swallow.content", ad->bookmarks_genlist);
-	evas_object_smart_callback_add(ad->bookmarks_genlist, "selected", gl_selected_cb, ad);
-	evas_object_smart_callback_add(ad->bookmarks_genlist, "longpressed", gl_longpressed_cb, ad);
+	ad->bookmarks_notes_genlist = elm_genlist_add(layout);
+	evas_object_size_hint_weight_set(ad->bookmarks_notes_genlist, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
+	evas_object_size_hint_align_set(ad->bookmarks_notes_genlist, EVAS_HINT_FILL, EVAS_HINT_FILL);
+	elm_layout_content_set(layout, "elm.swallow.content", ad->bookmarks_notes_genlist);
+	evas_object_smart_callback_add(ad->bookmarks_notes_genlist, "selected", gl_selected_cb, ad);
+	evas_object_smart_callback_add(ad->bookmarks_notes_genlist, "longpressed", gl_longpressed_cb, ad);
 
 	ad->bookmarks_itc = elm_genlist_item_class_new();
 	ad->bookmarks_itc->item_style = "full";
@@ -209,14 +307,55 @@ _get_bookmarks(appdata_s *ad)
 	sprintf(query, "SELECT bookcount, chaptercount, versecount FROM bookmarks");
     _app_database_query(query, _get_bookmarks_list, ad);
 
-    it = elm_genlist_first_item_get(ad->bookmarks_genlist);
+    it = elm_genlist_first_item_get(ad->bookmarks_notes_genlist);
     while(it) {
        verse_item = elm_object_item_data_get(it);
        sprintf(query, "SELECT e_verse FROM eng_bible WHERE Book = '%s' AND Chapter = %d AND Versecount = %d", Books[verse_item->bookcount], verse_item->chaptercount, verse_item->versecount + 1);
        _database_query(query, _get_verse, verse_item);
        it = elm_genlist_item_next_get(it);
     }
-    res_count = elm_genlist_items_count(ad->bookmarks_genlist);
+    res_count = elm_genlist_items_count(ad->bookmarks_notes_genlist);
+    if (res_count > 0)
+    	elm_layout_signal_emit(layout, "elm,holy_bible,bg,hide", "elm");
+	evas_object_show(layout);
+	return layout;
+}
+
+static Evas_Object*
+_get_notes(appdata_s *ad)
+{
+	char query[512];
+	int res_count;
+	Elm_Object_Item *it;
+	bible_verse_item *verse_item;
+	Evas_Object *layout = elm_layout_add(ad->naviframe);
+	elm_layout_file_set(layout, ad->edj_path, "notes_layout");
+	evas_object_size_hint_weight_set(layout, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
+	evas_object_size_hint_align_set(layout, EVAS_HINT_FILL, EVAS_HINT_FILL);
+	ad->bookmarks_notes_genlist = elm_genlist_add(layout);
+	evas_object_size_hint_weight_set(ad->bookmarks_notes_genlist, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
+	evas_object_size_hint_align_set(ad->bookmarks_notes_genlist, EVAS_HINT_FILL, EVAS_HINT_FILL);
+	elm_layout_content_set(layout, "elm.swallow.content", ad->bookmarks_notes_genlist);
+	evas_object_smart_callback_add(ad->bookmarks_notes_genlist, "selected", note_gl_selected_cb, ad);
+	evas_object_smart_callback_add(ad->bookmarks_notes_genlist, "longpressed", note_remove_cb, NULL);
+
+	ad->bookmarks_itc = elm_genlist_item_class_new();
+	ad->bookmarks_itc->item_style = "full";
+	ad->bookmarks_itc->func.content_get = note_gl_content_get_cb;
+	ad->bookmarks_itc->func.text_get = NULL;
+	ad->bookmarks_itc->func.del = gl_del_cb;
+
+	sprintf(query, "SELECT bookcount, chaptercount, versecount FROM notes");
+    _app_database_query(query, _get_bookmarks_list, ad);
+
+    it = elm_genlist_first_item_get(ad->bookmarks_notes_genlist);
+    while(it) {
+       verse_item = elm_object_item_data_get(it);
+       sprintf(query, "SELECT note FROM notes WHERE bookcount=%d and chaptercount=%d and versecount=%d;", verse_item->bookcount, verse_item->chaptercount, verse_item->versecount);
+       _app_database_query(query, _get_verse, verse_item);
+       it = elm_genlist_item_next_get(it);
+    }
+    res_count = elm_genlist_items_count(ad->bookmarks_notes_genlist);
     if (res_count > 0)
     	elm_layout_signal_emit(layout, "elm,holy_bible,bg,hide", "elm");
 	evas_object_show(layout);
@@ -227,9 +366,9 @@ static Eina_Bool
 _genlist_free_idler(void *data)
 {
 	appdata_s *ad = (appdata_s*)data;
-	if (ad->bookmarks_genlist)
-		elm_genlist_clear(ad->bookmarks_genlist);
-	ad->bookmarks_genlist = NULL;
+	if (ad->bookmarks_notes_genlist)
+		elm_genlist_clear(ad->bookmarks_notes_genlist);
+	ad->bookmarks_notes_genlist = NULL;
 	if (ad->bookmarks_itc)
 		elm_genlist_item_class_free(ad->bookmarks_itc);
 	ad->bookmarks_itc = NULL;
@@ -263,6 +402,14 @@ ctxpopup_item_select_cb(void *data, Evas_Object *obj, void *event_info)
 	if (!strcmp(title_label, "Bookmarks"))
 	{
 	   nf_it = elm_naviframe_item_push(ad->naviframe, "Bookmarks", NULL, NULL, _get_bookmarks(ad), NULL);
+	   elm_naviframe_item_pop_cb_set(nf_it, naviframe_pop_cb, ad);
+		_popup_del(obj, NULL, NULL);
+       return;
+	}
+
+	if (!strcmp(title_label, "Notes"))
+	{
+	   nf_it = elm_naviframe_item_push(ad->naviframe, "Notes", NULL, NULL, _get_notes(ad), NULL);
 	   elm_naviframe_item_pop_cb_set(nf_it, naviframe_pop_cb, ad);
 		_popup_del(obj, NULL, NULL);
        return;

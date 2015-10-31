@@ -28,7 +28,7 @@ typedef struct appdata{
 	Evas_Object* win;
 	Evas_Object* layout, *search_layout;
 	Evas_Object* label, *naviframe;
-	Evas_Object* genlist, *search_result_genlist, *bookmarks_genlist;
+	Evas_Object* genlist, *search_result_genlist, *bookmarks_notes_genlist;
 	Evas_Object *list1, *list2, *search_entry, *note_entry;
 	Elm_Genlist_Item_Class *itc, *search_itc, *bookmarks_itc;
 	Evas_Coord mouse_x, mouse_y;
@@ -37,7 +37,6 @@ typedef struct appdata{
 	int cur_chapter, cur_book;
 	int nxt_chapter, nxt_book;
 	char edj_path[PATH_MAX];
-	sqlite3 *db;
 } appdata_s;
 
 
@@ -82,3 +81,4 @@ void _check_bookmarks(appdata_s *);
 void _get_chapter(void *, Evas_Object *, void *);
 void _popup_del(void *, Evas_Object *, void *);
 void _show_verse(void *, int);
+void note_remove_cb(void *, Evas_Object *, void *);

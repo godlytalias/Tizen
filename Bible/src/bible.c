@@ -1,13 +1,9 @@
 #include <tizen.h>
-#include <sqlite3.h>
 #include "bible.h"
 
 static void
 win_delete_request_cb(void *data, Evas_Object *obj, void *event_info)
 {
-	appdata_s *ad = (appdata_s*)data;
-	elm_genlist_item_class_free(ad->itc);
-	sqlite3_shutdown();
 	ui_app_exit();
 }
 
@@ -211,10 +207,24 @@ _share_verse_cb(void *data, Evas_Object *obj, void *event_info)
 static void
 _save_note_query(void *data, Evas_Object *obj, void *event_info)
 {
-	char query[256];
+	char query[8220];
 	bible_verse_item *verse_item = (bible_verse_item*)data;
 	verse_item->note = EINA_TRUE;
 	const char *note = elm_entry_entry_get(verse_item->appdata->note_entry);
+	if (strlen(note) == 0 || strlen(note) > 8192)
+	{
+		Evas_Object *toast = elm_popup_add(verse_item->appdata->naviframe);
+		elm_object_style_set(toast, "toast");
+		if (strlen(note) == 0)
+			elm_object_text_set(toast, "Nothing to save!");
+		else
+			elm_object_text_set(toast, "Note is too large :(");
+		elm_popup_allow_events_set(toast, EINA_TRUE);
+		elm_popup_timeout_set(toast, 2.0);
+		evas_object_smart_callback_add(toast, "timeout", _popup_del, toast);
+		evas_object_show(toast);
+		return;
+	}
 	sprintf(query, "delete from notes where bookcount=%d and chaptercount=%d and versecount=%d;", verse_item->bookcount, verse_item->chaptercount, verse_item->versecount);
 	_app_database_query(query, NULL, NULL);
 	sprintf(query, "insert into notes VALUES(%d, %d, %d, '%s');", verse_item->bookcount, verse_item->chaptercount, verse_item->versecount, note);
@@ -285,6 +295,12 @@ _add_note_cb(void *data, Evas_Object *obj, void *event_info)
 	   elm_object_text_set(edit_btn, "Edit");
 	   elm_object_part_content_set(note_popup, "button2", edit_btn);
 	   evas_object_smart_callback_add(edit_btn, "clicked", _edit_note_cb, verse_item);
+	   Evas_Object *del_btn = elm_button_add(note_popup);
+	   elm_object_text_set(del_btn, "Delete");
+	   elm_object_part_content_set(note_popup, "button3", del_btn);
+	   evas_object_data_set(note_popup, "verse_item", verse_item);
+	   evas_object_smart_callback_add(del_btn, "clicked", note_remove_cb, verse_item);
+	   evas_object_smart_callback_add(del_btn, "clicked", _popup_del, note_popup);
    }
    Evas_Object *close = elm_button_add(note_popup);
    elm_object_text_set(close, "Close");
@@ -413,7 +429,7 @@ naviframe_pop_cb(void *data, Elm_Object_Item *it)
 	ad->itc = NULL;
 	_loading_progress_hide(popup);
 	ui_app_exit();
-	return EINA_TRUE;
+	return EINA_FALSE;
 }
 
 void

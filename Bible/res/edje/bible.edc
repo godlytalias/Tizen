@@ -38,6 +38,15 @@ collections {
          tag: "tab" "\t";
       }
       style {
+         name: "note_style";
+         base: "font=Tizen:style=Regular align=left font_size=25 color=#000000 wrap=mixed ellipsis=1.0";
+         tag: "br" "\n";
+         tag: "ps" "ps";
+         tag: "hilight" "+ font_weight=Bold";
+         tag: "b" "+ font_weight=Bold";
+         tag: "tab" "\t";
+      }
+      style {
          name: "verse_style";
          base: "font=Tizen:style=Regular align=left font_size=25 color=#000000 wrap=mixed ellipsis=1.0";
          tag: "br" "\n";
@@ -875,6 +884,29 @@ collections {
      }
    }
    
+   group { name: "note_item_layout";
+      inherit: "bookmark_verse_layout";
+      parts{
+         part{ name: "elm.text.verse";
+            type: TEXTBLOCK;
+            scale: 1;
+            description { state: "default" 0.0;
+               rel1.to_y: "elm.text.reference";
+               rel1.to_x: "left_top_padding";
+               rel1.relative: 1.0 1.0;
+               rel2.to: "right_bottom_padding";
+               rel2.relative: 0.0 0.0;
+               text.style: "note_style";
+               fixed: 1 0;
+               text.min: 0 1;
+               min: 416 0;
+               max: -1 200;
+               align: 0.0 0.0;
+            }         
+         }
+      }
+   }
+   
    group{ name: "search_verse_layout";
       parts {
          part{ name: "base";
@@ -946,6 +978,7 @@ collections {
    }
    
   group { name: "bookmarks_layout";
+      alias: "notes_layout";
       parts {
          part { name: "content_bg";
             type: RECT;
