@@ -123,6 +123,7 @@ _remove_note(void *data, Evas_Object *obj, void *event_info)
 	bible_verse_item *verse_item = (bible_verse_item*)evas_object_data_get(popup, "verse_item");
     sprintf(query, "DELETE FROM notes WHERE bookcount = %d AND chaptercount = %d AND versecount = %d", verse_item->bookcount, verse_item->chaptercount, verse_item->versecount);
     _app_database_query(query, NULL, NULL);
+    _check_notes(verse_item->appdata);
     verse_item->note = EINA_FALSE;
     Evas_Object *toast = elm_popup_add(verse_item->appdata->win);
     elm_object_style_set(toast, "toast");
@@ -132,7 +133,7 @@ _remove_note(void *data, Evas_Object *obj, void *event_info)
     evas_object_show(toast);
     elm_popup_timeout_set(toast, 2.0);
     evas_object_smart_callback_add(toast, "timeout", _popup_del, toast);
-    elm_genlist_item_update(verse_item->it);
+    elm_genlist_realized_items_update(verse_item->appdata->genlist);
     if (verse_item->appdata->bookmarks_notes_genlist) elm_object_item_del(verse_item->it);
     _popup_del(popup, NULL, NULL);
 }

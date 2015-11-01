@@ -207,7 +207,7 @@ _share_verse_cb(void *data, Evas_Object *obj, void *event_info)
 static void
 _save_note_query(void *data, Evas_Object *obj, void *event_info)
 {
-	char query[8220];
+	char query[8300];
 	bible_verse_item *verse_item = (bible_verse_item*)data;
 	verse_item->note = EINA_TRUE;
 	const char *note = elm_entry_entry_get(verse_item->appdata->note_entry);

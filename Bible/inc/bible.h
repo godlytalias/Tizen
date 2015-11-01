@@ -78,6 +78,7 @@ void _save_appdata(appdata_s *);
 void move_more_ctxpopup(void*, Evas_Object*, void*);
 void gl_del_cb(void*, Evas_Object*);
 void _check_bookmarks(appdata_s *);
+void _check_notes(appdata_s *);
 void _get_chapter(void *, Evas_Object *, void *);
 void _popup_del(void *, Evas_Object *, void *);
 void _show_verse(void *, int);

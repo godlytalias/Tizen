@@ -39,7 +39,7 @@ collections {
       }
       style {
          name: "note_style";
-         base: "font=Tizen:style=Regular align=left font_size=25 color=#000000 wrap=mixed ellipsis=1.0";
+         base: "font=Tizen:style=Light align=left font_size=25 color=#000000 wrap=mixed ellipsis=1.0";
          tag: "br" "\n";
          tag: "ps" "ps";
          tag: "hilight" "+ font_weight=Bold";
@@ -87,6 +87,9 @@ collections {
       images.image: "Bible.png" COMP;
       images.image: "left_arrow.png" COMP;
       images.image: "right_arrow.png" COMP;
+      script {
+         public click_mod = 0;
+      }
       parts {
          part {name: "base";
             scale: 1;
@@ -274,6 +277,7 @@ collections {
             scale: 1;
             mouse_events: 1;
             repeat_events: 0;
+            ignore_flags: ON_HOLD;
             description { state: "default" 0.0;
                color: 0 0 0 0;
                rel1.to: "elm.header.part";
@@ -347,17 +351,38 @@ collections {
         program { name: "signal_emit";
            action: SIGNAL_EMIT "elm,holy_bible,book,change" "elm";
         }
-        program { name: "change_book";
-           signal: "mouse,clicked,1";
-           source: "change_book_event";
+        program { name: "change_book_event_run";
            action: RUN_PLUGIN "touch_sound";
            after: "signal_emit";
+        }
+        program { name: "change_book_down";
+           signal: "mouse,down,*";
+           source: "change_book_event";
+           script {
+              set_int(click_mod, 1);
+           }
+        }
+        program { name: "change_book_up";
+           signal: "mouse,up,*";
+           source: "change_book_event";
+           script {
+              if (get_int(click_mod) == 1) {
+                 run_program(PROGRAM:"change_book_event_run");
+              }
+           }
+        }
+        program { name: "change_book_mouse_move";
+           signal: "mouse,move";
+           source: "change_book_event";
+           script {
+              set_int(click_mod, 0);
+           }
         }
         program { name: "next_chap_signal";
            action: SIGNAL_EMIT "elm,holy_bible,next,chapter" "elm";
         }
         program { name: "next_chap";
-           signal: "mouse,clicked,1";
+           signal: "mouse,clicked,*";
            source: "nxt_btn";
            action: RUN_PLUGIN "touch_sound";
            after: "next_chap_signal";
@@ -366,7 +391,7 @@ collections {
            action: SIGNAL_EMIT "elm,holy_bible,prev,chapter" "elm";
         }
         program { name: "prev_chap";
-           signal: "mouse,clicked,1";
+           signal: "mouse,clicked,*";
            source: "prev_btn";
            action: RUN_PLUGIN "touch_sound";
            after: "prev_chap_signal";
@@ -899,8 +924,7 @@ collections {
                text.style: "note_style";
                fixed: 1 0;
                text.min: 0 1;
-               min: 416 0;
-               max: -1 200;
+               min: 416 80;
                align: 0.0 0.0;
             }         
          }
