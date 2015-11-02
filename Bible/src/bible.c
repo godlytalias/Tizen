@@ -309,7 +309,8 @@ _add_note_cb(void *data, Evas_Object *obj, void *event_info)
    elm_popup_align_set(note_popup, ELM_NOTIFY_ALIGN_FILL, 1.0);
    eext_object_event_callback_add(note_popup, EEXT_CALLBACK_BACK, eext_popup_back_cb, NULL);
    evas_object_show(note_popup);
-   elm_object_focus_set(verse_item->appdata->note_entry, EINA_TRUE);
+   if (!verse_item->note)
+	   elm_object_focus_set(verse_item->appdata->note_entry, EINA_TRUE);
 }
 
 static void
