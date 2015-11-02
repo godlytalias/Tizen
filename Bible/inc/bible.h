@@ -26,7 +26,7 @@ typedef struct _bible_verse_item bible_verse_item;
 
 typedef struct appdata{
 	Evas_Object* win;
-	Evas_Object* layout, *search_layout;
+	Evas_Object* layout, *search_layout, *bookmark_note_layout;
 	Evas_Object* label, *naviframe;
 	Evas_Object* genlist, *search_result_genlist, *bookmarks_notes_genlist;
 	Evas_Object *list1, *list2, *search_entry, *note_entry;

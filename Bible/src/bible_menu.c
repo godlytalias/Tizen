@@ -134,7 +134,11 @@ _remove_note(void *data, Evas_Object *obj, void *event_info)
     elm_popup_timeout_set(toast, 2.0);
     evas_object_smart_callback_add(toast, "timeout", _popup_del, toast);
     elm_genlist_realized_items_update(verse_item->appdata->genlist);
-    if (verse_item->appdata->bookmarks_notes_genlist) elm_object_item_del(verse_item->it);
+    if (verse_item->appdata->bookmarks_notes_genlist) {
+        if (elm_genlist_items_count(verse_item->appdata->bookmarks_notes_genlist) == 1)
+        	elm_layout_signal_emit(verse_item->appdata->bookmark_note_layout, "elm,holy_bible,bg,show", "elm");
+    	elm_object_item_del(verse_item->it);
+    }
     _popup_del(popup, NULL, NULL);
 }
 
@@ -156,6 +160,9 @@ _remove_bookmark(void *data, Evas_Object *obj, void *event_info)
     elm_popup_timeout_set(toast, 2.0);
     evas_object_smart_callback_add(toast, "timeout", _popup_del, toast);
     elm_genlist_realized_items_update(verse_item->appdata->genlist);
+    if (elm_genlist_items_count(verse_item->appdata->bookmarks_notes_genlist) == 1) {
+    	elm_layout_signal_emit(verse_item->appdata->bookmark_note_layout, "elm,holy_bible,bg,show", "elm");
+    }
     elm_object_item_del(verse_item->it);
     _popup_del(popup, NULL, NULL);
 }
@@ -288,7 +295,9 @@ _get_bookmarks(appdata_s *ad)
 	int res_count;
 	Elm_Object_Item *it;
 	bible_verse_item *verse_item;
-	Evas_Object *layout = elm_layout_add(ad->naviframe);
+	Evas_Object *layout;
+	ad->bookmark_note_layout = elm_layout_add(ad->naviframe);
+	layout = ad->bookmark_note_layout;
 	elm_layout_file_set(layout, ad->edj_path, "bookmarks_layout");
 	evas_object_size_hint_weight_set(layout, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
 	evas_object_size_hint_align_set(layout, EVAS_HINT_FILL, EVAS_HINT_FILL);
@@ -329,7 +338,9 @@ _get_notes(appdata_s *ad)
 	int res_count;
 	Elm_Object_Item *it;
 	bible_verse_item *verse_item;
-	Evas_Object *layout = elm_layout_add(ad->naviframe);
+	Evas_Object *layout;
+	ad->bookmark_note_layout = elm_layout_add(ad->naviframe);
+	layout = ad->bookmark_note_layout;
 	elm_layout_file_set(layout, ad->edj_path, "notes_layout");
 	evas_object_size_hint_weight_set(layout, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
 	evas_object_size_hint_align_set(layout, EVAS_HINT_FILL, EVAS_HINT_FILL);
@@ -504,7 +515,7 @@ ctxpopup_item_select_cb(void *data, Evas_Object *obj, void *event_info)
 		evas_object_show(label);
 		elm_box_pack_end(content_box, label);
 
-		sprintf(text_content, "<color=#000000FF><align=center><font_size=15>"
+		sprintf(text_content, "<color=#000000FF><align=center><font_size=16>"
 				"Report the bugs or suggestions to "
 				"Godly T.Alias (<em>godlytalias@yahoo.co.in</em>).</font_size></align></color>");
 
@@ -627,6 +638,41 @@ ctxpopup_item_select_cb(void *data, Evas_Object *obj, void *event_info)
 				evas_object_show(label);
 				elm_box_pack_end(content_box, label);
 
+				sprintf(text_content, "<color=#000000FF><align=left><font_size=25>"
+					"<b>Add notes</b></font_size></align></color>");
+
+						label = elm_label_add(popup);
+						evas_object_size_hint_weight_set(label, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
+						evas_object_size_hint_align_set(label, EVAS_HINT_FILL, EVAS_HINT_FILL);
+						elm_label_line_wrap_set(label, ELM_WRAP_WORD);
+						elm_object_text_set(label, text_content);
+						evas_object_show(label);
+						elm_box_pack_end(content_box, label);
+
+
+						sprintf(text_content, "<color=#000000FF><align=left><font_size=20>"
+						"Users can add notes for each verse by selecting the add notes option on "
+						"double click / long press the verse. There is a limit of 8kB for the note of each verse. "
+						"There are options to view or edit the notes later by double clicking the verse and on opting the view note option. "
+						"Users can see all the notes added by them in the Notes option available in the application menu. </font_size></align></color>");
+
+						label = elm_label_add(popup);
+						evas_object_size_hint_weight_set(label, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
+						evas_object_size_hint_align_set(label, EVAS_HINT_FILL, EVAS_HINT_FILL);
+						elm_label_line_wrap_set(label, ELM_WRAP_WORD);
+						elm_object_text_set(label, text_content);
+						evas_object_show(label);
+						elm_box_pack_end(content_box, label);
+
+						label = elm_label_add(popup);
+						evas_object_size_hint_weight_set(label, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
+						evas_object_size_hint_align_set(label, EVAS_HINT_FILL, EVAS_HINT_FILL);
+						elm_label_line_wrap_set(label, ELM_WRAP_WORD);
+						sprintf(text_content, " ");
+						elm_object_text_set(label, text_content);
+						evas_object_show(label);
+						elm_box_pack_end(content_box, label);
+
 		sprintf(text_content, "<color=#000000FF><align=left><font_size=25>"
 	"<b>Bookmark verse</b></font_size></align></color>");
 
@@ -695,7 +741,7 @@ ctxpopup_item_select_cb(void *data, Evas_Object *obj, void *event_info)
 		evas_object_show(label);
 		elm_box_pack_end(content_box, label);
 
-		sprintf(text_content, "<color=#000000FF><align=center><font_size=15>"
+		sprintf(text_content, "<color=#000000FF><align=center><font_size=16>"
 		"Report the bugs or suggestions to "
 		"Godly T.Alias (<em>godlytalias@yahoo.co.in</em>).</font_size></align></color>");
 

@@ -1009,8 +1009,10 @@ collections {
             scale: 1;
             description { state: "default" 0.0;
                color: 230 230 230 230;
+               visible: 1;
             }
             description { state: "hide" 0.0;
+               inherit: "default" 0.0;
                visible: 0;
             }
          }

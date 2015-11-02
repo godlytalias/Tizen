@@ -213,6 +213,7 @@ _bible_search_query(char* search_query, appdata_s *ad)
 	evas_object_show(toastp);
 	elm_popup_timeout_set(toastp, 2.0);
 	evas_object_smart_callback_add(toastp, "timeout", eext_popup_back_cb, toastp);
+	elm_object_focus_set(ad->search_result_genlist, EINA_TRUE);
 }
 
 static void
