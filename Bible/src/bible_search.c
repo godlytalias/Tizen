@@ -12,159 +12,7 @@ _genlist_free_idler(void *data)
 	if (ad->search_itc)
 		elm_genlist_item_class_free(ad->search_itc);
 	ad->search_itc = NULL;
-	if (ad->search_grp_itc)
-		elm_genlist_item_class_free(ad->search_grp_itc);
-	ad->search_grp_itc = NULL;
 	return ECORE_CALLBACK_CANCEL;
-}
-
-static void
-btn_cb(void *data, Evas_Object *obj, void *event_info)
-{
-	Evas_Object *panel = data;
-	if (!elm_object_disabled_get(panel)) elm_panel_toggle(panel);
-}
-
-static Evas_Object*
-create_drawer_layout(Evas_Object *parent)
-{
-	Evas_Object *layout;
-	layout = elm_layout_add(parent);
-	elm_layout_theme_set(layout, "layout", "drawer", "panel");
-	evas_object_show(layout);
-
-	return layout;
-}
-
-static void
-_dropdown_item_select(void *data, Evas_Object *obj, void *event_info)
-{
-	Elm_Object_Item *item = (Elm_Object_Item*)event_info;
-	elm_object_text_set(obj, elm_object_item_text_get(item));
-}
-
-static Evas_Object*
-create_panel(appdata_s *ad)
-{
-	Evas_Object *panel, *layout, *rect;
-	int i;
-
-	/* Panel */
-	panel = elm_panel_add(ad->naviframe);
-	elm_panel_scrollable_set(panel, EINA_TRUE);
-
-	/* Default is visible, hide the content in default. */
-	elm_panel_hidden_set(panel, EINA_TRUE);
-	evas_object_show(panel);
-
-	layout = elm_layout_add(panel);
-	evas_object_size_hint_weight_set(layout, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
-	evas_object_size_hint_align_set(layout, EVAS_HINT_FILL, EVAS_HINT_FILL);
-	elm_layout_file_set(layout, ad->edj_path, "panel_layout");
-	elm_layout_text_set(layout, "elm.text.title", "Search Preferences");
-
-	Evas_Object *scroller = elm_scroller_add(panel);
-	evas_object_size_hint_weight_set(scroller, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
-	evas_object_size_hint_align_set(scroller, EVAS_HINT_FILL, EVAS_HINT_FILL);
-	evas_object_show(scroller);
-
-	Evas_Object *main_table = elm_table_add(panel);
-	evas_object_size_hint_weight_set(main_table, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
-	evas_object_size_hint_align_set(main_table, EVAS_HINT_FILL, EVAS_HINT_FILL);
-	evas_object_show(main_table);
-	elm_table_padding_set(main_table, 32, 48);
-
-	rect = evas_object_rectangle_add(evas_object_evas_get(main_table));
-	evas_object_size_hint_min_set(rect, 200, 100);
-	evas_object_color_set(rect, 0, 0, 0, 0);
-	evas_object_show(rect);
-	elm_table_pack(main_table, rect, 1, 0, 1, 1);
-
-	Evas_Object *label = elm_label_add(panel);
-	elm_object_text_set(label, "Search entire Bible");
-	evas_object_show(label);
-	elm_table_pack(main_table, label, 0, 0, 1, 1);
-
-	Evas_Object *check_entire = elm_check_add(panel);
-	elm_object_style_set(check_entire, "on&off");
-	evas_object_show(check_entire);
-	elm_table_pack(main_table, check_entire, 1, 0, 1, 1);
-
-	rect = evas_object_rectangle_add(evas_object_evas_get(main_table));
-	evas_object_size_hint_min_set(rect, 300, 2);
-	evas_object_color_set(rect, 0, 50, 50, 50);
-	evas_object_show(rect);
-	elm_table_pack(main_table, rect, 0, 1, 2, 1);
-
-	Evas_Object *label_custom = elm_label_add(panel);
-	elm_object_text_set(label_custom, "Custom search");
-	evas_object_show(label_custom);
-	elm_table_pack(main_table, label_custom, 0, 2, 1, 1);
-
-	Evas_Object *check_partial = elm_check_add(panel);
-	elm_object_style_set(check_partial, "on&off");
-	evas_object_show(check_partial);
-	elm_table_pack(main_table, check_partial, 1, 2, 1, 1);
-
-	Evas_Object *label_from = elm_label_add(panel);
-	elm_object_text_set(label_from, "From");
-	evas_object_show(label_from);
-	elm_table_pack(main_table, label_from, 0, 3, 1, 1);
-
-	Evas_Object *from_dropdown = elm_hoversel_add(panel);
-	elm_hoversel_hover_parent_set(from_dropdown, panel);
-	evas_object_size_hint_weight_set(from_dropdown, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
-	evas_object_size_hint_align_set(from_dropdown, EVAS_HINT_FILL, EVAS_HINT_FILL);
-	elm_object_text_set(from_dropdown, "Genesis");
-	for(i = 0; i < 66; i++)
-		elm_hoversel_item_add(from_dropdown, Books[i], NULL, 0, _dropdown_item_select, NULL);
-	evas_object_show(from_dropdown);
-	elm_table_pack(main_table, from_dropdown, 1, 3, 1, 1);
-
-	Evas_Object *label_to = elm_label_add(panel);
-	elm_object_text_set(label_to, "To");
-	evas_object_show(label_to);
-	elm_table_pack(main_table, label_to, 0, 4, 1, 1);
-
-	Evas_Object *to_dropdown = elm_hoversel_add(panel);
-	elm_hoversel_hover_parent_set(to_dropdown, panel);
-	evas_object_size_hint_weight_set(to_dropdown, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
-	evas_object_size_hint_align_set(to_dropdown, EVAS_HINT_FILL, EVAS_HINT_FILL);
-	elm_object_text_set(to_dropdown, "Genesis");
-	for(i = 0; i < 66; i++)
-		elm_hoversel_item_add(to_dropdown, Books[i], NULL, 0, _dropdown_item_select, NULL);
-	evas_object_show(to_dropdown);
-	elm_table_pack(main_table, to_dropdown, 1, 4, 1, 1);
-
-	rect = evas_object_rectangle_add(evas_object_evas_get(main_table));
-	evas_object_size_hint_min_set(rect, 300, 2);
-	evas_object_color_set(rect, 0, 50, 50, 50);
-	evas_object_show(rect);
-	elm_table_pack(main_table, rect, 0, 5, 2, 1);
-
-	Evas_Object *label_whole = elm_label_add(panel);
-	elm_object_text_set(label_whole, "Whole word");
-	evas_object_show(label_whole);
-	elm_table_pack(main_table, label_whole, 0, 6, 1, 1);
-
-	Evas_Object *check_whole = elm_check_add(panel);
-	evas_object_show(check_whole);
-	elm_table_pack(main_table, check_whole, 1, 6, 1, 1);
-
-	Evas_Object *label_strict = elm_label_add(panel);
-	elm_object_text_set(label_strict, "Strict search");
-	evas_object_show(label_strict);
-	elm_table_pack(main_table, label_strict, 0, 7, 1, 1);
-
-	Evas_Object *check_strict = elm_check_add(panel);
-	evas_object_show(check_strict);
-	elm_table_pack(main_table, check_strict, 1, 7, 1, 1);
-
-	elm_object_content_set(scroller, main_table);
-	elm_layout_content_set(layout, "elm.swallow.content", scroller);
-	elm_object_content_set(panel, layout);
-
-	return panel;
 }
 
 static void
@@ -305,19 +153,10 @@ _down_arrow_show(void *data, Evas_Object *obj, void *event_info)
    elm_layout_signal_emit(ad->search_layout, "elm,holy_bible,down,show", "elm");
 }
 
-static void
-_toggle_tree(void *data, Evas_Object *obj, void *event_info)
-{
-	Elm_Object_Item *item = (Elm_Object_Item*)event_info;
-	elm_genlist_item_expanded_set(item,
-			!elm_genlist_item_expanded_get(item));
-}
-
 static int
 _get_search_results(void *data, int argc, char **argv, char **azColName)
 {
 	   appdata_s *ad = (appdata_s*) data;
-	   Elm_Object_Item *gl_item;
 	   int i;
 	   bible_verse_item *verse_item = malloc(sizeof(bible_verse_item));
 	   for (i = 0; i < argc; i++)
@@ -334,26 +173,8 @@ _get_search_results(void *data, int argc, char **argv, char **azColName)
 			   verse_item->verse = strdup(argv[i]);
 	   }
 	   verse_item->appdata = ad;
-	   gl_item = elm_genlist_last_item_get(ad->search_result_genlist);
-	   if (gl_item)
-	   {
-		   bible_verse_item *v_item = (bible_verse_item*)elm_object_item_data_get(gl_item);
-		   if (v_item->bookcount != verse_item->bookcount)
-			   elm_genlist_item_append(ad->search_result_genlist, ad->search_grp_itc, (void*)verse_item, NULL, ELM_GENLIST_ITEM_TREE, _toggle_tree, verse_item);
-	   }
-	   else
-		   elm_genlist_item_append(ad->search_result_genlist, ad->search_grp_itc, (void*)verse_item, NULL, ELM_GENLIST_ITEM_TREE, _toggle_tree, verse_item);
-
-	   gl_item = elm_genlist_item_append(ad->search_result_genlist, ad->search_itc, (void*)verse_item, NULL, ELM_GENLIST_ITEM_NONE, _search_result_selected, (void*)verse_item);
-	   elm_object_item_data_set(gl_item, verse_item);
+	   elm_genlist_item_append(ad->search_result_genlist, ad->search_itc, (void*)verse_item, NULL, ELM_GENLIST_ITEM_NONE, _search_result_selected, (void*)verse_item);
 	   return 0;
-}
-
-static char*
-_group_index_get(void *data, Evas_Object *obj, char *part)
-{
-	bible_verse_item *verse_item = (bible_verse_item*)data;
-	return strdup(Books[verse_item->bookcount]);
 }
 
 static void
@@ -373,10 +194,6 @@ _bible_search_query(char* search_query, appdata_s *ad)
 	ad->search_itc->func.content_get = search_gl_content_get_cb;
 	ad->search_itc->func.text_get = NULL;
 	ad->search_itc->func.del = search_gl_del_cb;
-	ad->search_grp_itc = elm_genlist_item_class_new();
-	ad->search_grp_itc->item_style = "group_index/expandable";
-	ad->search_grp_itc->func.text_get = _group_index_get;
-	ad->search_grp_itc->func.del = NULL;
 	_database_query(search_query, _get_search_results, ad);
 	elm_object_part_content_set(ad->search_layout, "elm.swallow.result", ad->search_result_genlist);
 	evas_object_smart_callback_add(ad->search_result_genlist, "drag,start,up", _down_arrow_show, ad);
@@ -472,18 +289,6 @@ _search_word(void *data,
 	evas_object_smart_callback_add(ad->search_entry, "activated", _search_keyword, (void*)ad);
 	evas_object_show(go_btn);
 	elm_object_part_content_set(ad->search_layout, "elm.swallow.go", go_btn);
-	nf_it = elm_naviframe_item_push(ad->naviframe, "Search", NULL, NULL, ad->search_layout, "drawers");
+	nf_it = elm_naviframe_item_push(ad->naviframe, "Search", NULL, NULL, ad->search_layout, NULL);
 	elm_naviframe_item_pop_cb_set(nf_it, _search_navi_pop_cb, ad);
-
-	Evas_Object *playout = create_drawer_layout(ad->naviframe);
-	elm_layout_content_set(ad->search_layout, "elm.swallow.panel", playout);
-
-	Evas_Object *panel = create_panel(ad);
-	elm_panel_orient_set(panel, ELM_PANEL_ORIENT_LEFT);
-	elm_object_part_content_set(playout, "elm.swallow.left", panel);
-
-	Evas_Object *btn = elm_button_add(ad->naviframe);
-	elm_object_style_set(btn, "naviframe/drawers");
-	evas_object_smart_callback_add(btn, "clicked", btn_cb, panel);
-	elm_object_item_part_content_set(nf_it, "drawers", btn);
 }
