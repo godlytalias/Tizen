@@ -185,6 +185,7 @@ _bible_search_query(char* search_query, appdata_s *ad)
 	char toast[64];
 	int res_count = 0;
 	ad->search_result_genlist = elm_genlist_add(ad->naviframe);
+	elm_object_style_set(ad->search_result_genlist, "handler");
 	evas_object_size_hint_weight_set(ad->search_result_genlist, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
 	evas_object_size_hint_align_set(ad->search_result_genlist, EVAS_HINT_FILL, EVAS_HINT_FILL);
 	elm_genlist_select_mode_set(ad->search_result_genlist, ELM_OBJECT_SELECT_MODE_ALWAYS);
