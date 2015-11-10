@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<manifest xmlns="http://tizen.org/ns/packages" api-version="2.3" package="org.tizen.gtaholybiblemal" version="0.3.3">
+    <author email="godlytalias@yahoo.co.in" href="godlytalias.blogspot.com">Godly T Alias</author>
+    <description>This is a free Bible application released with GPL license.</description>
+    <profile name="mobile"/>
+    <ui-application appid="org.tizen.gtaholybiblemal" exec="gtaholybiblemal" multiple="false" nodisplay="false" taskmanage="true" type="capp">
+        <label>സത്യവേദ പുസ്തകം</label>
+        <icon>Bible.png</icon>
+    </ui-application>
+    <privileges>
+        <privilege>http://tizen.org/privilege/appmanager.launch</privilege>
+    </privileges>
+    <feature name="http://tizen.org/feature/screen.size.normal.480.800">true</feature>
+    <feature name="http://tizen.org/feature/screen.size.normal.540.960">true</feature>
+    <feature name="http://tizen.org/feature/screen.size.normal.720.1280">true</feature>
+</manifest>
