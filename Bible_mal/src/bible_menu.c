@@ -320,7 +320,7 @@ _get_bookmarks(appdata_s *ad)
     it = elm_genlist_first_item_get(ad->bookmarks_notes_genlist);
     while(it) {
        verse_item = elm_object_item_data_get(it);
-       sprintf(query, "SELECT e_verse FROM eng_bible WHERE Book = '%s' AND Chapter = %d AND Versecount = %d", Books[verse_item->bookcount], verse_item->chaptercount, verse_item->versecount + 1);
+       sprintf(query, "SELECT m_verse FROM bible WHERE Book = '%s' AND Chapter = %d AND Versecount = %d", Books[verse_item->bookcount], verse_item->chaptercount, verse_item->versecount + 1);
        _database_query(query, _get_verse, verse_item);
        it = elm_genlist_item_next_get(it);
     }

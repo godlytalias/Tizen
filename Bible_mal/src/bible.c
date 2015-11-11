@@ -384,7 +384,7 @@ _home_screen(appdata_s *ad)
 	elm_object_part_text_set(ad->layout, "elm.text.copyright", "Copyright © 2015 Godly T Alias");
 	elm_object_part_text_set(ad->layout, "elm.text.version", "GTA v0.3");
 	elm_object_part_text_set(ad->layout, "elm.text.apptitle", "സത്യവേദപുസ്തകം");
-	elm_object_part_text_set(ad->layout, "elm.text.loading", "Loading Database...");
+	elm_object_part_text_set(ad->layout, "elm.text.loading", "ഡാറ്റാബേസ് ലോഡ് ചെയ്യുന്നു...");
 	Evas_Object *progressbar = elm_progressbar_add(ad->layout);
 	elm_object_style_set(progressbar, "pending");
 	elm_progressbar_horizontal_set(progressbar, EINA_TRUE);
