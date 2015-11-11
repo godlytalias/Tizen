@@ -1,0 +1,1086 @@
+collections {
+   base_scale: 1.8;
+   styles {
+      style {
+         name: "title_style";
+         base: "font=Tizen:style=Regular align=center font_size=30 color=#FFFFFF wrap=mixed ellipsis=1.0";
+         tag: "br" "\n";
+         tag: "ps" "ps";
+         tag: "hilight" "+ font_weight=Bold";
+         tag: "b" "+ font_weight=Bold";
+         tag: "tab" "\t";
+      }
+      style {
+         name: "subtitle_style";
+         base: "font=Tizen:style=Light align=center font_size=20 color=#FFFFFF wrap=mixed ellipsis=1.0";
+         tag: "br" "\n";
+         tag: "ps" "ps";
+         tag: "hilight" "+ font_weight=Bold";
+         tag: "b" "+ font_weight=Bold";
+         tag: "tab" "\t";
+      }
+      style {
+         name: "main_verse_style";
+         base: "font=Tizen:style=Regular align=left font_size=25 color=#000000 wrap=mixed";
+         tag: "br" "\n";
+         tag: "ps" "ps";
+         tag: "hilight" "+ font_weight=Bold";
+         tag: "b" "+ font_weight=Bold";
+         tag: "tab" "\t";
+      }
+      style {
+         name: "bookmark_style";
+         base: "font=Tizen:style=Regular align=left font_size=25 color=#500000 wrap=mixed";
+         tag: "br" "\n";
+         tag: "ps" "ps";
+         tag: "hilight" "+ font_weight=Bold";
+         tag: "b" "+ font_weight=Bold";
+         tag: "tab" "\t";
+      }
+      style {
+         name: "note_style";
+         base: "font=Tizen:style=Light align=left font_size=25 color=#000000 wrap=mixed ellipsis=1.0";
+         tag: "br" "\n";
+         tag: "ps" "ps";
+         tag: "hilight" "+ font_weight=Bold";
+         tag: "b" "+ font_weight=Bold";
+         tag: "tab" "\t";
+      }
+      style {
+         name: "verse_style";
+         base: "font=Tizen:style=Regular align=left font_size=25 color=#000000 wrap=mixed ellipsis=1.0";
+         tag: "br" "\n";
+         tag: "ps" "ps";
+         tag: "hilight" "+ font_weight=Bold";
+         tag: "b" "+ font_weight=Bold";
+         tag: "tab" "\t";
+      }
+      style {
+         name: "verse_count_style";
+         base: "font=Tizen:style=Light align=center font_size=15 color=#000000 wrap=mixed";
+         tag: "br" "\n";
+         tag: "ps" "ps";
+         tag: "hilight" "+ font_weight=Bold";
+         tag: "b" "+ font_weight=Bold";
+         tag: "tab" "\t";
+      }
+      style {
+         name: "verse_reference_style";
+         base: "font=Tizen:style=Light align=left font_size=20 color=#000000 wrap=mixed";
+         tag: "br" "\n";
+         tag: "ps" "ps";
+         tag: "hilight" "+ font_weight=Bold";
+         tag: "b" "+ font_weight=Bold";
+         tag: "tab" "\t";
+      }
+   }
+   
+   plugins {
+      plugin {
+         name: "touch_sound";
+         source: "feedback";
+         param: "FEEDBACK_TYPE_SOUND FEEDBACK_PATTERN_TAP";
+      }
+   }
+
+   group { name: "main";
+      images.image: "Bible.png" COMP;
+      images.image: "left_arrow.png" COMP;
+      images.image: "right_arrow.png" COMP;
+      script {
+         public click_mod = 0;
+      }
+      parts {
+         part {name: "base";
+            scale: 1;
+            type: RECT;
+            description { state: "default" 0.0;
+               rel1.relative: 0.0 0.0;
+               rel2.relative: 1.0 1.0;
+               color: 0 0 0 255;
+            }
+            description { state: "loaded" 0.0;
+               inherit: "default" 0.0;
+               color: 0 0 0 0;
+            }
+         }
+         part { name: "app_icon";
+            scale: 1;
+            description { state: "default" 0.0;
+               rel1.to: "base";
+               rel2.to: "base";
+               min: 100 100;
+               max: 100 100;
+               image.normal: "Bible.png";
+            }
+            description { state: "loaded" 0.0;
+               inherit: "default" 0.0;
+               visible: 0;
+            }
+         }
+         part { name: "elm.text.copyright";
+            scale: 1;
+            type: TEXTBLOCK;
+            description { state: "default" 0.0;
+               min: 480 40;
+               fixed: 1 1;
+               rel1.to: "app_icon";
+               rel2.to: "app_icon";
+               rel2.relative: 1.0 0.0;
+               align: 0.5 1.0;
+               text.min: 1 1;
+               text.style: "subtitle_style";
+            }
+            description { state: "loaded" 0.0;
+               inherit: "default" 0.0;
+               visible: 0;
+            }
+         }
+         part { name: "elm.text.version";
+            scale: 1;
+            type: TEXTBLOCK;
+            description { state: "default" 0.0;
+               min: 480 40;
+               fixed: 1 1;
+               rel1.to: "elm.text.copyright";
+               rel2.to: "elm.text.copyright";
+               rel2.relative: 1.0 0.0;
+               align: 0.5 1.0;
+               text.min: 1 1;
+               text.style: "subtitle_style";
+            }
+            description { state: "loaded" 0.0;
+               inherit: "default" 0.0;
+               visible: 0;
+            }
+         }
+         part { name: "elm.text.apptitle";
+            scale: 1;
+            type: TEXTBLOCK;
+            description { state: "default" 0.0;
+               min: 480 80;
+               fixed: 1 1;
+               rel1.to: "elm.text.version";
+               rel2.to: "elm.text.version";
+               rel2.relative: 1.0 0.0;
+               align: 0.5 1.0;
+               text.min: 1 1;
+               text.style: "title_style";
+            }
+            description { state: "loaded" 0.0;
+               inherit: "default" 0.0;
+               visible: 0;
+            }
+         }
+         part { name: "elm.swallow.progressbar";
+            scale: 1;
+            type: SWALLOW;
+            description { state: "default" 0.0;
+               min: 480 80;
+               fixed: 1 1;
+               rel1.to_y: "app_icon";
+               rel1.to_x: "base";
+               rel1.relative: 0.0 1.0;
+               rel2.to_y: "app_icon";
+               rel2.to_x: "base";
+               align: 0.5 0.0;
+            }
+            description { state: "loaded" 0.0;
+               inherit: "default" 0.0;
+               visible: 0;
+            }
+         }
+         part { name: "elm.text.loading";
+            scale: 1;
+            type: TEXTBLOCK;
+            description { state: "default" 0.0;
+               min: 480 40;
+               fixed: 1 1;
+               rel1.to: "elm.swallow.progressbar";
+               rel1.relative: 0.0 1.0;
+               rel2.to: "elm.swallow.progressbar";
+               text.min: 1 1;
+               align: 0.5 0.0;
+               text.style: "subtitle_style";
+            }
+            description { state: "loaded" 0.0;
+               inherit: "default" 0.0;
+               visible: 0;
+            }
+         }
+         part { name: "clipper";
+            type: RECT;
+            scale: 1;
+            description { state: "default" 0.0;
+               rel1.to: "base";
+               rel2.to: "base";
+               color: 0 0 0 0;
+            }
+            description { state: "loaded" 0.0;
+               inherit: "default" 0.0;
+               color: 255 255 255 255;
+            }
+         }
+         part { name: "elm.header.part";
+            type: RECT;
+            scale: 1;
+            description { state: "default" 0.0;
+              min: 480 104;
+              fixed: 1 0;
+              rel1.to: "base";
+              rel2.to: "base";
+              color: 0 0 0 230;
+              align: 0.5 0.0;
+              rel2.relative: 1.0 0.0;
+            }
+         }
+         part { name: "elm.header.left_top.padding";
+            type: SPACER;
+            scale: 1;
+            description { state: "default" 0.0;
+              min: 32 32;
+              fixed: 1 1;
+              rel1.to: "elm.header.part";
+              rel2.to: "elm.header.part";
+              rel2.relative: 0.0 0.0;
+              align: 0.0 0.0;
+            }
+         }
+         part { name: "elm.header.right_bottom.padding";
+            type: SPACER;
+            scale: 1;
+            description { state: "default" 0.0;
+              min: 32 32;
+              fixed: 1 1;
+              rel1.to: "elm.header.part";
+              rel1.relative: 1.0 1.0;
+              rel2.to: "elm.header.part";
+              rel2.relative: 1.0 1.0;
+              align: 1.0 1.0;
+            }
+         }
+         part { name: "elm.text.book_title";
+            type: TEXTBLOCK;
+            scale: 1;
+            clip_to: "clipper";
+            description { state: "default" 0.0;
+               text.style: "title_style";
+               text.min: 1 1;
+               rel1.to: "elm.header.left_top.padding";
+               rel1.relative: 1.0 0.0;
+               rel2.to: "elm.header.right_bottom.padding";
+               rel2.relative: 0.0 1.0;
+            }
+         }
+         part { name: "change_book_event";
+            type: RECT;
+            scale: 1;
+            mouse_events: 1;
+            repeat_events: 0;
+            ignore_flags: ON_HOLD;
+            description { state: "default" 0.0;
+               color: 0 0 0 0;
+               rel1.to: "elm.header.part";
+               rel2.to: "elm.header.part";
+               visible: 0;
+            }
+            description { state: "loaded" 0.0;
+               inherit: "default" 0.0;
+               visible: 1;
+            }
+         }
+         part {name: "elm.swallow.content";
+            type: SWALLOW;
+            scale: 1;
+            clip_to: "clipper";
+            description { state: "default" 0.0;
+               rel1.to_y: "elm.header.part";
+               rel1.to_x: "base";
+               rel1.relative: 0.0 1.0;
+               rel2.to: "base";
+            }
+        }
+        part { name: "prev_btn";
+           scale: 1;
+           clip_to: "clipper";
+           description { state: "default" 0.0;
+              rel1.to: "base";
+              rel1.relative: 0.0 1.0;
+              rel2.to: "base";
+              rel2.relative: 0.0 1.0;
+              color: 255 255 255 50;
+              min: 50 50;
+              fixed: 1 1;
+              align: 0.0 1.0;
+              image.normal: "left_arrow.png";
+           }
+          description { state: "highlight" 0.0;
+             inherit: "default" 0.0;
+             color: 255 255 255 100;
+          }
+          description { state: "clicked" 0.0;
+             inherit: "default" 0.0;
+             color: 255 255 255 200;
+          }
+        }
+        part { name: "nxt_btn";
+           scale: 1;
+           clip_to: "clipper";
+           description { state: "default" 0.0;
+              rel1.to: "base";
+              rel1.relative: 1.0 1.0;
+              rel2.to: "base";
+              rel2.relative: 1.0 1.0;
+              color: 255 255 255 50;
+              min: 50 50;
+              fixed: 1 1;
+              align: 1.0 1.0;
+              image.normal: "right_arrow.png";
+           }
+          description { state: "highlight" 0.0;
+             inherit: "default" 0.0;
+             color: 255 255 255 100;
+          }
+          description { state: "clicked" 0.0;
+             inherit: "default" 0.0;
+             color: 255 255 255 200;
+          }
+        }
+     }
+     programs {
+        program { name: "signal_emit";
+           action: SIGNAL_EMIT "elm,holy_bible,book,change" "elm";
+        }
+        program { name: "change_book_event_run";
+           action: RUN_PLUGIN "touch_sound";
+           after: "signal_emit";
+        }
+        program { name: "change_book_down";
+           signal: "mouse,down,*";
+           source: "change_book_event";
+           script {
+              set_int(click_mod, 1);
+           }
+        }
+        program { name: "change_book_up";
+           signal: "mouse,up,*";
+           source: "change_book_event";
+           script {
+              if (get_int(click_mod) == 1) {
+                 run_program(PROGRAM:"change_book_event_run");
+              }
+           }
+        }
+        program { name: "change_book_mouse_move";
+           signal: "mouse,move";
+           source: "change_book_event";
+           script {
+              set_int(click_mod, 0);
+           }
+        }
+        program { name: "next_chap_signal";
+           action: SIGNAL_EMIT "elm,holy_bible,next,chapter" "elm";
+        }
+        program { name: "next_chap";
+           signal: "mouse,clicked,*";
+           source: "nxt_btn";
+           action: RUN_PLUGIN "touch_sound";
+           after: "next_chap_signal";
+        }
+        program { name: "prev_chap_signal";
+           action: SIGNAL_EMIT "elm,holy_bible,prev,chapter" "elm";
+        }
+        program { name: "prev_chap";
+           signal: "mouse,clicked,*";
+           source: "prev_btn";
+           action: RUN_PLUGIN "touch_sound";
+           after: "prev_chap_signal";
+        }
+        program { name: "prev_btn_pressed";
+           signal: "mouse,down,*";
+           source: "prev_btn";
+           action: STATE_SET "clicked" 0.0;
+           target: "prev_btn";
+        }
+        program { name: "prev_btn_released";
+           signal: "mouse,up,*";
+           source: "prev_btn";
+           transition: LINEAR 0.3;
+           action: STATE_SET "default" 0.0;
+           target: "prev_btn";
+        }
+        program { name: "nxt_btn_pressed";
+           signal: "mouse,down,*";
+           source: "nxt_btn";
+           action: STATE_SET "clicked" 0.0;
+           target: "nxt_btn";
+        }
+        program { name: "nxt_btn_released";
+           signal: "mouse,up,*";
+           source: "nxt_btn";
+           transition: LINEAR 0.3;
+           action: STATE_SET "default" 0.0;
+           target: "nxt_btn";
+        }
+        program { name: "arrow_unhighlight";
+           action: STATE_SET "default" 0.0;
+           in: 0.5 0;
+           transition: LINEAR 0.3;
+           target: "nxt_btn";
+           target: "prev_btn";
+        }
+        program { name: "arrow_highlight";
+           signal: "elm,holy_bible,arrow,highlight";
+           source: "elm";
+           action: STATE_SET "highlight" 0.0;
+           target: "nxt_btn";
+           target: "prev_btn";
+           after: "arrow_unhighlight";
+        }
+        program { name: "loading_done";
+           signal: "elm,holy_bible,loading,done";
+           source: "elm";
+           in: 1.0 0.0;
+           transition: LINEAR 0.3;
+           action: STATE_SET "loaded" 0.0;
+           target: "base";
+           target: "clipper";
+           target: "change_book_event";
+           target: "app_icon";
+           target: "elm.text.apptitle";
+           target: "elm.text.version";
+           target: "elm.text.copyright";
+           target: "elm.text.loading";
+           target: "elm.swallow.progressbar";
+        }
+     }
+   }
+
+   group{ name: "search_layout";
+   images.image: "up_arrow.png" COMP;
+   images.image: "down_arrow.png" COMP;
+      parts {
+         part{ name: "base";
+            type: SPACER;
+            scale: 1;
+            description { state: "default" 0.0;
+               min: 480 64;
+               fixed: 1 0;
+            }
+         }
+         part { name: "header_bg";
+            type: RECT;
+            scale: 1;
+            description { state: "default" 0.0;
+               rel1.to: "left_top_padding";
+               rel2.to: "elm.content.padding.right_top";
+               color: 230 230 230 230;
+            }
+         }
+         part { name: "content_bg";
+            type: RECT;
+            scale: 1;
+            description { state: "default" 0.0;
+               rel1.to: "elm.swallow.result";
+               rel2.to: "elm.swallow.result";
+               color: 230 230 230 230;
+            }
+            description { state: "hide" 0.0;
+               visible: 0;
+            }
+         }
+         part{ name: "left_top_padding";
+            type: SPACER;
+            scale: 1;
+            description { state: "default" 0.0;
+               min: 32 32;
+               fixed: 1 1;
+               rel1.to: "base";
+               rel2.to: "base";
+               rel2.relative: 0.0 0.0;
+               align: 0.0 0.0;
+            }
+         }
+         part { name: "elm.swallow.entry";
+            type: SWALLOW;
+            scale: 1;
+            description { state: "default" 0.0;
+               rel1.to: "left_top_padding";
+               rel1.relative: 1.0 1.0;
+               rel2.to: "left_top_padding";
+               min: 300 80;
+               fixed: 1 1;
+               align: 0.0 0.0;
+            }
+         }
+         part { name: "elm.swallow.go";
+            type: SWALLOW;
+            scale: 1;
+            description { state: "default" 0.0;
+               min: 120 80;
+               max: 120 80;
+               fixed: 1 1;
+               rel1.to: "elm.swallow.entry";
+               rel1.relative: 1.0 0.0;
+               rel2.to_x: "elm.content.padding.right_top";
+               rel2.to_y: "elm.swallow.entry";
+               rel2.relative: 0.0 1.0;
+               align: 1.0 0.0;
+            }
+         }
+         part{ name: "elm.content.padding.left_top";
+            type: SPACER;
+            scale: 1;
+            description { state: "default" 0.0;
+               rel1.to: "elm.swallow.entry";
+               rel1.relative: 0.0 1.0;
+               rel2.to: "elm.swallow.entry";
+               rel2.relative: 0.0 1.0;
+               min: 32 32;
+               fixed: 1 1;
+               align: 0.0 0.0;
+            }
+         }
+         part{ name: "elm.content.padding.right_top";
+            type: SPACER;
+            scale: 1;
+            description { state: "default" 0.0;
+               rel1.to_x: "base";
+               rel1.to_y: "elm.swallow.entry";
+               rel1.relative: 1.0 1.0;
+               rel2.to_x: "base";
+               rel2.to_y: "elm.swallow.entry";
+               min: 32 32;
+               fixed: 1 1;
+               align: 1.0 0.0;
+            }
+         }
+         part{ name: "elm.swallow.result";
+            type: SWALLOW;
+            scale: 1;
+            description { state: "default" 0.0;
+               min: 480 0;
+               fixed: 1 0;
+               rel1.to_x: "base";
+               rel1.to_y: "elm.content.padding.right_top";
+               rel1.relative: 0.0 1.0;
+               rel2.to: "base";
+            }         
+         }
+         part { name: "down_arrow";
+            scale: 1;
+            description { state: "default" 0.0;
+               min: 50 50;
+               fixed: 1 1;
+               rel1.to: "elm.swallow.result";
+               rel1.relative: 1.0 1.0;
+               rel2.to: "elm.swallow.result";
+               align: 1.0 1.0;
+               image.normal: "down_arrow.png";
+               color: 255 255 255 50;
+               visible: 0;
+            }
+            description { state: "visible" 0.0;
+               inherit: "default" 0.0;
+               visible: 1;
+            }
+            description { state: "show" 0.0;
+               inherit: "visible" 0.0;
+               color: 255 255 255 200;
+            }
+         }
+         part { name: "up_arrow";
+            scale: 1;
+            description { state: "default" 0.0;
+               min: 50 50;
+               fixed: 1 1;
+               rel1.to: "elm.swallow.result";
+               rel1.relative: 1.0 0.0;
+               rel2.to: "elm.swallow.result";
+               rel2.relative: 1.0 0.0;
+               align: 1.0 0.0;
+               image.normal: "up_arrow.png";
+               color: 255 255 255 50;
+               visible: 0;
+            }
+            description { state: "visible" 0.0;
+               inherit: "default" 0.0;
+               visible: 1;
+            }
+            description { state: "show" 0.0;
+               inherit: "visible" 0.0;
+               color: 255 255 255 200;
+            }
+         }
+      }
+      
+      programs {
+         program { name: "click_sound";
+            action: RUN_PLUGIN "touch_sound";
+         }
+         program { name: "go_bottom";
+            signal: "mouse,clicked,1";
+            source: "down_arrow";
+            action: SIGNAL_EMIT "elm,holy_bible,bottom" "elm";
+            after: "click_sound";
+         }
+         program { name: "go_top";
+            signal: "mouse,clicked,1";
+            source: "up_arrow";
+            action: SIGNAL_EMIT "elm,holy_bible,top" "elm";
+            after: "click_sound";
+         }
+         program { name: "arrow_visible";
+            action: STATE_SET "visible" 0.0;
+            target: "up_arrow";
+            target: "down_arrow";
+         }
+         program { name: "content_bg_hide";
+            signal: "elm,holy_bible,bg,hide";
+            source: "elm";
+            action: STATE_SET "hide" 0.0;
+            target: "content_bg";
+            after: "arrow_visible";
+         }
+         program { name: "up_arrow_hide";
+            in: 1.0 0.0;
+            transition: LINEAR 0.2;
+            action: STATE_SET "visible" 0.0;
+            target: "up_arrow";
+         }
+         program { name: "down_arrow_press";
+            signal: "mouse,down,*";
+            source: "down_arrow";
+            action: STATE_SET "show" 0.0;
+            target: "down_arrow";
+         }
+         program { name: "down_arrow_unpress";
+            signal: "mouse,up,*";
+            source: "down_arrow";
+            transition: LINEAR 0.3;
+            action: STATE_SET "visible" 0.0;
+            target: "down_arrow";
+         }
+         program { name: "up_arrow_press";
+            signal: "mouse,down,*";
+            source: "up_arrow";
+            action: STATE_SET "show" 0.0;
+            target: "up_arrow";
+         }
+         program { name: "up_arrow_unpress";
+            signal: "mouse,up,*";
+            source: "up_arrow";
+            transition: LINEAR 0.3;
+            action: STATE_SET "visible" 0.0;
+            target: "up_arrow";
+         }
+         program { name: "down_arrow_hide";
+            in: 1.0 0.0;
+            transition: LINEAR 0.2;
+            action: STATE_SET "visible" 0.0;
+            target: "down_arrow";
+         }
+         program { name: "up_arrow_show";
+            signal: "elm,holy_bible,up,show";
+            source: "elm";
+            transition: LINEAR 0.2;
+            action: STATE_SET "show" 0.0;
+            target: "up_arrow";
+            after: "up_arrow_hide";
+         }
+         program { name: "down_arrow_show";
+            signal: "elm,holy_bible,down,show";
+            source: "elm";
+            transition: LINEAR 0.2;
+            action: STATE_SET "show" 0.0;
+            target: "down_arrow";
+            after: "down_arrow_hide";
+         }
+      }
+   }
+   
+   group{ name: "verse_layout";
+      parts {
+         part{ name: "base";
+            scale: 1;
+            type: SPACER;
+            description { state: "default" 0.0;
+               min: 480 64;
+               fixed: 1 0;
+            }
+         }
+         part{ name: "left_top_padding";
+            scale: 1;
+            type: SPACER;
+            description { state: "default" 0.0;
+               min: 32 32;
+               fixed: 1 1;
+               rel1.to: "base";
+               rel2.to: "base";
+               rel2.relative: 0.0 0.0;
+               align: 0.0 0.0;
+            }
+         }
+         part{ name: "right_bottom_padding";
+            scale: 1;
+            type: SPACER;
+            description { state: "default" 0.0;
+               min: 32 32;
+               fixed: 1 1;
+               rel1.to: "base";
+               rel1.relative: 1.0 1.0;
+               rel2.to: "base";
+               align: 1.0 1.0;
+            }
+         }
+         part{ name: "elm.text.verse";
+            scale: 1;
+            type: TEXTBLOCK;
+            description { state: "default" 0.0;
+               min: 416 0;
+               fixed: 1 0;
+               text.style: "main_verse_style";
+               rel1.to: "left_top_padding";
+               rel1.relative: 1.0 1.0;
+               rel2.to: "right_bottom_padding";
+               rel2.relative: 0.0 0.0;
+               text.min: 0 1;
+               text.max: 0 1;
+            }
+            description { state: "bookmark" 0.0;
+               inherit: "default" 0.0;               
+               text.style: "bookmark_style";
+            }  
+         }
+         part {name: "elm.text.verse_count";
+            scale: 1;
+            type: TEXTBLOCK;
+            description {state: "default" 0.0;
+               rel1.to_x: "left_top_padding";
+               rel1.to_y: "elm.text.verse";
+               rel1.relative: 0.0 0.0;
+               rel2.to: "elm.text.verse";
+               rel2.relative: 0.0 0.0;
+               text.style: "verse_count_style";
+               text.min: 1 1;
+               fixed: 1 1;
+               min: 32 0;
+               align: 0.0 0.0;
+            }
+        }
+         part{ name: "bookmark_note_label";
+            scale: 1;
+            type: RECT;
+            description { state: "default" 0.0;
+               min: 4 0;
+               fixed: 1 0;
+               color: 255 0 0 255;
+               rel1.to: "base";
+               rel2.to: "base";
+               rel2.relative: 0.0 1.0;
+               align: 0.0 0.0;
+               visible: 0;
+            }
+            description { state: "bookmark" 0.0;
+               inherit: "default" 0.0;
+               visible: 1;
+            }
+            description { state: "note" 0.0;
+               inherit: "bookmark" 0.0;
+               color: 0 0 255 255;
+            }
+            description { state: "bookmarknote" 0.0;
+               inherit: "bookmark" 0.0;
+               rel2.relative: 0.0 0.5;
+            } 
+         }
+         part { name: "note_label";
+            type: RECT;
+            scale: 1;
+            description { state: "default" 0.0;
+               min: 4 0;
+               fixed: 1 0;
+               color: 0 0 255 255;
+               rel1.to: "base";
+               rel1.relative: 0.0 0.5;
+               rel2.to: "base";
+               rel2.relative: 0.0 1.0;
+               align: 0.0 1.0;
+               visible: 0;
+            }
+            description { state: "bookmarknote" 0.0;
+               inherit: "default" 0.0;
+               visible: 1;
+            }
+         }
+     }
+     programs {
+        program { name: "bookmark_show";
+           signal: "elm,holy_bible,bookmark,show";
+           source: "elm";
+           action: STATE_SET "bookmark" 0.0;
+           target: "bookmark_note_label";
+           target: "elm.text.verse";
+        }
+        program { name: "note_show";
+           signal: "elm,holy_bible,note,show";
+           source: "elm";          
+           script {
+              new st[31], Float:vl;
+              get_state(PART:"bookmark_note_label", st, 30, vl);
+              if (!strcmp(st, "bookmark")) {
+                 set_state(PART:"bookmark_note_label", "bookmarknote", 0.0);
+                 set_state(PART:"note_label", "bookmarknote", 0.0);
+              }
+              else {
+                 set_state(PART:"bookmark_note_label", "note", 0.0);
+              }
+           }
+        }
+     }
+   }
+   
+   group{ name: "bookmark_verse_layout";
+      parts {
+         part{ name: "base";
+            type: RECT;
+            scale: 1;
+            description { state: "default" 0.0;
+               min: 480 98;
+               color: 0 0 0 0;
+               fixed: 1 0;
+            }
+         }
+         part{ name: "left_top_padding";
+            type: SPACER;
+            scale: 1;
+            description { state: "default" 0.0;
+               min: 32 24;
+               fixed: 1 1;
+               rel1.to: "base";
+               rel2.to: "base";
+               rel2.relative: 0.0 0.0;
+               align: 0.0 0.0;
+            }
+         }
+         part{ name: "right_bottom_padding";
+            type: SPACER;
+            scale: 1;
+            description { state: "default" 0.0;
+               min: 32 24;
+               fixed: 1 1;
+               rel1.to: "base";
+               rel1.relative: 1.0 1.0;
+               rel2.to: "base";
+               align: 1.0 1.0;
+            }
+         }
+         part {name: "elm.text.reference";
+            type: TEXTBLOCK;
+            scale: 1;
+            description {state: "default" 0.0;
+               rel1.to: "left_top_padding";
+               rel1.relative: 1.0 1.0;
+               rel2.to_x: "right_bottom_padding";
+               rel2.to_y: "left_top_padding";
+               rel2.relative: 0.0 1.0;
+               text.style: "verse_reference_style";
+               fixed: 1 1;
+               min: 416 50;
+               align: 0.0 0.0;
+            }
+        }
+         part{ name: "elm.text.verse";
+            type: TEXTBLOCK;
+            scale: 1;
+            description { state: "default" 0.0;
+               rel1.to_y: "elm.text.reference";
+               rel1.to_x: "left_top_padding";
+               rel1.relative: 1.0 1.0;
+               rel2.to: "right_bottom_padding";
+               rel2.relative: 0.0 0.0;
+               text.style: "main_verse_style";
+               fixed: 1 0;
+               text.min: 0 1;
+               min: 416 0;
+               align: 0.0 0.0;
+            }         
+         }
+     }
+   }
+   
+   group { name: "note_item_layout";
+      inherit: "bookmark_verse_layout";
+      parts{
+         part{ name: "elm.text.verse";
+            type: TEXTBLOCK;
+            scale: 1;
+            description { state: "default" 0.0;
+               rel1.to_y: "elm.text.reference";
+               rel1.to_x: "left_top_padding";
+               rel1.relative: 1.0 1.0;
+               rel2.to: "right_bottom_padding";
+               rel2.relative: 0.0 0.0;
+               text.style: "note_style";
+               fixed: 1 0;
+               text.min: 0 1;
+               min: 416 80;
+               align: 0.0 0.0;
+            }         
+         }
+      }
+   }
+   
+   group{ name: "search_verse_layout";
+      parts {
+         part{ name: "base";
+            type: RECT;
+            scale: 1;
+            description { state: "default" 0.0;
+               min: 480 168;
+               color: 0 0 0 0;
+               fixed: 1 0;
+            }
+         }
+         part{ name: "left_top_padding";
+            type: SPACER;
+            scale: 1;
+            description { state: "default" 0.0;
+               min: 32 24;
+               fixed: 1 1;
+               rel1.to: "base";
+               rel2.to: "base";
+               rel2.relative: 0.0 0.0;
+               align: 0.0 0.0;
+            }
+         }
+         part{ name: "right_bottom_padding";
+            type: SPACER;
+            scale: 1;
+            description { state: "default" 0.0;
+               min: 32 24;
+               fixed: 1 1;
+               rel1.to: "base";
+               rel1.relative: 1.0 1.0;
+               rel2.to: "base";
+               align: 1.0 1.0;
+            }
+         }
+         part {name: "elm.text.reference";
+            type: TEXTBLOCK;
+            scale: 1;
+            description {state: "default" 0.0;
+               rel1.to: "left_top_padding";
+               rel1.relative: 1.0 1.0;
+               rel2.to_x: "right_bottom_padding";
+               rel2.to_y: "left_top_padding";
+               rel2.relative: 0.0 1.0;
+               text.style: "verse_reference_style";
+               fixed: 1 1;
+               text.min: 0 0;
+               min: 416 40;
+               align: 0.0 0.0;
+            }
+        }
+         part{ name: "elm.text.verse";
+            type: TEXTBLOCK;
+            scale: 1;
+            description { state: "default" 0.0;
+               rel1.to_y: "elm.text.reference";
+               rel1.to_x: "left_top_padding";
+               rel1.relative: 1.0 1.0;
+               rel2.to: "right_bottom_padding";
+               rel2.relative: 0.0 0.0;
+               text.style: "verse_style";
+               fixed: 1 1;
+               text.min: 0 0;
+               min: 416 80;
+               align: 0.0 1.0;
+            }         
+         }
+     }
+   }
+   
+  group { name: "bookmarks_layout";
+      alias: "notes_layout";
+      parts {
+         part { name: "content_bg";
+            type: RECT;
+            scale: 1;
+            description { state: "default" 0.0;
+               color: 230 230 230 230;
+               visible: 1;
+            }
+            description { state: "hide" 0.0;
+               inherit: "default" 0.0;
+               visible: 0;
+            }
+         }
+         part { name: "elm.swallow.content";
+            type: SWALLOW;
+            scale: 1;
+            description { state: "default" 0.0;
+            }
+         }
+      }
+      programs {
+         program { name: "content_bg_hide";
+            signal: "elm,holy_bible,bg,hide";
+            source: "elm";
+            action: STATE_SET "hide" 0.0;
+            target: "content_bg";
+         }
+         program { name: "content_bg_show";
+            signal: "elm,holy_bible,bg,show";
+            source: "elm";
+            action: STATE_SET "default" 0.0;
+            target: "content_bg";
+         }
+      }
+   }
+
+   group { name: "select_chapter_layout";
+      parts {
+         part{ name: "base";
+            type: RECT;
+            scale: 1;
+            description { state: "default" 0.0;
+               min: 480 0;
+               fixed: 1 0;
+               color: 230 230 230 230;
+            }
+         }
+         part { name: "elm.swallow.content1";
+            type: SWALLOW;
+            scale: 1;
+            description { state: "default" 0.0;
+               fixed: 1 0;
+               rel1.relative: 0.0 0.0;
+               rel2.relative: 0.70 1.0;
+            }
+         }
+         part { name: "divider";
+            type: RECT;
+            scale: 1;
+            description { state: "default" 0.0;
+               fixed: 1 0;
+               color_class: "F057";
+               rel1.to: "elm.swallow.content1";
+               rel1.relative: 1.0 0.0;
+               rel2.to: "elm.swallow.content1";
+               min: 2 0;
+            }
+         }
+         part { name: "elm.swallow.content2";
+            type: SWALLOW;
+            scale: 1;
+            description { state: "default" 0.0;
+               fixed: 1 0;
+               rel1.to : "divider";
+               rel1.relative: 1.0 0.0;
+               rel2.relative: 1.0 1.0;
+            }
+         }
+      }
+   }
+}
