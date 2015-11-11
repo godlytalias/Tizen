@@ -151,7 +151,7 @@ _remove_bookmark_query(void *data, Evas_Object *obj, void *event_info)
 {
 	char query[256];
 	bible_verse_item *verse_item = (bible_verse_item*)data;
-    sprintf(query, "DELETE FROM bookmarks WHERE bookcount = %d AND chaptercount = %d AND versecount = %d", verse_item->bookcount, verse_item->chaptercount, verse_item->versecount);
+    sprintf(query, "DELETE FROM bookmark WHERE bookcount = %d AND chaptercount = %d AND versecount = %d", verse_item->bookcount, verse_item->chaptercount, verse_item->versecount);
     _app_database_query(query, NULL, NULL);
     verse_item->bookmark = EINA_FALSE;
     elm_genlist_item_update(verse_item->it);
@@ -175,8 +175,8 @@ _bookmark_verse_cb(void *data, Evas_Object *obj, void *event_info)
    elm_popup_allow_events_set(toast, EINA_TRUE);
    if (!verse_item->bookmark)
    {
-	   char query[512];
-	   sprintf(query, "INSERT INTO bookmarks VALUES(%d, %d, %d)", verse_item->bookcount, verse_item->chaptercount, verse_item->versecount);
+	   char query[2048];
+	   sprintf(query, "INSERT INTO bookmark VALUES(%d, %d, %d, '%s')", verse_item->bookcount, verse_item->chaptercount, verse_item->versecount, verse_item->verse);
 	   _app_database_query(query, NULL, NULL);
 	   sprintf(query, "Bookmarked %s %d : %d", Books[verse_item->bookcount], verse_item->chaptercount, verse_item->versecount + 1);
 	   elm_object_text_set(toast, query);
