@@ -45,14 +45,6 @@ move_more_ctxpopup(void *data, Evas_Object *obj EINA_UNUSED, void *event_info EI
 }
 
 static int
-_get_verse(void *data, int argc, char **argv, char **azColName)
-{
-	bible_verse_item *verse_item = (bible_verse_item*)data;
-	verse_item->verse = strdup(argv[0]);
-	return 0;
-}
-
-static int
 _get_bookmarks_list(void *data, int argc, char **argv, char **azColName)
 {
     bible_verse_item *verse_item = malloc(sizeof(bible_verse_item));
@@ -71,6 +63,11 @@ _get_bookmarks_list(void *data, int argc, char **argv, char **azColName)
     if (azColName[2] && (strcmp(azColName[2], "versecount") == 0))
     {
     	verse_item->versecount = atoi(argv[2]);
+    }
+
+    if (azColName[3])
+    {
+    	verse_item->verse = strdup(argv[3]);
     }
 
     verse_item->it = elm_genlist_item_append(ad->bookmarks_notes_genlist, ad->bookmarks_itc, verse_item, NULL, ELM_GENLIST_ITEM_NONE, NULL, NULL);
@@ -148,7 +145,7 @@ _remove_bookmark(void *data, Evas_Object *obj, void *event_info)
 	Evas_Object *popup = (Evas_Object*)data;
 	char query[256];
 	bible_verse_item *verse_item = (bible_verse_item*)evas_object_data_get(popup, "verse_item");
-    sprintf(query, "DELETE FROM bookmarks WHERE bookcount = %d AND chaptercount = %d AND versecount = %d", verse_item->bookcount, verse_item->chaptercount, verse_item->versecount);
+    sprintf(query, "DELETE FROM bookmark WHERE bookcount = %d AND chaptercount = %d AND versecount = %d", verse_item->bookcount, verse_item->chaptercount, verse_item->versecount);
     _app_database_query(query, NULL, NULL);
     _check_bookmarks(verse_item->appdata);
     Evas_Object *toast = elm_popup_add(verse_item->appdata->win);
@@ -293,8 +290,6 @@ _get_bookmarks(appdata_s *ad)
 {
 	char query[512];
 	int res_count;
-	Elm_Object_Item *it;
-	bible_verse_item *verse_item;
 	Evas_Object *layout;
 	ad->bookmark_note_layout = elm_layout_add(ad->naviframe);
 	layout = ad->bookmark_note_layout;
@@ -314,16 +309,8 @@ _get_bookmarks(appdata_s *ad)
 	ad->bookmarks_itc->func.text_get = NULL;
 	ad->bookmarks_itc->func.del = gl_del_cb;
 
-	sprintf(query, "SELECT bookcount, chaptercount, versecount FROM bookmarks");
+	sprintf(query, "SELECT bookcount, chaptercount, versecount, verse FROM bookmark");
     _app_database_query(query, _get_bookmarks_list, ad);
-
-    it = elm_genlist_first_item_get(ad->bookmarks_notes_genlist);
-    while(it) {
-       verse_item = elm_object_item_data_get(it);
-       sprintf(query, "SELECT m_verse FROM bible WHERE Book = '%s' AND Chapter = %d AND Versecount = %d", Books[verse_item->bookcount], verse_item->chaptercount, verse_item->versecount + 1);
-       _database_query(query, _get_verse, verse_item);
-       it = elm_genlist_item_next_get(it);
-    }
     res_count = elm_genlist_items_count(ad->bookmarks_notes_genlist);
     if (res_count > 0)
     	elm_layout_signal_emit(layout, "elm,holy_bible,bg,hide", "elm");
@@ -336,8 +323,6 @@ _get_notes(appdata_s *ad)
 {
 	char query[512];
 	int res_count;
-	Elm_Object_Item *it;
-	bible_verse_item *verse_item;
 	Evas_Object *layout;
 	ad->bookmark_note_layout = elm_layout_add(ad->naviframe);
 	layout = ad->bookmark_note_layout;
@@ -358,16 +343,8 @@ _get_notes(appdata_s *ad)
 	ad->bookmarks_itc->func.text_get = NULL;
 	ad->bookmarks_itc->func.del = gl_del_cb;
 
-	sprintf(query, "SELECT bookcount, chaptercount, versecount FROM notes");
+	sprintf(query, "SELECT bookcount, chaptercount, versecount, note FROM notes");
     _app_database_query(query, _get_bookmarks_list, ad);
-
-    it = elm_genlist_first_item_get(ad->bookmarks_notes_genlist);
-    while(it) {
-       verse_item = elm_object_item_data_get(it);
-       sprintf(query, "SELECT note FROM notes WHERE bookcount=%d and chaptercount=%d and versecount=%d;", verse_item->bookcount, verse_item->chaptercount, verse_item->versecount);
-       _app_database_query(query, _get_verse, verse_item);
-       it = elm_genlist_item_next_get(it);
-    }
     res_count = elm_genlist_items_count(ad->bookmarks_notes_genlist);
     if (res_count > 0)
     	elm_layout_signal_emit(layout, "elm,holy_bible,bg,hide", "elm");

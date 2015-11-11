@@ -60,7 +60,7 @@ _load_appdata(appdata_s *ad)
 	char query[256];
 	sprintf(query, "SELECT bookcount,chaptercount FROM appinitdata;");
 	_app_database_query(query, &_get_app_data, ad);
-	sprintf(query, "create table if not exists bookmarks(bookcount INT, chaptercount INT, versecount INT);");
+	sprintf(query, "create table if not exists bookmark(bookcount INT, chaptercount INT, versecount INT, verse VARCHAR(1024));");
 	_app_database_query(query, &_check, ad);
 	sprintf(query, "create table if not exists notes(bookcount INT, chaptercount INT, versecount INT, note VARCHAR(8192));");
 	_app_database_query(query, &_check, ad);
@@ -175,7 +175,7 @@ _check_bookmarks(appdata_s *ad)
    while (it)
    {
 	   verse_item = (bible_verse_item*)elm_object_item_data_get(it);
-	   sprintf(query, "SELECT count(versecount) FROM bookmarks WHERE bookcount = %d AND chaptercount = %d AND versecount = %d", verse_item->bookcount, verse_item->chaptercount, verse_item->versecount);
+	   sprintf(query, "SELECT count(versecount) FROM bookmark WHERE bookcount = %d AND chaptercount = %d AND versecount = %d", verse_item->bookcount, verse_item->chaptercount, verse_item->versecount);
 	   _app_database_query(query, &_put_bookmarks, verse_item);
 	   it = elm_genlist_item_next_get(it);
    }
