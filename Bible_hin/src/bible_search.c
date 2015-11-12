@@ -106,7 +106,7 @@ _search_result_selected(void *data, Evas_Object *obj, void *event_info)
 	evas_object_smart_callback_add(verse_entry,"selection,copy",_copy_verse,(void*)verse_item);
 	elm_object_content_set(verse_popup, verse_entry);
 	Evas_Object *ok = elm_button_add(verse_popup);
-	elm_object_text_set(ok, "OK");
+	elm_object_text_set(ok, "बंद");
 	evas_object_smart_callback_add(ok, "clicked", _dismiss_verse_popup, verse_popup);
 	elm_object_part_content_set(verse_popup, "button1", ok);
 	evas_object_show(verse_popup);
@@ -124,13 +124,13 @@ _gl_longpressed_cb(void *data, Evas_Object *obj, void *event_info)
     Evas_Object *popup = elm_popup_add(ad->win);
 	elm_genlist_item_selected_set(item, EINA_FALSE);
     elm_popup_align_set(popup, ELM_NOTIFY_ALIGN_FILL, 0.5);
-    sprintf(popup_text, "<align='center'>Go to %s %d : %d ?</align>", Books[verse_item->bookcount], verse_item->chaptercount, verse_item->versecount + 1);
+    sprintf(popup_text, "<align='center'>%s %d : %d से जाओ ?</align>", Books[verse_item->bookcount], verse_item->chaptercount, verse_item->versecount + 1);
     elm_object_text_set(popup, popup_text);
     Evas_Object *button1 = elm_button_add(ad->win);
-    elm_object_text_set(button1, "No");
+    elm_object_text_set(button1, "नहीं");
     evas_object_smart_callback_add(button1, "clicked", _popup_del, popup);
     Evas_Object *button2 = elm_button_add(ad->win);
-    elm_object_text_set(button2, "Yes");
+    elm_object_text_set(button2, "ठीक");
     evas_object_smart_callback_add(button2, "clicked", _get_chapter, popup);
     evas_object_data_set(popup, "verse_item", verse_item);
     elm_object_part_content_set(popup, "button1", button1);
@@ -206,7 +206,7 @@ _bible_search_query(char* search_query, appdata_s *ad)
 	res_count = elm_genlist_items_count(ad->search_result_genlist);
 	if (res_count > 0)
 		elm_layout_signal_emit(ad->search_layout, "elm,holy_bible,bg,hide", "elm");
-	sprintf(toast, "Got %d results", res_count);
+	sprintf(toast, "%d रिसलृट मिला", res_count);
 	Evas_Object *toastp = elm_popup_add(ad->win);
 	elm_object_style_set(toastp, "toast");
 	elm_popup_allow_events_set(toastp, EINA_TRUE);
@@ -232,7 +232,7 @@ _search_keyword(void *data,
 		Evas_Object *toast_popup = elm_popup_add(ad->win);
 		elm_popup_timeout_set(toast_popup, 2);
 		elm_object_style_set(toast_popup, "toast");
-		elm_object_text_set(toast_popup, "Search keyword is too large");
+		elm_object_text_set(toast_popup, "कीवर्ड बहुत बड़ा है");
 		evas_object_smart_callback_add(toast_popup, "timeout", _dismiss_verse_popup, toast_popup);
 		evas_object_show(toast_popup);
 		return;
@@ -242,7 +242,7 @@ _search_keyword(void *data,
 			Evas_Object *toast_popup = elm_popup_add(ad->win);
 			elm_popup_timeout_set(toast_popup, 2);
 			elm_object_style_set(toast_popup, "toast");
-			elm_object_text_set(toast_popup, "Search keyword is too small");
+			elm_object_text_set(toast_popup, "कीवर्ड बहुत छोटा है");
 			evas_object_smart_callback_add(toast_popup, "timeout", _dismiss_verse_popup, toast_popup);
 			evas_object_show(toast_popup);
 			return;
@@ -280,16 +280,16 @@ _search_word(void *data,
 	evas_object_size_hint_align_set(ad->search_entry, EVAS_HINT_FILL, EVAS_HINT_FILL);
 	elm_entry_single_line_set(ad->search_entry, EINA_TRUE);
 	elm_entry_scrollable_set(ad->search_entry, EINA_TRUE);
-	elm_object_part_text_set(ad->search_entry, "elm.guide", "Enter the keyword");
+	elm_object_part_text_set(ad->search_entry, "elm.guide", "कीवर्ड दर्ज करें");
 	elm_entry_input_panel_return_key_type_set(ad->search_entry, ELM_INPUT_PANEL_RETURN_KEY_TYPE_SEARCH);
 	evas_object_show(ad->search_entry);
 	elm_object_part_content_set(ad->search_layout, "elm.swallow.entry", ad->search_entry);
 	Evas_Object *go_btn = elm_button_add(ad->search_layout);
-	elm_object_text_set(go_btn, "Go");
+	elm_object_text_set(go_btn, "ठीक");
 	evas_object_smart_callback_add(go_btn, "clicked", _search_keyword, (void*)ad);
 	evas_object_smart_callback_add(ad->search_entry, "activated", _search_keyword, (void*)ad);
 	evas_object_show(go_btn);
 	elm_object_part_content_set(ad->search_layout, "elm.swallow.go", go_btn);
-	nf_it = elm_naviframe_item_push(ad->naviframe, "Search", NULL, NULL, ad->search_layout, NULL);
+	nf_it = elm_naviframe_item_push(ad->naviframe, "खोज", NULL, NULL, ad->search_layout, NULL);
 	elm_naviframe_item_pop_cb_set(nf_it, _search_navi_pop_cb, ad);
 }

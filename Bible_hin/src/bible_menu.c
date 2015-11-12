@@ -124,7 +124,7 @@ _remove_note(void *data, Evas_Object *obj, void *event_info)
     verse_item->note = EINA_FALSE;
     Evas_Object *toast = elm_popup_add(verse_item->appdata->win);
     elm_object_style_set(toast, "toast");
-    sprintf(query, "Note Deleted!");
+    sprintf(query, "नोट हटा दिया!");
     elm_object_text_set(toast, query);
     elm_popup_allow_events_set(toast, EINA_TRUE);
     evas_object_show(toast);
@@ -150,7 +150,7 @@ _remove_bookmark(void *data, Evas_Object *obj, void *event_info)
     _check_bookmarks(verse_item->appdata);
     Evas_Object *toast = elm_popup_add(verse_item->appdata->win);
     elm_object_style_set(toast, "toast");
-    sprintf(query, "Removed %s %d : %d", Books[verse_item->bookcount], verse_item->chaptercount, verse_item->versecount + 1);
+    sprintf(query, "%s %d : %d हटा दिया", Books[verse_item->bookcount], verse_item->chaptercount, verse_item->versecount + 1);
     elm_object_text_set(toast, query);
     elm_popup_allow_events_set(toast, EINA_TRUE);
     evas_object_show(toast);
@@ -190,10 +190,10 @@ note_gl_selected_cb(void *data, Evas_Object *obj, void *event_info)
     elm_object_part_text_set(popup, "title,text", popup_text);
     elm_object_text_set(popup, verse_item->verse);
     Evas_Object *button1 = elm_button_add(ad->win);
-    elm_object_text_set(button1, "Close");
+    elm_object_text_set(button1, "रद्द");
     evas_object_smart_callback_add(button1, "clicked", _popup_del, popup);
     Evas_Object *button2 = elm_button_add(ad->win);
-    elm_object_text_set(button2, "Get Verse");
+    elm_object_text_set(button2, "कविता मिल");
     evas_object_smart_callback_add(button2, "clicked", _get_chapter, popup);
     evas_object_data_set(popup, "verse_item", verse_item);
     elm_object_part_content_set(popup, "button1", button1);
@@ -217,15 +217,15 @@ note_remove_cb(void *data, Evas_Object *obj, void *event_info)
     }
     Evas_Object *popup = elm_popup_add(verse_item->appdata->win);
     elm_popup_align_set(popup, ELM_NOTIFY_ALIGN_FILL, 0.5);
-    sprintf(popup_text, "<align='center'>Delete Note ?</align>");
+    sprintf(popup_text, "<align='center'>नोट हटाऐँ ?</align>");
     elm_object_text_set(popup, popup_text);
     sprintf(popup_text, "<align='center'>%s %d : %d</align>", Books[verse_item->bookcount], verse_item->chaptercount, verse_item->versecount + 1);
     elm_object_part_text_set(popup, "title,text", popup_text);
     Evas_Object *button1 = elm_button_add(verse_item->appdata->win);
-    elm_object_text_set(button1, "No");
+    elm_object_text_set(button1, "रद्द");
     evas_object_smart_callback_add(button1, "clicked", _popup_del, popup);
     Evas_Object *button2 = elm_button_add(verse_item->appdata->win);
-    elm_object_text_set(button2, "Yes");
+    elm_object_text_set(button2, "ठीक");
     evas_object_smart_callback_add(button2, "clicked", _remove_note, popup);
     evas_object_data_set(popup, "verse_item", verse_item);
     elm_object_part_content_set(popup, "button1", button1);
@@ -244,13 +244,13 @@ gl_selected_cb(void *data, Evas_Object *obj, void *event_info)
     appdata_s *ad = (appdata_s*)data;
     Evas_Object *popup = elm_popup_add(ad->win);
     elm_popup_align_set(popup, ELM_NOTIFY_ALIGN_FILL, 0.5);
-    sprintf(popup_text, "<align='center'>Go to %s %d : %d ?</align>", Books[verse_item->bookcount], verse_item->chaptercount, verse_item->versecount + 1);
+    sprintf(popup_text, "<align='center'>%s %d : %d से जाओ ?</align>", Books[verse_item->bookcount], verse_item->chaptercount, verse_item->versecount + 1);
     elm_object_text_set(popup, popup_text);
     Evas_Object *button1 = elm_button_add(ad->win);
-    elm_object_text_set(button1, "No");
+    elm_object_text_set(button1, "रद्द");
     evas_object_smart_callback_add(button1, "clicked", _popup_del, popup);
     Evas_Object *button2 = elm_button_add(ad->win);
-    elm_object_text_set(button2, "Yes");
+    elm_object_text_set(button2, "ठीक");
     evas_object_smart_callback_add(button2, "clicked", _get_chapter, popup);
     evas_object_data_set(popup, "verse_item", verse_item);
     elm_object_part_content_set(popup, "button1", button1);
@@ -269,14 +269,14 @@ gl_longpressed_cb(void *data, Evas_Object *obj, void *event_info)
     Evas_Object *popup = elm_popup_add(ad->win);
 	elm_genlist_item_selected_set(item, EINA_FALSE);
     elm_popup_align_set(popup, ELM_NOTIFY_ALIGN_FILL, 0.5);
-    sprintf(popup_text, "<align='center'>Remove %s %d : %d ?</align>", Books[verse_item->bookcount], verse_item->chaptercount, verse_item->versecount + 1);
+    sprintf(popup_text, "<align='center'>%s %d : %d हटाऐँ?</align>", Books[verse_item->bookcount], verse_item->chaptercount, verse_item->versecount + 1);
     elm_object_text_set(popup, popup_text);
     elm_object_part_text_set(popup, "title,text", "Bookmark!");
     Evas_Object *button1 = elm_button_add(ad->win);
-    elm_object_text_set(button1, "No");
+    elm_object_text_set(button1, "रद्द");
     evas_object_smart_callback_add(button1, "clicked", _popup_del, popup);
     Evas_Object *button2 = elm_button_add(ad->win);
-    elm_object_text_set(button2, "Yes");
+    elm_object_text_set(button2, "ठीक");
     evas_object_smart_callback_add(button2, "clicked", _remove_bookmark, popup);
     evas_object_data_set(popup, "verse_item", verse_item);
     elm_object_part_content_set(popup, "button1", button1);
@@ -384,30 +384,30 @@ ctxpopup_item_select_cb(void *data, Evas_Object *obj, void *event_info)
 	Elm_Object_Item *nf_it;
 	appdata_s *ad = (appdata_s*)data;
 
-	if (!strcmp(title_label, "Search"))
+	if (!strcmp(title_label, "खोजें"))
 	{
 		_search_word(ad, NULL, NULL);
 		_popup_del(obj, NULL, NULL);
 		return;
 	}
 
-	if (!strcmp(title_label, "Bookmarks"))
+	if (!strcmp(title_label, "बुकमार्क"))
 	{
-	   nf_it = elm_naviframe_item_push(ad->naviframe, "Bookmarks", NULL, NULL, _get_bookmarks(ad), NULL);
+	   nf_it = elm_naviframe_item_push(ad->naviframe, "बुकमार्क", NULL, NULL, _get_bookmarks(ad), NULL);
 	   elm_naviframe_item_pop_cb_set(nf_it, naviframe_pop_cb, ad);
 		_popup_del(obj, NULL, NULL);
        return;
 	}
 
-	if (!strcmp(title_label, "Notes"))
+	if (!strcmp(title_label, "नोट्स"))
 	{
-	   nf_it = elm_naviframe_item_push(ad->naviframe, "Notes", NULL, NULL, _get_notes(ad), NULL);
+	   nf_it = elm_naviframe_item_push(ad->naviframe, "नोट्स", NULL, NULL, _get_notes(ad), NULL);
 	   elm_naviframe_item_pop_cb_set(nf_it, naviframe_pop_cb, ad);
 		_popup_del(obj, NULL, NULL);
        return;
 	}
 
-	if (!strcmp(title_label, "Select Chapter"))
+	if (!strcmp(title_label, "अध्यायों चुनें"))
 	{
 	   _change_book(data, ad->layout, NULL, NULL);
 		_popup_del(obj, NULL, NULL);
@@ -420,13 +420,13 @@ ctxpopup_item_select_cb(void *data, Evas_Object *obj, void *event_info)
 	Evas_Object *content_box = elm_box_add(popup);
 	evas_object_size_hint_weight_set(content_box, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
 	evas_object_size_hint_align_set(content_box, EVAS_HINT_FILL, EVAS_HINT_FILL);
-	if (!strcmp(title_label, "About"))
+	if (!strcmp(title_label, "हमारे बारे में"))
 	{
 		Evas_Object *label = elm_label_add(popup);
 		evas_object_size_hint_weight_set(label, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
 		evas_object_size_hint_align_set(label, EVAS_HINT_FILL, EVAS_HINT_FILL);
 		elm_label_line_wrap_set(label, ELM_WRAP_WORD);
-		sprintf(text_content, "<color=#000000FF><align=center><b>HOLY BIBLE (MKJV)</b></align></color>");
+		sprintf(text_content, "<color=#000000FF><align=center><b>पवित्र बाइबिल</b></align></color>");
 		elm_object_text_set(label, text_content);
 		evas_object_show(label);
 		elm_box_pack_end(content_box, label);
@@ -507,13 +507,13 @@ ctxpopup_item_select_cb(void *data, Evas_Object *obj, void *event_info)
 		evas_object_show(label);
 		elm_box_pack_end(content_box, label);
 	}
-	else if (!strcmp(title_label, "Help"))
+	else if (!strcmp(title_label, "मदद"))
 	{
 		Evas_Object *label = elm_label_add(popup);
 		evas_object_size_hint_weight_set(label, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
 		evas_object_size_hint_align_set(label, EVAS_HINT_FILL, EVAS_HINT_FILL);
 		elm_label_line_wrap_set(label, ELM_WRAP_WORD);
-		sprintf(text_content, "<color=#000000FF><align=center><b>HOLY BIBLE (MKJV)</b></align></color>");
+		sprintf(text_content, "<color=#000000FF><align=center><b>पवित्र बाइबिल</b></align></color>");
 		elm_object_text_set(label, text_content);
 		evas_object_show(label);
 		elm_box_pack_end(content_box, label);
@@ -761,12 +761,12 @@ create_ctxpopup_more_button_cb(void *data, Evas_Object *obj, void *event_info)
 	win = elm_object_top_widget_get(ad->naviframe);
 	evas_object_smart_callback_add(win, "rotation,changed", move_more_ctxpopup, ctxpopup);
 
-	elm_ctxpopup_item_append(ctxpopup, "Search", NULL, ctxpopup_item_select_cb, ad);
-	elm_ctxpopup_item_append(ctxpopup, "Bookmarks", NULL, ctxpopup_item_select_cb, ad);
-	elm_ctxpopup_item_append(ctxpopup, "Notes", NULL, ctxpopup_item_select_cb, ad);
-	elm_ctxpopup_item_append(ctxpopup, "Select Chapter", NULL, ctxpopup_item_select_cb, ad);
-	elm_ctxpopup_item_append(ctxpopup, "Help", NULL, ctxpopup_item_select_cb, ad);
-	elm_ctxpopup_item_append(ctxpopup, "About", NULL, ctxpopup_item_select_cb, ad);
+	elm_ctxpopup_item_append(ctxpopup, "खोजें", NULL, ctxpopup_item_select_cb, ad);
+	elm_ctxpopup_item_append(ctxpopup, "बुकमार्क", NULL, ctxpopup_item_select_cb, ad);
+	elm_ctxpopup_item_append(ctxpopup, "नोट्स", NULL, ctxpopup_item_select_cb, ad);
+	elm_ctxpopup_item_append(ctxpopup, "अध्यायों चुनें", NULL, ctxpopup_item_select_cb, ad);
+	elm_ctxpopup_item_append(ctxpopup, "मदद", NULL, ctxpopup_item_select_cb, ad);
+	elm_ctxpopup_item_append(ctxpopup, "हमारे बारे में", NULL, ctxpopup_item_select_cb, ad);
 
 	elm_ctxpopup_direction_priority_set(ctxpopup, ELM_CTXPOPUP_DIRECTION_UP, ELM_CTXPOPUP_DIRECTION_UNKNOWN, ELM_CTXPOPUP_DIRECTION_UNKNOWN, ELM_CTXPOPUP_DIRECTION_UNKNOWN);
 	move_more_ctxpopup(ctxpopup, ctxpopup, NULL);
