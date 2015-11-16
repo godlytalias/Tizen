@@ -2,13 +2,13 @@
 <SignedInfo>
 <CanonicalizationMethod Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#"></CanonicalizationMethod>
 <SignatureMethod Algorithm="http://www.w3.org/2001/04/xmldsig-more#rsa-sha256"></SignatureMethod>
-<Reference URI="bin%2Fgta_holy_bible">
+<Reference URI="bin%2Fgtaholybiblehindi">
 <DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha256"></DigestMethod>
-<DigestValue>yy07K83ElqazC4Z9EnqNkZEKUzt6qdQoN4ms7VMSAl0=</DigestValue>
+<DigestValue>KFlwQ+AsRiRKqE0TIGs5zoXGsmmlQlq4qUEPZOm4HHI=</DigestValue>
 </Reference>
 <Reference URI="res%2Fedje%2Fbible.edj">
 <DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha256"></DigestMethod>
-<DigestValue>mcR71jQXShR81uccQHatJemHllmlA5rGEajNn2saK44=</DigestValue>
+<DigestValue>ev2ChDngHgCQHOkjKT9ljVnWGWI8maIUHISVdwpsCw4=</DigestValue>
 </Reference>
 <Reference URI="res%2Fedje%2Fimages%2Fdown_arrow.png">
 <DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha256"></DigestMethod>
@@ -26,9 +26,9 @@
 <DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha256"></DigestMethod>
 <DigestValue>+9OQyKM8dZIJj5J+pixJ7BaIFmiEv4AdbHnbkgl2yhM=</DigestValue>
 </Reference>
-<Reference URI="res%2Fholybible_eng.db">
+<Reference URI="res%2Fholybible.db">
 <DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha256"></DigestMethod>
-<DigestValue>QEyYzsBFDq19aJIPz1/kjRbqt1jd13xpwDF3wi0WJyg=</DigestValue>
+<DigestValue>xuPFD05L29LrRscyfDe2Ga5owAGbIwNsndV7+mDO4KI=</DigestValue>
 </Reference>
 <Reference URI="shared%2Fres%2FBible.png">
 <DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha256"></DigestMethod>
@@ -36,7 +36,7 @@
 </Reference>
 <Reference URI="tizen-manifest.xml">
 <DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha256"></DigestMethod>
-<DigestValue>Ch8EJDKeD6CkBtwdEMpGEes4Az5Ur1QC8WVacWIMtl4=</DigestValue>
+<DigestValue>k545zZadP897RYPHeMlZ47uXya4EKEoPgJdjTRqHhtI=</DigestValue>
 </Reference>
 <Reference URI="#prop">
 <Transforms>
@@ -47,9 +47,9 @@
 </Reference>
 </SignedInfo>
 <SignatureValue>
-x06r2PYkeFu85/GqCHdUL0KS1p/B+4yfbHNRmduDPduOecpchfjhbyozgfulBEfESN7SHHwE4e6g
-6fCAtqqqgc3EPCftYWrtm4W5ny2mId2lieGyxz9js8rrIqnYaMaGYmbNjcQ0y0QnxcC+x/iQsDja
-cN0wT9gy9ycAvRxQP3M=
+YxMfPelKNiNMDQ6S7iiI2sa926NySsSb6Q/nmBBmwPemnKvTZ33Hd+WzwDx/SdH7tLgGI4fkFgmu
+F23h8TZRuVx2bRn/LKdBgmzneRVsrnna8MDHRyuaMvjvRFOwQI31you7MfGaEpAN95jeZEr5AdO6
+xbkeE/e7HkZN3uKWTTc=
 </SignatureValue>
 <KeyInfo>
 <X509Data>

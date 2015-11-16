@@ -15,7 +15,7 @@
 				</extensions>
 			</storageModule>
 			<storageModule moduleId="cdtBuildSystem" version="4.0.0">
-				<configuration artifactName="gta_holy_bible" buildArtefactType="org.tizen.nativecore.buildArtefactType.app" buildProperties="org.eclipse.cdt.build.core.buildType=org.eclipse.cdt.build.core.buildType.debug,org.eclipse.cdt.build.core.buildArtefactType=org.tizen.nativecore.buildArtefactType.app" description="" errorParsers="org.eclipse.cdt.core.MakeErrorParser;org.eclipse.cdt.core.GCCErrorParser;" id="org.tizen.nativecore.config.sbi.gcc45.app.debug.1733456991" name="Debug" parent="org.tizen.nativecore.config.sbi.gcc45.app.debug">
+				<configuration artifactName="gtaholybiblemal" buildArtefactType="org.tizen.nativecore.buildArtefactType.app" buildProperties="org.eclipse.cdt.build.core.buildType=org.eclipse.cdt.build.core.buildType.debug,org.eclipse.cdt.build.core.buildArtefactType=org.tizen.nativecore.buildArtefactType.app" description="" errorParsers="org.eclipse.cdt.core.MakeErrorParser;org.eclipse.cdt.core.GCCErrorParser;" id="org.tizen.nativecore.config.sbi.gcc45.app.debug.1733456991" name="Debug" parent="org.tizen.nativecore.config.sbi.gcc45.app.debug">
 					<folderInfo id="org.tizen.nativecore.config.sbi.gcc45.app.debug.1733456991." name="/" resourcePath="">
 						<toolChain id="org.tizen.nativecore.toolchain.sbi.gcc45.app.debug.1730218958" name="Tizen Native Toolchain" superClass="org.tizen.nativecore.toolchain.sbi.gcc45.app.debug">
 							<targetPlatform binaryParser="org.eclipse.cdt.core.ELF" id="org.tizen.nativeide.target.sbi.gnu.platform.base.1984242838" osList="linux,win32" superClass="org.tizen.nativeide.target.sbi.gnu.platform.base"/>
@@ -280,7 +280,7 @@
 				</extensions>
 			</storageModule>
 			<storageModule moduleId="cdtBuildSystem" version="4.0.0">
-				<configuration artifactName="gta_holy_bible" buildArtefactType="org.tizen.nativecore.buildArtefactType.app" buildProperties="org.eclipse.cdt.build.core.buildType=org.eclipse.cdt.build.core.buildType.release,org.eclipse.cdt.build.core.buildArtefactType=org.tizen.nativecore.buildArtefactType.app" description="" errorParsers="org.eclipse.cdt.core.MakeErrorParser;org.eclipse.cdt.core.GCCErrorParser;" id="org.tizen.nativecore.config.sbi.gcc45.app.release.1308950981" name="Release" parent="org.tizen.nativecore.config.sbi.gcc45.app.release">
+				<configuration artifactName="gtaholybiblemal" buildArtefactType="org.tizen.nativecore.buildArtefactType.app" buildProperties="org.eclipse.cdt.build.core.buildType=org.eclipse.cdt.build.core.buildType.release,org.eclipse.cdt.build.core.buildArtefactType=org.tizen.nativecore.buildArtefactType.app" description="" errorParsers="org.eclipse.cdt.core.MakeErrorParser;org.eclipse.cdt.core.GCCErrorParser;" id="org.tizen.nativecore.config.sbi.gcc45.app.release.1308950981" name="Release" parent="org.tizen.nativecore.config.sbi.gcc45.app.release">
 					<folderInfo id="org.tizen.nativecore.config.sbi.gcc45.app.release.1308950981." name="/" resourcePath="">
 						<toolChain id="org.tizen.nativecore.toolchain.sbi.gcc45.app.release.401223765" name="Tizen Native Toolchain" superClass="org.tizen.nativecore.toolchain.sbi.gcc45.app.release">
 							<targetPlatform binaryParser="org.eclipse.cdt.core.ELF" id="org.tizen.nativeide.target.sbi.gnu.platform.base.799828342" osList="linux,win32" superClass="org.tizen.nativeide.target.sbi.gnu.platform.base"/>
@@ -495,7 +495,7 @@
 									<listOptionValue builtIn="false" value="-Xlinker --version-script=&quot;$(PROJ_PATH)/.exportMap&quot;"/>
 									<listOptionValue builtIn="false" value="-L&quot;$(SBI_SYSROOT)/usr/lib&quot;"/>
 									<listOptionValue builtIn="false" value="$(RS_LIBRARIES)"/>
-									<listOptionValue builtIn="false" value="-Xlinker -rpath=&quot;/opt/usr/apps/org.tizen.gta_holy_bible/lib&quot;"/>
+									<listOptionValue builtIn="false" value="-Xlinker -rpath=&quot;/opt/usr/apps/org.tizen.gtaholybiblemal/lib&quot;"/>
 								</option>
 								<option id="gnu.cpp.link.option.paths.158772009" name="Library search path (-L)" superClass="gnu.cpp.link.option.paths" valueType="libPaths">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/lib}&quot;"/>
@@ -514,7 +514,7 @@
 							<tool id="org.tizen.nativecore.tool.ast.cpp.276690483" name="C++ Static Analyzer" superClass="org.tizen.nativecore.tool.ast.cpp"/>
 							<tool id="org.tizen.nativecore.tool.sbi.po.compiler.1437605698" name="PO Resource Compiler" superClass="org.tizen.nativecore.tool.sbi.po.compiler"/>
 							<tool id="org.tizen.nativecore.tool.sbi.edc.compiler.1953625576" name="EDC Resource Compiler" superClass="org.tizen.nativecore.tool.sbi.edc.compiler">
-								<option id="sbi.gnu.edc.compiler.option.misc.id.1129598466" superClass="sbi.gnu.edc.compiler.option.misc.id" valueType="stringList">
+								<option id="sbi.gnu.edc.compiler.option.misc.id.750325076" superClass="sbi.gnu.edc.compiler.option.misc.id" valueType="stringList">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/res/edje/images}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/shared/res}&quot;"/>
 								</option>

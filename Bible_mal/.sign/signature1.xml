@@ -4,15 +4,15 @@
 <SignatureMethod Algorithm="http://www.w3.org/2001/04/xmldsig-more#rsa-sha256"></SignatureMethod>
 <Reference URI="author-signature.xml">
 <DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha256"></DigestMethod>
-<DigestValue>4zEYjCCU17+6WOLRIqPf3rDTOg0RJKq6Gzjo9EyhTyk=</DigestValue>
+<DigestValue>QTak4dx7eyWVneB9fOOnhoUvaKGFi09Z87cpBA+uqeM=</DigestValue>
 </Reference>
-<Reference URI="bin%2Fgta_holy_bible">
+<Reference URI="bin%2Fgtaholybiblemal">
 <DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha256"></DigestMethod>
-<DigestValue>yy07K83ElqazC4Z9EnqNkZEKUzt6qdQoN4ms7VMSAl0=</DigestValue>
+<DigestValue>IN3/5kTTJyngPTiRa3oQceKf9kuTwnGhwgFz1kUC8/Y=</DigestValue>
 </Reference>
 <Reference URI="res%2Fedje%2Fbible.edj">
 <DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha256"></DigestMethod>
-<DigestValue>mcR71jQXShR81uccQHatJemHllmlA5rGEajNn2saK44=</DigestValue>
+<DigestValue>DbG0ktywjD3z/JVID1eAhBQd3SibDrxBwKlxG/YhC6c=</DigestValue>
 </Reference>
 <Reference URI="res%2Fedje%2Fimages%2Fdown_arrow.png">
 <DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha256"></DigestMethod>
@@ -30,9 +30,9 @@
 <DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha256"></DigestMethod>
 <DigestValue>+9OQyKM8dZIJj5J+pixJ7BaIFmiEv4AdbHnbkgl2yhM=</DigestValue>
 </Reference>
-<Reference URI="res%2Fholybible_eng.db">
+<Reference URI="res%2Fholybible.db">
 <DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha256"></DigestMethod>
-<DigestValue>QEyYzsBFDq19aJIPz1/kjRbqt1jd13xpwDF3wi0WJyg=</DigestValue>
+<DigestValue>94RbymUgOHZFTs9iJEY+tbmaEGM05r+fuiRYxv2AqKw=</DigestValue>
 </Reference>
 <Reference URI="shared%2Fres%2FBible.png">
 <DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha256"></DigestMethod>
@@ -40,7 +40,7 @@
 </Reference>
 <Reference URI="tizen-manifest.xml">
 <DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha256"></DigestMethod>
-<DigestValue>Ch8EJDKeD6CkBtwdEMpGEes4Az5Ur1QC8WVacWIMtl4=</DigestValue>
+<DigestValue>dpFEBAAG30QeeD6JbYZUVX+wUXiAZIBoFOZ9c16DTf4=</DigestValue>
 </Reference>
 <Reference URI="#prop">
 <Transforms>
@@ -51,11 +51,11 @@
 </Reference>
 </SignedInfo>
 <SignatureValue>
-S5k/kwy2/1b9/vnYY5YhWBAa8L/FUZCmNAl+HpNYnEeumr2uVDi3tzVS/wWH+kIDViBNlKqN6Lfq
-eR1J9SheKBLCNxS7ATHOf+Ec75SuczdfFepFUyhVfq04xIKv/AH3HxBFV95q0j+95joO4nZ33oHx
-wu+Mk9a5PyQNVUSREYwStrvGTcZ8hFz/lkht+cNU9POa6KLrTmmrfYcCVxrPSVKXVJgWcRaE/cyI
-a58u8XaMxm9dg14yn2C11BqEyssIbKc83WYym8e7AMw5bfNF0AXddjerU/NlIafMyFmKqyjWQvq6
-xTYRoEUgKTfPRrAkA1UvbMGlxRBRKv8qPXnzQg==
+KtwdN2/ry9CqenlFPAaa87I11CqnMijJMtq/JvTJbfwKOq4c1C7sMiBnKiAHm1lfxanXSSuXaXcU
+RB1WF13pDpbUfFxq+nGw+PYgBl80EtEdMLpd2U/i17ni0eR3gckxI8LWA3zx1Ld6BCW0mmKqXleb
+IDL8ZOtvRgCEiA7EjO2ECri+sFN+YA1+W5dGJBWDfpTtNL8FM8sgAGuqL4yhFPyyqnSgQnlrwK3P
+s0LFCQqe+ErMWTLE90cnf7Td+HWYKpDquTbbzUbgOUjLdsvv57f9K/5nDLSmw+zNhFIYwjP8ereL
+TCbtaBsW85uKVa1u4HrL97o4dbayo+V/z2W6Iw==
 </SignatureValue>
 <KeyInfo>
 <X509Data>
