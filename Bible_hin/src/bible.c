@@ -277,7 +277,7 @@ _add_note_cb(void *data, Evas_Object *obj, void *event_info)
 	   evas_object_size_hint_weight_set(note_entry, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
 	   elm_object_content_set(note_popup, note_entry);
 	   Evas_Object *save_btn = elm_button_add(note_popup);
-	   elm_object_text_set(save_btn, "बचाना");
+	   elm_object_text_set(save_btn, "सुरक्षित");
 	   elm_object_part_content_set(note_popup, "button2", save_btn);
 	   evas_object_smart_callback_add(save_btn, "clicked", _save_note_query, verse_item);
    }
