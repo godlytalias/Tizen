@@ -3,4 +3,5 @@
 #modify
 author-signature.xml
 signature1.xml
-res/edje/bible.edj
+bin/gtaholybiblehindi
+tizen-manifest.xml

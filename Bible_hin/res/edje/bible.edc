@@ -437,6 +437,9 @@ collections {
            target: "prev_btn";
            after: "arrow_unhighlight";
         }
+        program { name: "splash_finish";
+           action: SIGNAL_EMIT "elm,holy_bible,splash,over" "elm";
+        }
         program { name: "loading_done";
            signal: "elm,holy_bible,loading,done";
            source: "elm";
@@ -452,6 +455,7 @@ collections {
            target: "elm.text.copyright";
            target: "elm.text.loading";
            target: "elm.swallow.progressbar";
+           after: "splash_finish";
         }
      }
    }

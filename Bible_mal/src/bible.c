@@ -83,6 +83,36 @@ _nxt_chapter(void *data, Evas_Object *obj, const char *emission, const char *sou
 }
 
 static void
+_show_warning_popup(appdata_s *ad)
+{
+	Evas_Object *popup = elm_popup_add(ad->win);
+	elm_object_part_text_set(popup, "title,text", "Malayalam Bible");
+	elm_object_text_set(popup, "This application requires Malayalam language support!");
+	Evas_Object *ok_btn = elm_button_add(popup);
+	elm_object_text_set(ok_btn, "OK");
+	elm_object_part_content_set(popup, "button1", ok_btn);
+	evas_object_smart_callback_add(ok_btn, "clicked", _popup_del, popup);
+	eext_object_event_callback_add(popup, EEXT_CALLBACK_BACK, eext_popup_back_cb, popup);
+	evas_object_show(popup);
+}
+
+static void
+_first_launch_check(void *data, Evas_Object *obj, const char *emission, const char *source)
+{
+	appdata_s *ad = (appdata_s*)data;
+	bool exist;
+	if (preference_is_existing("first_launch", &exist) == 0)
+	{
+		if (!exist)
+		{
+			_show_warning_popup(ad);
+			preference_set_int("first_launch", 0);
+		}
+	}
+	else _show_warning_popup(ad);
+}
+
+static void
 _content_mouse_down(void *data,
         Evas *evas EINA_UNUSED,
         Evas_Object *obj,
@@ -380,6 +410,7 @@ _home_screen(appdata_s *ad)
 	elm_layout_signal_callback_add(ad->layout, "elm,holy_bible,book,change", "elm", _change_book, (void*)ad);
 	elm_layout_signal_callback_add(ad->layout, "elm,holy_bible,next,chapter", "elm", _nxt_chapter, (void*)ad);
 	elm_layout_signal_callback_add(ad->layout, "elm,holy_bible,prev,chapter", "elm", _prev_chapter, (void*)ad);
+	elm_layout_signal_callback_add(ad->layout, "elm,holy_bible,splash,over", "elm", _first_launch_check, (void*)ad);
 
 	elm_object_part_text_set(ad->layout, "elm.text.copyright", "Copyright © 2015 Godly T Alias");
 	elm_object_part_text_set(ad->layout, "elm.text.version", "GTA v0.3");

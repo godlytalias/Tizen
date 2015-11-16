@@ -2,6 +2,7 @@
 #define __bible_H__
 
 #include <app.h>
+#include <app_preference.h>
 #include <Elementary.h>
 #include <system_settings.h>
 #include <efl_extension.h>
