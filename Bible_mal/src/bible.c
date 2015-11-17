@@ -89,7 +89,7 @@ _show_warning_popup(appdata_s *ad)
 	elm_object_part_text_set(popup, "title,text", "Malayalam Bible");
 	elm_object_text_set(popup, "This application requires Malayalam language support!");
 	Evas_Object *ok_btn = elm_button_add(popup);
-	elm_object_text_set(ok_btn, "OK");
+	elm_object_text_set(ok_btn, "GOT IT");
 	elm_object_part_content_set(popup, "button1", ok_btn);
 	evas_object_smart_callback_add(ok_btn, "clicked", _popup_del, popup);
 	eext_object_event_callback_add(popup, EEXT_CALLBACK_BACK, eext_popup_back_cb, popup);
