@@ -1027,7 +1027,7 @@ collections {
                rel1.to: "content_bg";
                rel2.to: "content_bg";
                text.style: "verse_count_style";
-               text.text: "No items to display!";
+               text.text: "दिखाने के लिए कोई आइटम नहीं!";
             }
             description { state: "hide" 0.0;
                inherit: "default" 0.0;
