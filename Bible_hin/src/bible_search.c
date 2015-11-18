@@ -169,7 +169,7 @@ _get_search_results(void *data, int argc, char **argv, char **azColName)
 			   verse_item->versecount = atoi(argv[i]);
 			   verse_item->versecount--;
 		   }
-		   if (!strcmp(azColName[i], "e_verse"))
+		   if (!strcmp(azColName[i], "h_verse"))
 			   verse_item->verse = strdup(argv[i]);
 	   }
 	   verse_item->appdata = ad;
@@ -251,15 +251,15 @@ _search_keyword(void *data,
 	_loading_progress(ad->win);
 	if (keyword) {
 		ch = strtok(keyword, " ");
-		sprintf(keyword_query, "e_verse LIKE '%%%s%%'", ch);
+		sprintf(keyword_query, "h_verse LIKE '%%%s%%'", ch);
 	}
 	ch = strtok(NULL, " ");
 	while (ch)
 	{
-		sprintf(keyword_query, "%s AND e_verse LIKE '%%%s%%'", keyword_query, ch);
+		sprintf(keyword_query, "%s AND h_verse LIKE '%%%s%%'", keyword_query, ch);
 		ch = strtok(NULL, " ");
 	}
-	sprintf(search_query, "SELECT Book, Chapter, Versecount, e_verse FROM eng_bible WHERE %s;", keyword_query);
+	sprintf(search_query, "SELECT Book, Chapter, Versecount, h_verse FROM hin_bible WHERE %s;", keyword_query);
 	_bible_search_query(search_query, ad);
 }
 

@@ -108,7 +108,7 @@ _get_verse_count_query(void *data, int book, int chapter)
 {
 	char query[128];
 
-	sprintf(query, "select count(Versecount) from eng_bible where Book='%s' and Chapter=%d;", Books[book], chapter);
+	sprintf(query, "select count(Versecount) from hin_bible where Book='%s' and Chapter=%d;", Books[book], chapter);
 	_database_query(query, &_get_verse_count, data);
 }
 
@@ -125,7 +125,7 @@ _get_chapter_count_query(void *data, int book)
 {
 	char query[128];
 
-	sprintf(query, "select count(distinct Chapter) from eng_bible where Book='%s';", Books[book]);
+	sprintf(query, "select count(distinct Chapter) from hin_bible where Book='%s';", Books[book]);
 	_database_query(query, &_get_chapter_count, data);
 }
 
@@ -215,7 +215,7 @@ _query_chapter(void *data, int book, int chapter)
     ad->count = 0;
     ad->cur_book = book;
     ad->cur_chapter = chapter;
-    sprintf(query, "select e_verse from eng_bible where Book='%s' and Chapter=%d", Books[book], chapter);
+    sprintf(query, "select h_verse from hin_bible where Book='%s' and Chapter=%d", Books[book], chapter);
 
 	_database_query(query, &_get_verse_list, data);
 	_check_bookmarks(ad);
