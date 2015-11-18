@@ -229,9 +229,11 @@ _share_verse_cb(void *data, Evas_Object *obj, void *event_info)
 	sprintf(buf,"%s ~ %s %d : %d", verse_item->verse, Books[verse_item->bookcount], verse_item->chaptercount, verse_item->versecount + 1);
 	app_control_h handler;
 	app_control_create(&handler);
+	app_control_set_launch_mode(handler, APP_CONTROL_LAUNCH_MODE_GROUP);
 	app_control_set_operation(handler, APP_CONTROL_OPERATION_SHARE_TEXT);
 	app_control_add_extra_data(handler, APP_CONTROL_DATA_TEXT, buf);
 	app_control_send_launch_request(handler, NULL, NULL);
+	app_control_destroy(handler);
 	elm_ctxpopup_dismiss(obj);
 }
 
