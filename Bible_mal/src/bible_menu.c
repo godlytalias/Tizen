@@ -297,6 +297,7 @@ _get_bookmarks(appdata_s *ad)
 	evas_object_size_hint_weight_set(layout, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
 	evas_object_size_hint_align_set(layout, EVAS_HINT_FILL, EVAS_HINT_FILL);
 	ad->bookmarks_notes_genlist = elm_genlist_add(layout);
+	elm_object_style_set(ad->bookmarks_notes_genlist, "handler");
 	evas_object_size_hint_weight_set(ad->bookmarks_notes_genlist, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
 	evas_object_size_hint_align_set(ad->bookmarks_notes_genlist, EVAS_HINT_FILL, EVAS_HINT_FILL);
 	elm_layout_content_set(layout, "elm.swallow.content", ad->bookmarks_notes_genlist);

@@ -1016,10 +1016,31 @@ collections {
                visible: 0;
             }
          }
+         part { name: "no_content_text";
+            type: TEXTBLOCK;
+            scale:1;
+            description { state: "default" 0.0;
+               rel1.to: "content_bg";
+               rel2.to: "content_bg";
+               text.style: "verse_count_style";
+               text.text: "No items to display!";
+            }
+            description { state: "hide" 0.0;
+               inherit: "default" 0.0;
+               visible: 0;
+            }
+         }
          part { name: "elm.swallow.content";
             type: SWALLOW;
             scale: 1;
             description { state: "default" 0.0;
+               rel1.to: "content_bg";
+               rel2.to: "content_bg";
+               visible: 0;
+            }
+            description { state: "hide" 0.0; //actually show
+               inherit: "default" 0.0;
+               visible: 1;
             }
          }
       }
@@ -1029,12 +1050,16 @@ collections {
             source: "elm";
             action: STATE_SET "hide" 0.0;
             target: "content_bg";
+            target: "elm.swallow.content";
+            target: "no_content_text";
          }
          program { name: "content_bg_show";
             signal: "elm,holy_bible,bg,show";
             source: "elm";
             action: STATE_SET "default" 0.0;
             target: "content_bg";
+            target: "elm.swallow.content";
+            target: "no_content_text";
          }
       }
    }
