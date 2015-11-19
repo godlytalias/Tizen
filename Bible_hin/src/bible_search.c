@@ -206,6 +206,8 @@ _bible_search_query(char* search_query, appdata_s *ad)
 	res_count = elm_genlist_items_count(ad->search_result_genlist);
 	if (res_count > 0)
 		elm_layout_signal_emit(ad->search_layout, "elm,holy_bible,bg,hide", "elm");
+	else
+		elm_layout_signal_emit(ad->search_layout, "elm,holy_bible,bg,show", "elm");
 	sprintf(toast, "%d रिसलृट मिला", res_count);
 	Evas_Object *toastp = elm_popup_add(ad->win);
 	elm_object_style_set(toastp, "toast");

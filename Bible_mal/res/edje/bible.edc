@@ -502,6 +502,20 @@ collections {
                visible: 0;
             }
          }
+         part{ name: "no_content_text";
+            type: TEXTBLOCK;
+            scale: 1;
+            description { state: "default" 0.0;
+               rel1.to: "content_bg";
+               rel2.to: "content_bg";
+               text.style: "verse_count_style";
+               text.text: "ഒന്നും കാണിക്കാൻ ഇല്ല!";
+            }
+            description { state: "hide" 0.0;
+               inherit: "default" 0.0;
+               visible: 0;
+            }
+         }
          part{ name: "left_top_padding";
             type: SPACER;
             scale: 1;
@@ -578,7 +592,12 @@ collections {
                rel1.to_y: "elm.content.padding.right_top";
                rel1.relative: 0.0 1.0;
                rel2.to: "base";
-            }         
+               visible: 0;
+            }
+            description { state: "hide" 0.0; //actually show
+               inherit: "default" 0.0;
+               visible: 1;
+            }
          }
          part { name: "down_arrow";
             scale: 1;
@@ -648,12 +667,28 @@ collections {
             target: "up_arrow";
             target: "down_arrow";
          }
+         program { name: "arrow_hide";
+            action: STATE_SET "default" 0.0;
+            target: "up_arrow";
+            target: "down_arrow";
+         }
          program { name: "content_bg_hide";
             signal: "elm,holy_bible,bg,hide";
             source: "elm";
             action: STATE_SET "hide" 0.0;
             target: "content_bg";
+            target: "no_content_text";
+            target: "elm.swallow.result";
             after: "arrow_visible";
+         }
+         program { name: "content_bg_show";
+            signal: "elm,holy_bible,bg,show";
+            source: "elm";
+            action: STATE_SET "show" 0.0;
+            target: "content_bg";
+            target: "no_content_text";
+            target: "elm.swallow.result";
+            after: "arrow_hide";
          }
          program { name: "up_arrow_hide";
             in: 1.0 0.0;
