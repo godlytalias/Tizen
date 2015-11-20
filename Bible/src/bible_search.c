@@ -352,6 +352,7 @@ _dropdown_item_select(void *data, Evas_Object *obj, void *event_info)
 		elm_object_text_set(ad->to_dropdown, book);
 		for (i = 0; i < 66 && strcmp(book, Books[i]); i++);
 		ad->search_from = i;
+                ad->search_to = i;
 		evas_object_data_set(ad->to_dropdown, "appdata", (void*)ad);
 		elm_hoversel_clear(ad->to_dropdown);
 		ecore_idler_add(_hoversel_item_add, ad->to_dropdown);
@@ -477,7 +478,7 @@ create_panel(appdata_s *ad)
 	elm_table_padding_set(main_table, 0, ELM_SCALE_SIZE(16));
 
 	Evas_Object *label = elm_label_add(panel);
-	elm_object_text_set(label, "<align=left>Search entire Bible</align>");
+	elm_object_text_set(label, "<color=#000000FF><align=left>Entire Bible</align></color>");
 	evas_object_show(label);
 	elm_table_pack(main_table, label, 0, 0, 1, 1);
 
@@ -489,13 +490,13 @@ create_panel(appdata_s *ad)
 	elm_table_pack(main_table, ad->check_entire, 1, 0, 1, 1);
 
 	rect = evas_object_rectangle_add(evas_object_evas_get(main_table));
-	evas_object_size_hint_min_set(rect, ELM_SCALE_SIZE(300), ELM_SCALE_SIZE(2));
+	evas_object_size_hint_min_set(rect, ELM_SCALE_SIZE(352), ELM_SCALE_SIZE(2));
 	evas_object_color_set(rect, 0, 50, 50, 200);
 	evas_object_show(rect);
 	elm_table_pack(main_table, rect, 0, 1, 2, 1);
 
 	Evas_Object *label_new = elm_label_add(panel);
-	elm_object_text_set(label_new, "<align=left>New Testament</align>");
+	elm_object_text_set(label_new, "<color=#000000FF><align=left>New Testament</align></color>");
 	evas_object_show(label_new);
 	elm_table_pack(main_table, label_new, 0, 2, 1, 1);
 
@@ -506,7 +507,7 @@ create_panel(appdata_s *ad)
 	elm_table_pack(main_table, ad->check_nt, 1, 2, 1, 1);
 
 	Evas_Object *label_old = elm_label_add(panel);
-	elm_object_text_set(label_old, "<align=left>Old Testament</align>");
+	elm_object_text_set(label_old, "<color=#000000FF><align=left>Old Testament</align></color>");
 	evas_object_show(label_old);
 	elm_table_pack(main_table, label_old, 0, 3, 1, 1);
 
@@ -517,13 +518,13 @@ create_panel(appdata_s *ad)
 	elm_table_pack(main_table, ad->check_ot, 1, 3, 1, 1);
 
 	rect = evas_object_rectangle_add(evas_object_evas_get(main_table));
-	evas_object_size_hint_min_set(rect, ELM_SCALE_SIZE(300), ELM_SCALE_SIZE(2));
+	evas_object_size_hint_min_set(rect, ELM_SCALE_SIZE(352), ELM_SCALE_SIZE(2));
 	evas_object_color_set(rect, 0, 50, 50, 200);
 	evas_object_show(rect);
 	elm_table_pack(main_table, rect, 0, 4, 2, 1);
 
 	Evas_Object *label_custom = elm_label_add(panel);
-	elm_object_text_set(label_custom, "<align=left>Custom search</align>");
+	elm_object_text_set(label_custom, "<color=#000000FF><align=left>Custom search</align></color>");
 	evas_object_show(label_custom);
 	elm_table_pack(main_table, label_custom, 0, 5, 1, 1);
 
@@ -534,7 +535,7 @@ create_panel(appdata_s *ad)
 	elm_table_pack(main_table, ad->check_custom, 1, 5, 1, 1);
 
 	Evas_Object *label_from = elm_label_add(panel);
-	elm_object_text_set(label_from, "<align=left>From</align>");
+	elm_object_text_set(label_from, "<color=#000000FF><align=left>From</align></color>");
 	evas_object_show(label_from);
 	elm_table_pack(main_table, label_from, 0, 6, 1, 1);
 
@@ -548,7 +549,7 @@ create_panel(appdata_s *ad)
 	elm_table_pack(main_table, ad->from_dropdown, 1, 6, 1, 1);
 
 	Evas_Object *label_to = elm_label_add(panel);
-	elm_object_text_set(label_to, "<align=left>To</align>");
+	elm_object_text_set(label_to, "<color=#000000FF><align=left>To</align></color>");
 	evas_object_show(label_to);
 	elm_table_pack(main_table, label_to, 0, 7, 1, 1);
 
@@ -562,13 +563,13 @@ create_panel(appdata_s *ad)
 	elm_table_pack(main_table, ad->to_dropdown, 1, 7, 1, 1);
 
 	rect = evas_object_rectangle_add(evas_object_evas_get(main_table));
-	evas_object_size_hint_min_set(rect, ELM_SCALE_SIZE(300), ELM_SCALE_SIZE(2));
+	evas_object_size_hint_min_set(rect, ELM_SCALE_SIZE(352), ELM_SCALE_SIZE(2));
 	evas_object_color_set(rect, 0, 50, 50, 200);
 	evas_object_show(rect);
 	elm_table_pack(main_table, rect, 0, 8, 2, 1);
 
 	Evas_Object *label_whole = elm_label_add(panel);
-	elm_object_text_set(label_whole, "<align=left>Whole word</align>");
+	elm_object_text_set(label_whole, "<color=#000000FF><align=left>Whole word</align></color>");
 	evas_object_show(label_whole);
 	elm_table_pack(main_table, label_whole, 0, 9, 1, 1);
 
@@ -577,7 +578,7 @@ create_panel(appdata_s *ad)
 	elm_table_pack(main_table, ad->check_whole, 1, 9, 1, 1);
 
 	Evas_Object *label_strict = elm_label_add(panel);
-	elm_object_text_set(label_strict, "<align=left>Strict search</align>");
+	elm_object_text_set(label_strict, "<color=#000000FF><align=left>Strict search</align></color>");
 	evas_object_show(label_strict);
 	elm_table_pack(main_table, label_strict, 0, 10, 1, 1);
 
