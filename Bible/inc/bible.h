@@ -30,9 +30,12 @@ typedef struct appdata{
 	Evas_Object* label, *naviframe;
 	Evas_Object* genlist, *search_result_genlist, *bookmarks_notes_genlist;
 	Evas_Object *list1, *list2, *search_entry, *note_entry;
+	Evas_Object *check_entire, *check_ot, *check_nt, *check_custom, *check_strict, *check_whole;
+	Evas_Object *from_dropdown, *to_dropdown;
 	Elm_Genlist_Item_Class *itc, *search_itc, *bookmarks_itc;
 	Evas_Coord mouse_x, mouse_y;
 	uint mouse_down_time;
+	int search_from, search_to;
 	int count, versecount, chaptercount;
 	int cur_chapter, cur_book;
 	int nxt_chapter, nxt_book;
