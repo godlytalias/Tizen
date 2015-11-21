@@ -31,17 +31,6 @@ _go_bottom(void *data, Evas_Object *obj, const char *emission, const char *sourc
 	elm_genlist_item_bring_in(elm_genlist_last_item_get(ad->search_result_genlist), ELM_GENLIST_ITEM_SCROLLTO_IN);
 }
 
-static Eina_Bool
-_search_navi_pop_cb(void *data, Elm_Object_Item *it)
-{
-	ecore_idler_add(_genlist_free_idler, data);
-	appdata_s *ad = (appdata_s*)data;
-	elm_layout_signal_callback_del(ad->search_layout, "elm,holy_bible,top", "elm", _go_top);
-	elm_layout_signal_callback_del(ad->search_layout, "elm,holy_bible,bottom", "elm", _go_bottom);
-	_loading_progress(ad->win);
-	return EINA_TRUE;
-}
-
 Evas_Object*
 search_gl_content_get_cb(void *data, Evas_Object *obj, const char *part)
 {
@@ -343,7 +332,6 @@ panel_toggle(void *data, Evas_Object *obj, void *event_info)
 				elm_check_state_set(ad->check_entire, EINA_TRUE);
 				evas_object_smart_callback_call(ad->check_entire, "changed", NULL);
 			}
-			eext_object_event_callback_add(panel, EEXT_CALLBACK_BACK, panel_toggle, panel);
 		}
 		else
 		{
@@ -351,7 +339,6 @@ panel_toggle(void *data, Evas_Object *obj, void *event_info)
 				elm_hoversel_hover_end(ad->from_dropdown);
 			if (elm_hoversel_expanded_get(ad->to_dropdown))
 				elm_hoversel_hover_end(ad->to_dropdown);
-			eext_object_event_callback_del(panel, EEXT_CALLBACK_BACK, panel_toggle);
 		}
 	}
 }
@@ -638,6 +625,7 @@ _panel_create(void *data)
 	evas_object_data_set(panel, "appdata", ad);
 	elm_panel_orient_set(panel, ELM_PANEL_ORIENT_LEFT);
 	elm_object_part_content_set(playout, "elm.swallow.left", panel);
+	evas_object_data_set(ad->search_layout, "panel", panel);
 
 	Evas_Object *btn = elm_button_add(ad->naviframe);
 	elm_object_style_set(btn, "naviframe/drawers");
@@ -675,6 +663,23 @@ _content_mouse_up(void *data,
    if (abs(x_del) < 100) return;
    if (x_del > 0)
 	   panel_toggle(ad, NULL, NULL);
+}
+
+static Eina_Bool
+_search_navi_pop_cb(void *data, Elm_Object_Item *it)
+{
+	appdata_s *ad = (appdata_s*)data;
+	Evas_Object *panel = (Evas_Object*)evas_object_data_get(ad->search_layout, "panel");
+	if (!elm_panel_hidden_get(panel))
+	{
+		panel_toggle(panel, panel, NULL);
+		return EINA_FALSE;
+	}
+	ecore_idler_add(_genlist_free_idler, data);
+	elm_layout_signal_callback_del(ad->search_layout, "elm,holy_bible,top", "elm", _go_top);
+	elm_layout_signal_callback_del(ad->search_layout, "elm,holy_bible,bottom", "elm", _go_bottom);
+	_loading_progress(ad->win);
+	return EINA_TRUE;
 }
 
 void
