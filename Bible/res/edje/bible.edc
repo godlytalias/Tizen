@@ -536,6 +536,19 @@ collections {
                align: 0.0 0.0;
             }
          }
+         part { name: "elm.entry.underline";
+            type: RECT;
+            scale: 1;
+            description { state: "default" 0.0;
+               min: 300 2;
+               fixed: 1 1;
+               rel1.to: "elm.swallow.entry";
+               rel1.relative: 0.0 1.0;
+               rel2.to: "elm.swallow.entry";
+               align: 0.5 1.0;
+               color_class: "F057";
+            }
+         }
          part { name: "elm.swallow.go";
             type: SWALLOW;
             scale: 1;
