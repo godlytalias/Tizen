@@ -375,7 +375,7 @@ collections {
            signal: "mouse,up,*";
            source: "change_book_event";
            script {
-              if (get_int(click_mod) == 1) {
+              if (get_int(click_mod) < 10) {
                  run_program(PROGRAM:"change_book_event_run");
               }
            }
@@ -384,7 +384,7 @@ collections {
            signal: "mouse,move";
            source: "change_book_event";
            script {
-              set_int(click_mod, 0);
+              set_int(click_mod, get_int(click_mod)+1);
            }
         }
         program { name: "next_chap_signal";
