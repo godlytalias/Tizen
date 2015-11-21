@@ -96,7 +96,7 @@ _search_result_selected(void *data, Evas_Object *obj, void *event_info)
 	bible_verse_item *verse_item = (bible_verse_item*)data;
 	char title[128];
 	Elm_Object_Item *item = (Elm_Object_Item*)event_info;
-	Evas_Object *verse_popup = elm_popup_add(verse_item->appdata->search_result_genlist);
+	Evas_Object *verse_popup = elm_popup_add(verse_item->appdata->search_layout);
 	elm_popup_align_set(verse_popup, ELM_NOTIFY_ALIGN_FILL, 1.0);
 	sprintf(title, "%s %d : %d", Books[verse_item->bookcount], verse_item->chaptercount, verse_item->versecount + 1);
 	elm_object_part_text_set(verse_popup, "title,text", title);
@@ -322,10 +322,32 @@ _search_keyword(void *data,
 }
 
 static void
-btn_cb(void *data, Evas_Object *obj, void *event_info)
+panel_toggle(void *data, Evas_Object *obj, void *event_info)
 {
-	Evas_Object *panel = data;
-	if (!elm_object_disabled_get(panel)) elm_panel_toggle(panel);
+	if (!obj)
+	{
+		appdata_s *ad = (appdata_s*)data;
+		Evas_Object* panel_btn = (Evas_Object*) elm_object_item_part_content_get
+				  (elm_naviframe_top_item_get(ad->naviframe), "drawers");
+		evas_object_smart_callback_call(panel_btn, "clicked", NULL);
+	}
+	else
+	{
+		Evas_Object* panel = (Evas_Object*)data;
+		appdata_s *ad = (appdata_s*)evas_object_data_get(panel, "appdata");
+		if (!elm_object_disabled_get(panel)) elm_panel_toggle(panel);
+		if (!elm_panel_hidden_get(panel))
+		{
+			if (elm_check_state_get(ad->check_custom) && elm_object_disabled_get(ad->to_dropdown))
+			{
+				elm_check_state_set(ad->check_entire, EINA_TRUE);
+				evas_object_smart_callback_call(ad->check_entire, "changed", NULL);
+			}
+			eext_object_event_callback_add(panel, EEXT_CALLBACK_BACK, panel_toggle, panel);
+		}
+		else
+			eext_object_event_callback_del(panel, EEXT_CALLBACK_BACK, panel_toggle);
+	}
 }
 
 static Evas_Object*
@@ -352,7 +374,7 @@ _dropdown_item_select(void *data, Evas_Object *obj, void *event_info)
 		elm_object_text_set(ad->to_dropdown, book);
 		for (i = 0; i < 66 && strcmp(book, Books[i]); i++);
 		ad->search_from = i;
-                ad->search_to = i;
+		ad->search_to = i;
 		evas_object_data_set(ad->to_dropdown, "appdata", (void*)ad);
 		elm_hoversel_clear(ad->to_dropdown);
 		ecore_idler_add(_hoversel_item_add, ad->to_dropdown);
@@ -360,7 +382,7 @@ _dropdown_item_select(void *data, Evas_Object *obj, void *event_info)
 	}
 	else
 	{
-		for (i = ad->search_from; i < 66, strcmp(book, Books[i]); i++);
+		for (i = ad->search_from; i < 66 && strcmp(book, Books[i]); i++);
 		ad->search_to = i;
 	}
 }
@@ -370,9 +392,11 @@ _hoversel_item_add(void *data)
 {
 	Evas_Object *hoversel = (Evas_Object*)data;
 	appdata_s *ad = (appdata_s*)evas_object_data_get(hoversel, "appdata");
+	Evas_Object *loading = _loading_progress_show(ad->naviframe);
 	int i;
 	for(i = ad->search_from; i < 66; i++)
 			elm_hoversel_item_add(hoversel, Books[i], NULL, 0, _dropdown_item_select, ad);
+	_loading_progress_hide(loading);
 	return ECORE_CALLBACK_DONE;
 }
 
@@ -442,6 +466,8 @@ _custom_pref_changed(void *data, Evas_Object *obj, void *event_info)
 		if (eina_list_count(elm_hoversel_items_get(ad->from_dropdown)) < 66)
 		   ecore_idler_add(_hoversel_item_add, ad->from_dropdown);
 		elm_object_disabled_set(ad->from_dropdown, EINA_FALSE);
+		elm_object_text_set(ad->from_dropdown, "Select Book");
+		elm_object_text_set(ad->to_dropdown, "Select Book");
 	}
 	else elm_check_state_set(ad->check_custom, EINA_TRUE);
 }
@@ -603,14 +629,46 @@ _panel_create(void *data)
 	elm_layout_content_set(ad->search_layout, "elm.swallow.panel", playout);
 
 	Evas_Object *panel = create_panel(ad);
+	evas_object_data_set(panel, "appdata", ad);
 	elm_panel_orient_set(panel, ELM_PANEL_ORIENT_LEFT);
 	elm_object_part_content_set(playout, "elm.swallow.left", panel);
 
 	Evas_Object *btn = elm_button_add(ad->naviframe);
 	elm_object_style_set(btn, "naviframe/drawers");
-	evas_object_smart_callback_add(btn, "clicked", btn_cb, panel);
+	evas_object_smart_callback_add(btn, "clicked", panel_toggle, panel);
 	elm_object_item_part_content_set(elm_naviframe_top_item_get(ad->naviframe), "drawers", btn);
 	return ECORE_CALLBACK_DONE;
+}
+
+static void
+_content_mouse_down(void *data,
+        Evas *evas EINA_UNUSED,
+        Evas_Object *obj,
+        void *event_info)
+{
+   appdata_s *ad = (appdata_s*)data;
+   Evas_Event_Mouse_Down *ev = (Evas_Event_Mouse_Down*)event_info;
+   ad->mouse_x = ev->canvas.x;
+   ad->mouse_y = ev->canvas.y;
+   ad->mouse_down_time = ev->timestamp;
+}
+
+static void
+_content_mouse_up(void *data,
+        Evas *evas EINA_UNUSED,
+        Evas_Object *obj,
+        void *event_info)
+{
+   appdata_s *ad = (appdata_s*)data;
+   int x_del, y_del;
+   Evas_Event_Mouse_Up *ev = (Evas_Event_Mouse_Up*)event_info;
+   if ((ev->timestamp - ad->mouse_down_time) > 1000) return;
+   x_del = ev->canvas.x - ad->mouse_x;
+   y_del = ev->canvas.y - ad->mouse_y;
+   if (abs(x_del) < (2 * abs(y_del))) return;
+   if (abs(x_del) < 100) return;
+   if (x_del > 0)
+	   panel_toggle(ad, NULL, NULL);
 }
 
 void
@@ -640,6 +698,8 @@ _search_word(void *data,
 	evas_object_smart_callback_add(ad->search_entry, "activated", _search_keyword, (void*)ad);
 	evas_object_show(go_btn);
 	elm_object_part_content_set(ad->search_layout, "elm.swallow.go", go_btn);
+	evas_object_event_callback_add(ad->search_layout, EVAS_CALLBACK_MOUSE_DOWN, _content_mouse_down, ad);
+	evas_object_event_callback_add(ad->search_layout, EVAS_CALLBACK_MOUSE_UP, _content_mouse_up, ad);
 	nf_it = elm_naviframe_item_push(ad->naviframe, "Search", NULL, NULL, ad->search_layout, "drawers");
 	elm_naviframe_item_pop_cb_set(nf_it, _search_navi_pop_cb, ad);
 	ecore_idler_add(_panel_create, ad);

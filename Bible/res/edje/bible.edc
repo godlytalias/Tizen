@@ -644,11 +644,21 @@ collections {
             type: SWALLOW;
             scale: 1;
             description { state: "default" 0.0;
-               min: 300 0;
+               min: 400 0;
                fixed: 1 0;
                rel1.to: "base";
                rel2.to: "base";
             }         
+         }
+         part{ name: "events";
+            type: RECT;
+            scale: 1;
+            repeat_events: 1;
+            description { state: "default" 0.0;
+               rel1.to: "elm.swallow.result";
+               rel2.to: "elm.swallow.result";
+               color: 0 0 0 0;
+            }
          }
       }
       
@@ -797,7 +807,7 @@ collections {
                rel2.to_x: "right_bottom_padding";
                rel2.to_y: "left_top_padding";
                rel2.relative: 0.0 1.0;
-               min: 400 60;
+               min: 352 60;
                fixed: 1 1;
                align: 0.0 0.0;
                text.style: "heading_style";
