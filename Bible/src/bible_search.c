@@ -346,7 +346,13 @@ panel_toggle(void *data, Evas_Object *obj, void *event_info)
 			eext_object_event_callback_add(panel, EEXT_CALLBACK_BACK, panel_toggle, panel);
 		}
 		else
+		{
+			if (elm_hoversel_expanded_get(ad->from_dropdown))
+				elm_hoversel_hover_end(ad->from_dropdown);
+			if (elm_hoversel_expanded_get(ad->to_dropdown))
+				elm_hoversel_hover_end(ad->to_dropdown);
 			eext_object_event_callback_del(panel, EEXT_CALLBACK_BACK, panel_toggle);
+		}
 	}
 }
 

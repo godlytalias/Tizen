@@ -619,6 +619,48 @@ ctxpopup_item_select_cb(void *data, Evas_Object *obj, void *event_info)
 				evas_object_show(label);
 				elm_box_pack_end(content_box, label);
 
+
+				sprintf(text_content, "<color=#000000FF><align=left><font_size=25>"
+					"<b>Search Preferences</b></font_size></align></color>");
+
+						label = elm_label_add(popup);
+						evas_object_size_hint_weight_set(label, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
+						evas_object_size_hint_align_set(label, EVAS_HINT_FILL, EVAS_HINT_FILL);
+						elm_label_line_wrap_set(label, ELM_WRAP_WORD);
+						elm_object_text_set(label, text_content);
+						evas_object_show(label);
+						elm_box_pack_end(content_box, label);
+
+
+						sprintf(text_content, "<color=#000000FF><align=left><font_size=20>"
+						"User can set specific conditions on searching for a keyword. "
+						"Search preferences include options to restrict search to new testament, old testament or to some custom books as set by user. "
+						"There are certain other options to control the searching,<br/> "
+						"<b>Whole Word:</b><br/>User will get only the words exactly matching the keyword entered if this option is enabled. "
+						"If it is not enabled search results will include verses with words partially matching the keyword entered also. For eg. on searching Love, if "
+						"this option is enabled search results will include verses which contain 'Loves' 'Loved' etc.. else only verses which contain a word "
+						"exactly matching 'Love' only will be included in the result.<br/>"
+						"<b>Strict Search:</b><br/>This option is useful only when searching with more than one keyword. "
+						"If this option is enabled, only verses which contain all the entered keyword "
+						"will be included, otherwise even if one keyword entered is present in the verse, it will be included in the result. </font_size></align></color>");
+
+						label = elm_label_add(popup);
+						evas_object_size_hint_weight_set(label, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
+						evas_object_size_hint_align_set(label, EVAS_HINT_FILL, EVAS_HINT_FILL);
+						elm_label_line_wrap_set(label, ELM_WRAP_WORD);
+						elm_object_text_set(label, text_content);
+						evas_object_show(label);
+						elm_box_pack_end(content_box, label);
+
+						label = elm_label_add(popup);
+						evas_object_size_hint_weight_set(label, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
+						evas_object_size_hint_align_set(label, EVAS_HINT_FILL, EVAS_HINT_FILL);
+						elm_label_line_wrap_set(label, ELM_WRAP_WORD);
+						sprintf(text_content, " ");
+						elm_object_text_set(label, text_content);
+						evas_object_show(label);
+						elm_box_pack_end(content_box, label);
+
 				sprintf(text_content, "<color=#000000FF><align=left><font_size=25>"
 					"<b>Add notes</b></font_size></align></color>");
 
