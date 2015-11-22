@@ -532,6 +532,7 @@ create_base_gui(appdata_s *ad)
 	elm_win_conformant_set(ad->win, EINA_TRUE);
 	app_get_resource(EDJ_FILE, ad->edj_path, (int)PATH_MAX);
 	elm_language_set("hi_IN");
+	elm_app_base_scale_set(1.8);
 
 	Evas_Object *conform = elm_conformant_add(ad->win);
 	evas_object_size_hint_weight_set(conform, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
