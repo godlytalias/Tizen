@@ -11,8 +11,8 @@ collections {
          tag: "tab" "\t";
       }
       style {
-         name: "title_style_black";
-         base: "font=Tizen:style=Bold align=center font_size=25 color=#000000 wrap=mixed ellipsis=1.0";
+         name: "heading_style";
+         base: "font=Tizen:style=Regular align=center font_size=25 color=#000000 wrap=mixed ellipsis=1.0";
          tag: "br" "\n";
          tag: "ps" "ps";
          tag: "hilight" "+ font_weight=Bold";
@@ -375,7 +375,7 @@ collections {
            signal: "mouse,up,*";
            source: "change_book_event";
            script {
-              if (get_int(click_mod) == 1) {
+              if (get_int(click_mod) < 10) {
                  run_program(PROGRAM:"change_book_event_run");
               }
            }
@@ -384,7 +384,7 @@ collections {
            signal: "mouse,move";
            source: "change_book_event";
            script {
-              set_int(click_mod, 0);
+              set_int(click_mod, get_int(click_mod)+1);
            }
         }
         program { name: "next_chap_signal";
@@ -540,6 +540,19 @@ collections {
                align: 0.0 0.0;
             }
          }
+         part { name: "elm.entry.underline";
+            type: RECT;
+            scale: 1;
+            description { state: "default" 0.0;
+               min: 300 2;
+               fixed: 1 1;
+               rel1.to: "elm.swallow.entry";
+               rel1.relative: 0.0 1.0;
+               rel2.to: "elm.swallow.entry";
+               align: 0.5 1.0;
+               color_class: "F057";
+            }
+         }
          part { name: "elm.swallow.go";
             type: SWALLOW;
             scale: 1;
@@ -644,6 +657,26 @@ collections {
                color: 255 255 255 200;
             }
          }
+         part{ name: "elm.swallow.panel";
+            type: SWALLOW;
+            scale: 1;
+            description { state: "default" 0.0;
+               min: 400 0;
+               fixed: 1 0;
+               rel1.to: "base";
+               rel2.to: "base";
+            }         
+         }
+         part{ name: "events";
+            type: RECT;
+            scale: 1;
+            repeat_events: 1;
+            description { state: "default" 0.0;
+               rel1.to: "elm.swallow.result";
+               rel2.to: "elm.swallow.result";
+               color: 0 0 0 0;
+            }
+         }
       }
       
       programs {
@@ -746,6 +779,103 @@ collections {
          }
       }
    }
+   
+   
+   group{ name: "panel_layout";
+      parts {
+         part{ name: "base";
+            type: SPACER;
+            scale: 1;
+            description { state: "default" 0.0;
+               min: 400 64;
+               fixed: 1 0;
+            }
+         }
+         part{ name: "left_top_padding";
+            type: SPACER;
+            scale: 1;
+            description { state: "default" 0.0;
+               min: 24 24;
+               fixed: 1 1;
+               rel1.to: "base";
+               rel2.to: "base";
+               rel2.relative: 0.0 0.0;
+               align: 0.0 0.0;
+            }
+         }
+         part{ name: "right_bottom_padding";
+            type: SPACER;
+            scale: 1;
+            description { state: "default" 0.0;
+               min: 24 24;
+               fixed: 1 1;
+               rel1.to: "base";
+               rel1.relative: 1.0 1.0;
+               rel2.to: "base";
+               align: 1.0 1.0;
+            }
+         }
+         part { name: "elm.text.title";
+            type: TEXTBLOCK;
+            scale: 1;
+            description { state: "default" 0.0;
+               rel1.to: "left_top_padding";
+               rel1.relative: 1.0 1.0;
+               rel2.to_x: "right_bottom_padding";
+               rel2.to_y: "left_top_padding";
+               rel2.relative: 0.0 1.0;
+               min: 352 60;
+               fixed: 1 1;
+               align: 0.0 0.0;
+               text.style: "heading_style";
+               text.min: 1 1;
+            }
+         }
+         part{ name: "elm.content.padding.top";
+            type: SPACER;
+            scale: 1;
+            description { state: "default" 0.0;
+               rel1.to: "elm.text.title";
+               rel1.relative: 0.0 1.0;
+               rel2.to: "elm.text.title";
+               rel2.relative: 1.0 1.0;
+               min: 0 32;
+               fixed: 0 1;
+               align: 0.0 0.0;
+            }
+         }
+         part{ name: "elm.swallow.content";
+            type: SWALLOW;
+            scale: 1;
+            description { state: "default" 0.0;
+               min: 352 0;
+               fixed: 1 0;
+               rel1.to_x: "left_top_padding";
+               rel1.to_y: "elm.content.padding.top";
+               rel1.relative: 1.0 1.0;
+               rel2.to: "right_bottom_padding";
+               rel2.relative: 0.0 0.0;
+               align: 0.0 0.0;
+            }         
+         }
+         part { name: "divider";
+            type: RECT;
+            scale: 1;
+            description { state: "default" 0.0;
+               min: 400 2;
+               fixed: 1 1;
+               rel1.to_x: "base";
+               rel1.to_y: "elm.content.padding.top";
+               rel2.to_x: "base";
+               rel2.to_y: "elm.content.padding.top";
+               rel2.relative: 1.0 0.0;
+               color: 0 100 100 100;
+               align: 0.0 1.0;
+            }
+         }
+      }
+   }
+   
    
    group{ name: "verse_layout";
       parts {
