@@ -371,7 +371,6 @@ _dropdown_item_select(void *data, Evas_Object *obj, void *event_info)
 		evas_object_data_set(ad->to_dropdown, "appdata", (void*)ad);
 		elm_hoversel_clear(ad->to_dropdown);
 		ecore_idler_add(_hoversel_item_add, ad->to_dropdown);
-		elm_object_disabled_set(ad->to_dropdown, EINA_FALSE);
 	}
 	else
 	{
@@ -381,15 +380,30 @@ _dropdown_item_select(void *data, Evas_Object *obj, void *event_info)
 }
 
 static Eina_Bool
+_hoversel_item_creation(void *data)
+{
+	int i;
+	Evas_Object *hoversel = (Evas_Object*)data;
+	appdata_s *ad = (appdata_s*)evas_object_data_get(hoversel, "appdata");
+	elm_object_disabled_set(hoversel, EINA_FALSE);
+	for(i = ad->search_from; i < 66; i++)
+			elm_hoversel_item_add(hoversel, Books[i], NULL, 0, _dropdown_item_select, ad);
+	Evas_Object *loading = (Evas_Object*)evas_object_data_get(hoversel, "loading");
+	evas_object_del(loading);
+	return ECORE_CALLBACK_DONE;
+}
+
+static Eina_Bool
 _hoversel_item_add(void *data)
 {
 	Evas_Object *hoversel = (Evas_Object*)data;
 	appdata_s *ad = (appdata_s*)evas_object_data_get(hoversel, "appdata");
-	Evas_Object *loading = _loading_progress_show(ad->naviframe);
-	int i;
-	for(i = ad->search_from; i < 66; i++)
-			elm_hoversel_item_add(hoversel, Books[i], NULL, 0, _dropdown_item_select, ad);
-	_loading_progress_hide(loading);
+	Evas_Object *loading = elm_popup_add(ad->naviframe);
+	elm_object_style_set(loading, "toast");
+	elm_object_text_set(loading, "लोड हो रहा है...");
+	evas_object_data_set(hoversel, "loading", loading);
+	evas_object_show(loading);
+	ecore_timer_add(0.3, _hoversel_item_creation, hoversel);
 	return ECORE_CALLBACK_DONE;
 }
 
@@ -458,7 +472,8 @@ _custom_pref_changed(void *data, Evas_Object *obj, void *event_info)
 		evas_object_data_set(ad->from_dropdown, "appdata", (void*)ad);
 		if (eina_list_count(elm_hoversel_items_get(ad->from_dropdown)) < 66)
 		   ecore_idler_add(_hoversel_item_add, ad->from_dropdown);
-		elm_object_disabled_set(ad->from_dropdown, EINA_FALSE);
+		else
+			elm_object_disabled_set(ad->from_dropdown, EINA_FALSE);
 		elm_object_text_set(ad->from_dropdown, "पुस्तक चुनें");
 		elm_object_text_set(ad->to_dropdown, "पुस्तक चुनें");
 	}
