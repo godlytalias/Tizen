@@ -497,7 +497,7 @@ create_panel(appdata_s *ad)
 	elm_table_padding_set(main_table, 0, ELM_SCALE_SIZE(16));
 
 	Evas_Object *label = elm_label_add(panel);
-	elm_object_text_set(label, "<color=#000000FF><align=left>Entire Bible</align></color>");
+	elm_object_text_set(label, "<color=#000000FF><align=left><font_size=30>Entire Bible</font></align></color>");
 	evas_object_show(label);
 	elm_table_pack(main_table, label, 0, 0, 1, 1);
 
@@ -515,7 +515,7 @@ create_panel(appdata_s *ad)
 	elm_table_pack(main_table, rect, 0, 1, 2, 1);
 
 	Evas_Object *label_new = elm_label_add(panel);
-	elm_object_text_set(label_new, "<color=#000000FF><align=left>New Testament</align></color>");
+	elm_object_text_set(label_new, "<color=#000000FF><align=left><font_size=30>New Testament</font></align></color>");
 	evas_object_show(label_new);
 	elm_table_pack(main_table, label_new, 0, 2, 1, 1);
 
@@ -526,7 +526,7 @@ create_panel(appdata_s *ad)
 	elm_table_pack(main_table, ad->check_nt, 1, 2, 1, 1);
 
 	Evas_Object *label_old = elm_label_add(panel);
-	elm_object_text_set(label_old, "<color=#000000FF><align=left>Old Testament</align></color>");
+	elm_object_text_set(label_old, "<color=#000000FF><align=left><font_size=30>Old Testament</font></align></color>");
 	evas_object_show(label_old);
 	elm_table_pack(main_table, label_old, 0, 3, 1, 1);
 
@@ -543,7 +543,7 @@ create_panel(appdata_s *ad)
 	elm_table_pack(main_table, rect, 0, 4, 2, 1);
 
 	Evas_Object *label_custom = elm_label_add(panel);
-	elm_object_text_set(label_custom, "<color=#000000FF><align=left>Custom search</align></color>");
+	elm_object_text_set(label_custom, "<color=#000000FF><align=left><font_size=30>Custom search</font></align></color>");
 	evas_object_show(label_custom);
 	elm_table_pack(main_table, label_custom, 0, 5, 1, 1);
 
@@ -554,7 +554,7 @@ create_panel(appdata_s *ad)
 	elm_table_pack(main_table, ad->check_custom, 1, 5, 1, 1);
 
 	Evas_Object *label_from = elm_label_add(panel);
-	elm_object_text_set(label_from, "<color=#000000FF><align=left>From</align></color>");
+	elm_object_text_set(label_from, "<color=#000000FF><align=left><font_size=30>From</font></align></color>");
 	evas_object_show(label_from);
 	elm_table_pack(main_table, label_from, 0, 6, 1, 1);
 
@@ -568,7 +568,7 @@ create_panel(appdata_s *ad)
 	elm_table_pack(main_table, ad->from_dropdown, 1, 6, 1, 1);
 
 	Evas_Object *label_to = elm_label_add(panel);
-	elm_object_text_set(label_to, "<color=#000000FF><align=left>To</align></color>");
+	elm_object_text_set(label_to, "<color=#000000FF><align=left><font_size=30>To</font></align></color>");
 	evas_object_show(label_to);
 	elm_table_pack(main_table, label_to, 0, 7, 1, 1);
 
@@ -588,7 +588,7 @@ create_panel(appdata_s *ad)
 	elm_table_pack(main_table, rect, 0, 8, 2, 1);
 
 	Evas_Object *label_whole = elm_label_add(panel);
-	elm_object_text_set(label_whole, "<color=#000000FF><align=left>Whole word</align></color>");
+	elm_object_text_set(label_whole, "<color=#000000FF><align=left><font_size=30>Whole word</font></align></color>");
 	evas_object_show(label_whole);
 	elm_table_pack(main_table, label_whole, 0, 9, 1, 1);
 
@@ -597,7 +597,7 @@ create_panel(appdata_s *ad)
 	elm_table_pack(main_table, ad->check_whole, 1, 9, 1, 1);
 
 	Evas_Object *label_strict = elm_label_add(panel);
-	elm_object_text_set(label_strict, "<color=#000000FF><align=left>Strict search</align></color>");
+	elm_object_text_set(label_strict, "<color=#000000FF><align=left><font_size=30>Strict search</font></align></color>");
 	evas_object_show(label_strict);
 	elm_table_pack(main_table, label_strict, 0, 10, 1, 1);
 

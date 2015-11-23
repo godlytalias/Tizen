@@ -500,7 +500,7 @@ create_panel(appdata_s *ad)
 	elm_table_padding_set(main_table, 0, ELM_SCALE_SIZE(16));
 
 	Evas_Object *label = elm_label_add(panel);
-	elm_object_text_set(label, "<color=#000000FF><align=left>മുഴുവൻ<br/>ബൈബിൾ</align></color>");
+	elm_object_text_set(label, "<color=#000000FF><align=left><font_size=30>മുഴുവൻ<br/>ബൈബിൾ</font></align></color>");
 	evas_object_show(label);
 	elm_table_pack(main_table, label, 0, 0, 1, 1);
 
@@ -518,7 +518,7 @@ create_panel(appdata_s *ad)
 	elm_table_pack(main_table, rect, 0, 1, 2, 1);
 
 	Evas_Object *label_new = elm_label_add(panel);
-	elm_object_text_set(label_new, "<color=#000000FF><align=left>പുതിയ<br/>നിയമം</align></color>");
+	elm_object_text_set(label_new, "<color=#000000FF><align=left><font_size=30>പുതിയ<br/>നിയമം</font></align></color>");
 	evas_object_show(label_new);
 	elm_table_pack(main_table, label_new, 0, 2, 1, 1);
 
@@ -529,7 +529,7 @@ create_panel(appdata_s *ad)
 	elm_table_pack(main_table, ad->check_nt, 1, 2, 1, 1);
 
 	Evas_Object *label_old = elm_label_add(panel);
-	elm_object_text_set(label_old, "<color=#000000FF><align=left>പഴയ<br/>നിയമം</align></color>");
+	elm_object_text_set(label_old, "<color=#000000FF><align=left><font_size=30>പഴയ<br/>നിയമം</font></align></color>");
 	evas_object_show(label_old);
 	elm_table_pack(main_table, label_old, 0, 3, 1, 1);
 
@@ -546,7 +546,7 @@ create_panel(appdata_s *ad)
 	elm_table_pack(main_table, rect, 0, 4, 2, 1);
 
 	Evas_Object *label_custom = elm_label_add(panel);
-	elm_object_text_set(label_custom, "<color=#000000FF><align=left>സ്വതന്ത്ര<br/>തിരയൽ</align></color>");
+	elm_object_text_set(label_custom, "<color=#000000FF><align=left><font_size=30>സ്വതന്ത്ര<br/>തിരയൽ</font></align></color>");
 	evas_object_show(label_custom);
 	elm_table_pack(main_table, label_custom, 0, 5, 1, 1);
 
@@ -557,7 +557,7 @@ create_panel(appdata_s *ad)
 	elm_table_pack(main_table, ad->check_custom, 1, 5, 1, 1);
 
 	Evas_Object *label_from = elm_label_add(panel);
-	elm_object_text_set(label_from, "<color=#000000FF><align=left>മുതൽ</align></color>");
+	elm_object_text_set(label_from, "<color=#000000FF><align=left><font_size=30>മുതൽ</font></align></color>");
 	evas_object_show(label_from);
 	elm_table_pack(main_table, label_from, 0, 6, 1, 1);
 
@@ -571,7 +571,7 @@ create_panel(appdata_s *ad)
 	elm_table_pack(main_table, ad->from_dropdown, 1, 6, 1, 1);
 
 	Evas_Object *label_to = elm_label_add(panel);
-	elm_object_text_set(label_to, "<color=#000000FF><align=left>വരെ</align></color>");
+	elm_object_text_set(label_to, "<color=#000000FF><align=left><font_size=30>വരെ</font></align></color>");
 	evas_object_show(label_to);
 	elm_table_pack(main_table, label_to, 0, 7, 1, 1);
 
@@ -591,7 +591,7 @@ create_panel(appdata_s *ad)
 	elm_table_pack(main_table, rect, 0, 8, 2, 1);
 
 	Evas_Object *label_whole = elm_label_add(panel);
-	elm_object_text_set(label_whole, "<color=#000000FF><align=left>മുഴുവൻ<br/>വാക്ക്</align></color>");
+	elm_object_text_set(label_whole, "<color=#000000FF><align=left><font_size=30>മുഴുവൻ<br/>വാക്ക്</font></align></color>");
 	evas_object_show(label_whole);
 	elm_table_pack(main_table, label_whole, 0, 9, 1, 1);
 
@@ -600,7 +600,7 @@ create_panel(appdata_s *ad)
 	elm_table_pack(main_table, ad->check_whole, 1, 9, 1, 1);
 
 	Evas_Object *label_strict = elm_label_add(panel);
-	elm_object_text_set(label_strict, "<color=#000000FF><align=left>കർശന<br/>തിരച്ചിൽ</align></color>");
+	elm_object_text_set(label_strict, "<color=#000000FF><align=left><font_size=30>കർശന<br/>തിരച്ചിൽ</font></align></color>");
 	evas_object_show(label_strict);
 	elm_table_pack(main_table, label_strict, 0, 10, 1, 1);
 
