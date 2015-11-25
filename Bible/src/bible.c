@@ -132,6 +132,13 @@ _content_mouse_up(void *data,
 }
 
 static void
+_reset_select_check(void *data, Evas_Object *obj, const char *emission, const char *source)
+{
+	Evas_Object *check = (Evas_Object*)data;
+	elm_check_state_set(check, EINA_FALSE);
+}
+
+static void
 _select_all_verses(void *data, Evas_Object *obj, const char *emission, const char *source)
 {
 	Evas_Object *check = (Evas_Object*)data;
@@ -459,6 +466,7 @@ _home_screen(appdata_s *ad)
 	elm_layout_content_set(layout, "elm.swallow.check", check);
 	elm_layout_content_set(ad->layout, "elm.select.all", layout);
 	evas_object_data_set(check, "appdata", ad);
+	elm_layout_signal_callback_add(ad->layout, "elm,holy_bible,share_copy,on", "elm", _reset_select_check, check);
 	elm_layout_signal_callback_add(layout, "elm,holy_bible,select_all", "elm", _select_all_verses, check);
 
 	_load_appdata(ad);

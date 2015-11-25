@@ -30,14 +30,46 @@ _prepare_verse_list(appdata_s *ad)
 	{
 		char *buf = malloc(sizeof(char) * 1024 * sel_count);
 		bible_verse_item *verse_item;
+		Eina_List *temp_list;
+		int last_verse;
 		sprintf(buf, "%s %d : ", Books[ad->cur_book], ad->cur_chapter);
+		Eina_Bool hyphen = EINA_FALSE;
 
-		EINA_LIST_FOREACH(sel_list, sel_list_iter, item)
-		{
-			verse_item = (bible_verse_item*)elm_object_item_data_get(item);
-			sprintf(buf, "%s%d", buf, verse_item->versecount + 1);
-			if (eina_list_next(sel_list_iter)) strcat(buf, ", ");
-		}
+		if (sel_count == elm_genlist_items_count(ad->genlist))
+			sprintf(buf, "%s1 - %d", buf, sel_count);
+		else
+			EINA_LIST_FOREACH(sel_list, sel_list_iter, item)
+			{
+				verse_item = (bible_verse_item*)elm_object_item_data_get(item);
+				last_verse = verse_item->versecount + 1;
+				temp_list = eina_list_next(sel_list_iter);
+				if (temp_list)
+				{
+					item = eina_list_data_get(temp_list);
+					verse_item = (bible_verse_item*)elm_object_item_data_get(item);
+					if (!hyphen && (verse_item->versecount == last_verse))
+					{
+						sprintf(buf, "%s%d", buf, last_verse);
+						strcat(buf, " - ");
+						hyphen = EINA_TRUE;
+					}
+					else if (hyphen && (verse_item->versecount == last_verse))
+						continue;
+					else if (hyphen && (verse_item->versecount != last_verse))
+					{
+						sprintf(buf, "%s%d", buf, last_verse);
+						strcat(buf, ", ");
+						hyphen = EINA_FALSE;
+					}
+					else
+					{
+						sprintf(buf, "%s%d", buf, last_verse);
+						strcat(buf, ", ");
+					}
+				}
+				else
+					sprintf(buf, "%s%d", buf, last_verse);
+			}
 		strcat(buf, "\n\n");
 		EINA_LIST_FOREACH(sel_list, sel_list_iter, item)
 		{
