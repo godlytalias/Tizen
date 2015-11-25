@@ -587,6 +587,7 @@ collections {
             description { state: "default" 0.0;
                color: 0 0 0 0;
                min: 32 10;
+               fixed: 1 1;
                rel1.to: "base";
                rel2.to: "base";
                rel2.relative: 0.0 1.0;
@@ -598,6 +599,7 @@ collections {
             description { state: "default" 0.0;
                color: 0 0 0 0;
                min: 32 10;
+               fixed: 1 1;
                rel1.to: "base";
                rel1.relative: 1.0 0.0;
                rel2.to: "base";
@@ -622,6 +624,8 @@ collections {
             type: SWALLOW;
             scale: 1;
             description { state: "default" 0.0;
+               min: 60 60;
+               fixed: 1 1;
                rel1.to_x: "elm.padding.right_bottom";
                rel1.to_y: "elm.padding.left_top";
                rel1.relative: 0.0 1.0;
