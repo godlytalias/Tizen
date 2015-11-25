@@ -45,6 +45,17 @@ _prev_chapter(void *data, Evas_Object *obj, const char *emission, const char *so
 	ecore_idle_enterer_add(_get_prev_chapter, data);
 }
 
+static void
+_splash_over(void *data, Evas_Object *obj, const char *emission, const char *source)
+{
+	appdata_s *ad = (appdata_s*)data;
+	if (elm_win_wm_rotation_supported_get(ad->win)) {
+		int rots[4] = { 0, 90, 180, 270 };
+		elm_win_wm_rotation_available_rotations_set(ad->win, (const int *)(&rots), 4);
+	}
+	eext_object_event_callback_add(ad->naviframe, EEXT_CALLBACK_MORE, eext_naviframe_more_cb, NULL);
+}
+
 void _show_verse(void *data, int verse)
 {
 	appdata_s *ad = (appdata_s*)data;
@@ -133,6 +144,7 @@ _select_all_verses(void *data, Evas_Object *obj, const char *emission, const cha
 		while(item)
 		{
 			elm_genlist_item_selected_set(item, EINA_FALSE);
+			elm_genlist_item_update(item);
 			item = elm_genlist_item_next_get(item);
 		}
 	}
@@ -142,6 +154,8 @@ _select_all_verses(void *data, Evas_Object *obj, const char *emission, const cha
 		item = elm_genlist_first_item_get(ad->genlist);
 		while(item)
 		{
+			if (elm_genlist_item_selected_get(item))
+				elm_genlist_item_selected_set(item, EINA_FALSE);
 			elm_genlist_item_selected_set(item, EINA_TRUE);
 			item = elm_genlist_item_next_get(item);
 		}
@@ -325,6 +339,9 @@ static void
 gl_longpressed_cb(void *data, Evas_Object *obj, void *event_info)
 {
 	appdata_s *ad = (appdata_s*)data;
+	if (ad->share_copy_mode) return;
+	if (!elm_object_focus_get(ad->genlist)) return;
+
 	Elm_Object_Item *it = (Elm_Object_Item*)event_info;
 	bible_verse_item *verse_item = (bible_verse_item*)elm_object_item_data_get(it);
 	elm_genlist_item_selected_set(it, EINA_FALSE);
@@ -376,7 +393,6 @@ _load_chapter(void *data)
 	_query_chapter(data, ad->cur_book, ad->cur_chapter);
 	_get_chapter_count_query(data, ad->cur_book);
 	elm_layout_signal_emit(ad->layout, "elm,holy_bible,loading,done", "elm");
-	eext_object_event_callback_add(ad->naviframe, EEXT_CALLBACK_MORE, eext_naviframe_more_cb, NULL);
 	return ECORE_CALLBACK_CANCEL;
 }
 
@@ -392,6 +408,7 @@ _home_screen(appdata_s *ad)
 	elm_layout_signal_callback_add(ad->layout, "elm,holy_bible,book,change", "elm", _change_book, (void*)ad);
 	elm_layout_signal_callback_add(ad->layout, "elm,holy_bible,next,chapter", "elm", _nxt_chapter, (void*)ad);
 	elm_layout_signal_callback_add(ad->layout, "elm,holy_bible,prev,chapter", "elm", _prev_chapter, (void*)ad);
+	elm_layout_signal_callback_add(ad->layout, "elm,holy_bible,splash,over", "elm", _splash_over, (void*)ad);
 
 	elm_object_part_text_set(ad->layout, "elm.text.copyright", "Copyright © 2015 Godly T Alias");
 	elm_object_part_text_set(ad->layout, "elm.text.version", "GTA v0.3");
@@ -543,11 +560,6 @@ create_base_gui(appdata_s *ad)
 	evas_object_show(conform);
 	elm_win_indicator_mode_set(ad->win, ELM_WIN_INDICATOR_SHOW);
 	elm_win_indicator_opacity_set(ad->win, ELM_WIN_INDICATOR_TRANSPARENT);
-
-	if (elm_win_wm_rotation_supported_get(ad->win)) {
-		int rots[4] = { 0, 90, 180, 270 };
-		elm_win_wm_rotation_available_rotations_set(ad->win, (const int *)(&rots), 4);
-	}
 
 	evas_object_smart_callback_add(ad->win, "delete,request", win_delete_request_cb, NULL);
 	ad->naviframe = elm_naviframe_add(conform);

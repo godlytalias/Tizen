@@ -550,6 +550,9 @@ collections {
            target: "prev_btn";
            after: "arrow_unhighlight";
         }
+        program { name: "splash_finish";
+           action: SIGNAL_EMIT "elm,holy_bible,splash,over" "elm";
+        }
         program { name: "loading_done";
            signal: "elm,holy_bible,loading,done";
            source: "elm";
@@ -567,6 +570,7 @@ collections {
            target: "elm.swallow.progressbar";
            target: "nxt_btn";
            target: "prev_btn";
+           after: "splash_finish";
         }
      }
    }

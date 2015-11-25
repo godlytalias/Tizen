@@ -90,6 +90,7 @@ _cancel_cb(void *data, Evas_Object *obj, void *event_info)
 	EINA_LIST_FOREACH(sel_list, sel_list_iter, item)
 	{
 		elm_genlist_item_selected_set(item, EINA_FALSE);
+		elm_genlist_item_update(item);
 	}
 	Evas_Object *done_btn = elm_layout_content_get(ad->layout, "title_right_button");
 	evas_object_smart_callback_del(done_btn, "clicked", _share_verse_done_cb);
