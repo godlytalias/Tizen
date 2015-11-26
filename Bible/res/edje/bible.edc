@@ -378,7 +378,7 @@ collections {
               rel2.to: "base";
               rel2.relative: 0.0 1.0;
               color: 255 255 255 50;
-              min: 50 50;
+              min: 32 32;
               fixed: 1 1;
               align: 0.0 1.0;
               image.normal: "left_arrow.png";
@@ -406,7 +406,7 @@ collections {
               rel2.to: "base";
               rel2.relative: 1.0 1.0;
               color: 255 255 255 50;
-              min: 50 50;
+              min: 32 32;
               fixed: 1 1;
               align: 1.0 1.0;
               image.normal: "right_arrow.png";
@@ -479,7 +479,7 @@ collections {
            signal: "mouse,up,*";
            source: "change_book_event";
            script {
-              if (get_int(click_mod) < 10) {
+              if (get_int(click_mod) < 5) {
                  run_program(PROGRAM:"change_book_event_run");
               }
            }
@@ -803,7 +803,7 @@ collections {
          part { name: "down_arrow";
             scale: 1;
             description { state: "default" 0.0;
-               min: 50 50;
+               min: 32 32;
                fixed: 1 1;
                rel1.to: "elm.swallow.result";
                rel1.relative: 0.0 1.0;
@@ -826,7 +826,7 @@ collections {
          part { name: "up_arrow";
             scale: 1;
             description { state: "default" 0.0;
-               min: 50 50;
+               min: 32 32;
                fixed: 1 1;
                rel1.to: "elm.swallow.result";
                rel2.to: "elm.swallow.result";

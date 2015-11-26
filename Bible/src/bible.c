@@ -17,6 +17,19 @@ app_get_resource(const char *edj_file_in, char *edj_path_out, int edj_path_max)
 	}
 }
 
+void
+_app_no_memory(appdata_s *ad)
+{
+	Evas_Object *toast = elm_popup_add(ad->naviframe);
+	elm_object_style_set(toast, "toast");
+	elm_popup_allow_events_set(toast, EINA_TRUE);
+	elm_popup_timeout_set(toast, 2.0);
+	elm_object_text_set(toast, "Not enough memory to do the operation!");
+	evas_object_smart_callback_add(toast, "timeout", _popup_del, toast);
+	evas_object_show(toast);
+	return;
+}
+
 static Eina_Bool
 _get_prev_chapter(void *data)
 {
@@ -206,6 +219,7 @@ _remove_bookmark_query(void *data, Evas_Object *obj, void *event_info)
     elm_object_text_set(toast, "Bookmark removed");
     evas_object_smart_callback_add(toast, "timeout", eext_popup_back_cb, toast);
     elm_ctxpopup_dismiss(obj);
+    elm_object_focus_set(verse_item->appdata->genlist, EINA_TRUE);
     return;
 }
 
@@ -231,6 +245,7 @@ _bookmark_verse_cb(void *data, Evas_Object *obj, void *event_info)
    evas_object_show(toast);
    evas_object_smart_callback_add(toast, "timeout", eext_popup_back_cb, toast);
    elm_ctxpopup_dismiss(obj);
+   elm_object_focus_set(verse_item->appdata->genlist, EINA_TRUE);
 }
 
 static void
@@ -666,6 +681,8 @@ static void
 ui_app_low_memory(app_event_info_h event_info, void *user_data)
 {
 	/*APP_EVENT_LOW_MEMORY*/
+	appdata_s *ad = (appdata_s*)user_data;
+	if (ad) _app_no_memory(ad);
 }
 
 int

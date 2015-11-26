@@ -200,7 +200,7 @@ _bible_search_query(char* search_query, appdata_s *ad)
 	else
 		elm_layout_signal_emit(ad->search_layout, "elm,holy_bible,bg,show", "elm");
 	sprintf(toast, "Got %d results", res_count);
-	Evas_Object *toastp = elm_popup_add(ad->win);
+	Evas_Object *toastp = elm_popup_add(ad->naviframe);
 	elm_object_style_set(toastp, "toast");
 	elm_popup_allow_events_set(toastp, EINA_TRUE);
 	elm_object_text_set(toastp, toast);
@@ -223,7 +223,7 @@ _search_keyword(void *data,
 	char condition_key[5];
 	if (keyword && (strlen(keyword) > 1024))
 	{
-		Evas_Object *toast_popup = elm_popup_add(ad->win);
+		Evas_Object *toast_popup = elm_popup_add(ad->naviframe);
 		elm_popup_timeout_set(toast_popup, 2);
 		elm_object_style_set(toast_popup, "toast");
 		elm_object_text_set(toast_popup, "Search keyword is too large");
@@ -233,7 +233,7 @@ _search_keyword(void *data,
 	}
 	else if (keyword && (strlen(keyword) < 2))
 		{
-			Evas_Object *toast_popup = elm_popup_add(ad->win);
+			Evas_Object *toast_popup = elm_popup_add(ad->naviframe);
 			elm_popup_timeout_set(toast_popup, 2);
 			elm_object_style_set(toast_popup, "toast");
 			elm_object_text_set(toast_popup, "Search keyword is too small");

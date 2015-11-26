@@ -20,7 +20,13 @@ _prepare_verse_list(appdata_s *ad)
 	int sel_count = eina_list_count(sel_list);
 	if (sel_count == 1)
 	{
-		char *buf = malloc(sizeof(char)*1024);
+		char *buf = NULL;
+		buf = malloc(sizeof(char)*1024);
+		if (!buf)
+		{
+			_app_no_memory(ad);
+			return NULL;
+		}
 		item = eina_list_data_get(sel_list);
 		bible_verse_item *verse_item = (bible_verse_item*)elm_object_item_data_get(item);
 		sprintf(buf,"%s ~ %s %d : %d", verse_item->verse, Books[verse_item->bookcount], verse_item->chaptercount, verse_item->versecount + 1);
@@ -28,7 +34,13 @@ _prepare_verse_list(appdata_s *ad)
 	}
 	else
 	{
-		char *buf = malloc(sizeof(char) * 1024 * sel_count);
+		char *buf = NULL;
+		buf = malloc(sizeof(char) * 1024 * sel_count);
+		if (!buf)
+		{
+			_app_no_memory(ad);
+			return NULL;
+		}
 		bible_verse_item *verse_item;
 		Eina_List *temp_list;
 		int last_verse;

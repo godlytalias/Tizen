@@ -90,3 +90,4 @@ void note_remove_cb(void *, Evas_Object *, void *);
 void _share_verse_cb(void *, Evas_Object *, void *);
 void _copy_verse_cb(void *, Evas_Object *, void *);
 void _cancel_cb(void *, Evas_Object *, void *);
+void _app_no_memory(appdata_s *);
