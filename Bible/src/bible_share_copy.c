@@ -144,29 +144,19 @@ _cancel_cb(void *data, Evas_Object *obj, void *event_info)
 }
 
 void
-_share_verse_cb(void *data, Evas_Object *obj, void *event_info)
+_share_verse_cb(appdata_s *ad)
 {
-	bible_verse_item *verse_item = (bible_verse_item*)data;
-	appdata_s *ad = verse_item->appdata;
-
-	elm_ctxpopup_dismiss(obj);
 	Evas_Object *done_btn = elm_layout_content_get(ad->layout, "title_right_button");
 	evas_object_smart_callback_add(done_btn, "clicked", _share_verse_done_cb, ad);
 	ad->share_copy_mode = EINA_TRUE;
-	elm_genlist_item_selected_set(verse_item->it, EINA_TRUE);
 	elm_layout_signal_emit(ad->layout, "elm,holy_bible,share_copy,on", "elm");
 }
 
 void
-_copy_verse_cb(void *data, Evas_Object *obj, void *event_info)
+_copy_verse_cb(appdata_s *ad)
 {
-	bible_verse_item *verse_item = (bible_verse_item*)data;
-	appdata_s *ad = verse_item->appdata;
-
-	elm_ctxpopup_dismiss(obj);
 	Evas_Object *done_btn = elm_layout_content_get(ad->layout, "title_right_button");
 	evas_object_smart_callback_add(done_btn, "clicked", _copy_verse_done_cb, ad);
 	ad->share_copy_mode = EINA_TRUE;
-	elm_genlist_item_selected_set(verse_item->it, EINA_TRUE);
 	elm_layout_signal_emit(ad->layout, "elm,holy_bible,share_copy,on", "elm");
 }

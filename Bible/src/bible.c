@@ -224,6 +224,24 @@ _remove_bookmark_query(void *data, Evas_Object *obj, void *event_info)
 }
 
 static void
+_share_verse_item_cb(void *data, Evas_Object *obj, void *event_info)
+{
+	bible_verse_item *verse_item = (bible_verse_item*)data;
+	_popup_del(obj, NULL, NULL);
+	_share_verse_cb(verse_item->appdata);
+	elm_genlist_item_selected_set(verse_item->it, EINA_TRUE);
+}
+
+static void
+_copy_verse_item_cb(void *data, Evas_Object *obj, void *event_info)
+{
+	bible_verse_item *verse_item = (bible_verse_item*)data;
+	_popup_del(obj, NULL, NULL);
+	_copy_verse_cb(verse_item->appdata);
+	elm_genlist_item_selected_set(verse_item->it, EINA_TRUE);
+}
+
+static void
 _bookmark_verse_cb(void *data, Evas_Object *obj, void *event_info)
 {
    bible_verse_item *verse_item = (bible_verse_item*)data;
@@ -378,8 +396,8 @@ gl_longpressed_cb(void *data, Evas_Object *obj, void *event_info)
     	elm_ctxpopup_item_append(verse_popup, "Add notes", NULL, _add_note_cb, verse_item);
     else
     	elm_ctxpopup_item_append(verse_popup, "View notes", NULL, _add_note_cb, verse_item);
-	elm_ctxpopup_item_append(verse_popup, "Share Verse", NULL, _share_verse_cb, verse_item);
-	elm_ctxpopup_item_append(verse_popup, "Copy Verse", NULL, _copy_verse_cb, verse_item);
+	elm_ctxpopup_item_append(verse_popup, "Share Verse", NULL, _share_verse_item_cb, verse_item);
+	elm_ctxpopup_item_append(verse_popup, "Copy Verse", NULL, _copy_verse_item_cb, verse_item);
 	evas_object_smart_callback_add(verse_popup, "dismissed", eext_ctxpopup_back_cb, verse_popup);
 	evas_object_smart_callback_add(ad->win, "rotation,changed", move_more_ctxpopup, verse_popup);
 	eext_object_event_callback_add(verse_popup, EEXT_CALLBACK_BACK, eext_ctxpopup_back_cb, verse_popup);

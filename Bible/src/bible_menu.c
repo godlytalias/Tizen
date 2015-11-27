@@ -410,17 +410,15 @@ ctxpopup_item_select_cb(void *data, Evas_Object *obj, void *event_info)
 
 	if (!strcmp(title_label, "Share"))
 	{
-		Elm_Object_Item *item = elm_genlist_first_item_get(ad->genlist);
-	   _share_verse_cb(elm_object_item_data_get(item), obj, NULL);
-	   elm_genlist_item_selected_set(item, EINA_FALSE);
+		_popup_del(obj, NULL, NULL);
+	   _share_verse_cb(ad);
        return;
 	}
 
 	if (!strcmp(title_label, "Copy"))
 	{
-		Elm_Object_Item *item = elm_genlist_first_item_get(ad->genlist);
-	   _copy_verse_cb(elm_object_item_data_get(item), obj, NULL);
-	   elm_genlist_item_selected_set(item, EINA_FALSE);
+		_popup_del(obj, NULL, NULL);
+	   _copy_verse_cb(ad);
        return;
 	}
 
