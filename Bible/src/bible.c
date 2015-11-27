@@ -451,7 +451,7 @@ _home_screen(appdata_s *ad)
 	elm_layout_signal_callback_add(ad->layout, "elm,holy_bible,splash,over", "elm", _splash_over, (void*)ad);
 
 	elm_object_part_text_set(ad->layout, "elm.text.copyright", "Copyright © 2015 Godly T Alias");
-	elm_object_part_text_set(ad->layout, "elm.text.version", "GTA v0.3");
+	elm_object_part_text_set(ad->layout, "elm.text.version", "GTA v0.4");
 	elm_object_part_text_set(ad->layout, "elm.text.apptitle", "HOLY BIBLE");
 	elm_object_part_text_set(ad->layout, "elm.text.loading", "Loading Database...");
 	Evas_Object *progressbar = elm_progressbar_add(ad->layout);

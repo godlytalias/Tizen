@@ -459,7 +459,7 @@ ctxpopup_item_select_cb(void *data, Evas_Object *obj, void *event_info)
 		evas_object_size_hint_weight_set(label, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
 		evas_object_size_hint_align_set(label, EVAS_HINT_FILL, EVAS_HINT_FILL);
 		elm_label_line_wrap_set(label, ELM_WRAP_WORD);
-		sprintf(text_content, "<color=#000000FF><align=center><em><font_size=20>GTA v0.3</font_size></em></align></color>");
+		sprintf(text_content, "<color=#000000FF><align=center><em><font_size=20>GTA v0.4</font_size></em></align></color>");
 		elm_object_text_set(label, text_content);
 		evas_object_show(label);
 		elm_box_pack_end(content_box, label);
@@ -546,7 +546,7 @@ ctxpopup_item_select_cb(void *data, Evas_Object *obj, void *event_info)
 		evas_object_size_hint_weight_set(label, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
 		evas_object_size_hint_align_set(label, EVAS_HINT_FILL, EVAS_HINT_FILL);
 		elm_label_line_wrap_set(label, ELM_WRAP_WORD);
-		sprintf(text_content, "<color=#000000FF><align=center><em><font_size=20>GTA v0.3</font_size></em></align></color>");
+		sprintf(text_content, "<color=#000000FF><align=center><em><font_size=20>GTA v0.4</font_size></em></align></color>");
 		elm_object_text_set(label, text_content);
 		evas_object_show(label);
 		elm_box_pack_end(content_box, label);
@@ -758,6 +758,8 @@ ctxpopup_item_select_cb(void *data, Evas_Object *obj, void *event_info)
 
 		sprintf(text_content, "<color=#000000FF><align=left><font_size=20>"
 		"User can share or copy the desired verses by long pressing / double click on verses. "
+		"Verses can also be shared / copied using the Share / Copy options "
+		"available in the application menu and then selecting the desired verses. "
 		"Reference of verse also will get appended to verse automatically. Verses will be "
 		"listed based on the order of selection of verses. "
 		"Users can copy more than one verses by selecting the verses needed to copy / share and "
