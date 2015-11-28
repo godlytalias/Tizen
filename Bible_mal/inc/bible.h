@@ -35,6 +35,7 @@ typedef struct appdata{
 	Evas_Object *from_dropdown, *to_dropdown;
 	Elm_Genlist_Item_Class *itc, *search_itc, *bookmarks_itc;
 	Evas_Coord mouse_x, mouse_y;
+	Eina_Bool share_copy_mode:1;
 	uint mouse_down_time;
 	int search_from, search_to;
 	int count, versecount, chaptercount;
@@ -89,3 +90,7 @@ void _get_chapter(void *, Evas_Object *, void *);
 void _popup_del(void *, Evas_Object *, void *);
 void _show_verse(void *, int);
 void note_remove_cb(void *, Evas_Object *, void *);
+void _share_verse_cb(appdata_s *);
+void _copy_verse_cb(appdata_s *);
+void _cancel_cb(void *, Evas_Object *, void *);
+void _app_no_memory(appdata_s *);

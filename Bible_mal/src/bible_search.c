@@ -85,7 +85,7 @@ _search_result_selected(void *data, Evas_Object *obj, void *event_info)
 	bible_verse_item *verse_item = (bible_verse_item*)data;
 	char title[128];
 	Elm_Object_Item *item = (Elm_Object_Item*)event_info;
-	Evas_Object *verse_popup = elm_popup_add(verse_item->appdata->search_result_genlist);
+	Evas_Object *verse_popup = elm_popup_add(verse_item->appdata->search_layout);
 	elm_popup_align_set(verse_popup, ELM_NOTIFY_ALIGN_FILL, 1.0);
 	sprintf(title, "%s %d : %d", Books[verse_item->bookcount], verse_item->chaptercount, verse_item->versecount + 1);
 	elm_object_part_text_set(verse_popup, "title,text", title);

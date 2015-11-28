@@ -17,6 +17,19 @@ app_get_resource(const char *edj_file_in, char *edj_path_out, int edj_path_max)
 	}
 }
 
+void
+_app_no_memory(appdata_s *ad)
+{
+	Evas_Object *toast = elm_popup_add(ad->naviframe);
+	elm_object_style_set(toast, "toast");
+	elm_popup_allow_events_set(toast, EINA_TRUE);
+	elm_popup_timeout_set(toast, 2.0);
+	elm_object_text_set(toast, "Not enough memory to do the operation!");
+	evas_object_smart_callback_add(toast, "timeout", _popup_del, toast);
+	evas_object_show(toast);
+	return;
+}
+
 static Eina_Bool
 _get_prev_chapter(void *data)
 {
@@ -43,6 +56,17 @@ static void
 _prev_chapter(void *data, Evas_Object *obj, const char *emission, const char *source)
 {
 	ecore_idle_enterer_add(_get_prev_chapter, data);
+}
+
+static void
+_splash_over(void *data, Evas_Object *obj, const char *emission, const char *source)
+{
+	appdata_s *ad = (appdata_s*)data;
+	if (elm_win_wm_rotation_supported_get(ad->win)) {
+		int rots[4] = { 0, 90, 180, 270 };
+		elm_win_wm_rotation_available_rotations_set(ad->win, (const int *)(&rots), 4);
+	}
+	eext_object_event_callback_add(ad->naviframe, EEXT_CALLBACK_MORE, eext_naviframe_more_cb, NULL);
 }
 
 void _show_verse(void *data, int verse)
@@ -120,6 +144,8 @@ _content_mouse_down(void *data,
         void *event_info)
 {
    appdata_s *ad = (appdata_s*)data;
+   if(ad->share_copy_mode) return;
+
    Evas_Event_Mouse_Down *ev = (Evas_Event_Mouse_Down*)event_info;
    ad->mouse_x = ev->canvas.x;
    ad->mouse_y = ev->canvas.y;
@@ -134,6 +160,8 @@ _content_mouse_up(void *data,
         void *event_info)
 {
    appdata_s *ad = (appdata_s*)data;
+   if(ad->share_copy_mode) return;
+
    int x_del, y_del;
    Evas_Event_Mouse_Up *ev = (Evas_Event_Mouse_Up*)event_info;
    if ((ev->timestamp - ad->mouse_down_time) > 1000) return;
@@ -145,6 +173,44 @@ _content_mouse_up(void *data,
 	   _nxt_chapter(data, obj, NULL, NULL);
    else
 	   _prev_chapter(data, obj, NULL, NULL);
+}
+
+static void
+_reset_select_check(void *data, Evas_Object *obj, const char *emission, const char *source)
+{
+	Evas_Object *check = (Evas_Object*)data;
+	elm_check_state_set(check, EINA_FALSE);
+}
+
+static void
+_select_all_verses(void *data, Evas_Object *obj, const char *emission, const char *source)
+{
+	Evas_Object *check = (Evas_Object*)data;
+	appdata_s *ad = (appdata_s*)evas_object_data_get(check, "appdata");
+	Elm_Object_Item *item;
+	if (elm_check_state_get(check))
+	{
+		elm_check_state_set(check, EINA_FALSE);
+		item = elm_genlist_first_item_get(ad->genlist);
+		while(item)
+		{
+			elm_genlist_item_selected_set(item, EINA_FALSE);
+			elm_genlist_item_update(item);
+			item = elm_genlist_item_next_get(item);
+		}
+	}
+	else
+	{
+		elm_check_state_set(check, EINA_TRUE);
+		item = elm_genlist_first_item_get(ad->genlist);
+		while(item)
+		{
+			if (elm_genlist_item_selected_get(item))
+				elm_genlist_item_selected_set(item, EINA_FALSE);
+			elm_genlist_item_selected_set(item, EINA_TRUE);
+			item = elm_genlist_item_next_get(item);
+		}
+	}
 }
 
 static Evas_Object*
@@ -168,16 +234,6 @@ gl_content_get_cb(void *data, Evas_Object *obj, const char *part)
 }
 
 static void
-_copy_verse_cb(void *data, Evas_Object *obj, void *event_info)
-{
-	char buf[2048];
-	bible_verse_item *verse_item = (bible_verse_item*)data;
-	sprintf(buf, "%s ~ %s %d : %d", verse_item->verse, Books[verse_item->bookcount], verse_item->chaptercount, verse_item->versecount + 1);
-	elm_cnp_selection_set(obj, ELM_SEL_TYPE_CLIPBOARD, ELM_SEL_FORMAT_TEXT, buf, strlen(buf));
-    elm_ctxpopup_dismiss(obj);
-}
-
-static void
 _remove_bookmark_query(void *data, Evas_Object *obj, void *event_info)
 {
 	char query[256];
@@ -194,7 +250,26 @@ _remove_bookmark_query(void *data, Evas_Object *obj, void *event_info)
     elm_object_text_set(toast, "ബുക്ക്മാർക്ക് ഒഴിവാക്കി!");
     evas_object_smart_callback_add(toast, "timeout", eext_popup_back_cb, toast);
     elm_ctxpopup_dismiss(obj);
+    elm_object_focus_set(verse_item->appdata->genlist, EINA_TRUE);
     return;
+}
+
+static void
+_share_verse_item_cb(void *data, Evas_Object *obj, void *event_info)
+{
+	bible_verse_item *verse_item = (bible_verse_item*)data;
+	_popup_del(obj, NULL, NULL);
+	_share_verse_cb(verse_item->appdata);
+	elm_genlist_item_selected_set(verse_item->it, EINA_TRUE);
+}
+
+static void
+_copy_verse_item_cb(void *data, Evas_Object *obj, void *event_info)
+{
+	bible_verse_item *verse_item = (bible_verse_item*)data;
+	_popup_del(obj, NULL, NULL);
+	_copy_verse_cb(verse_item->appdata);
+	elm_genlist_item_selected_set(verse_item->it, EINA_TRUE);
 }
 
 static void
@@ -219,22 +294,7 @@ _bookmark_verse_cb(void *data, Evas_Object *obj, void *event_info)
    evas_object_show(toast);
    evas_object_smart_callback_add(toast, "timeout", eext_popup_back_cb, toast);
    elm_ctxpopup_dismiss(obj);
-}
-
-static void
-_share_verse_cb(void *data, Evas_Object *obj, void *event_info)
-{
-	char buf[2048];
-	bible_verse_item *verse_item = (bible_verse_item*)data;
-	sprintf(buf,"%s ~ %s %d : %d", verse_item->verse, Books[verse_item->bookcount], verse_item->chaptercount, verse_item->versecount + 1);
-	app_control_h handler;
-	app_control_create(&handler);
-	app_control_set_launch_mode(handler, APP_CONTROL_LAUNCH_MODE_GROUP);
-	app_control_set_operation(handler, APP_CONTROL_OPERATION_SHARE_TEXT);
-	app_control_add_extra_data(handler, APP_CONTROL_DATA_TEXT, buf);
-	app_control_send_launch_request(handler, NULL, NULL);
-	app_control_destroy(handler);
-	elm_ctxpopup_dismiss(obj);
+   elm_object_focus_set(verse_item->appdata->genlist, EINA_TRUE);
 }
 
 static void
@@ -350,6 +410,9 @@ static void
 gl_longpressed_cb(void *data, Evas_Object *obj, void *event_info)
 {
 	appdata_s *ad = (appdata_s*)data;
+	if (ad->share_copy_mode) return;
+	if (!elm_object_focus_get(ad->genlist)) return;
+
 	Elm_Object_Item *it = (Elm_Object_Item*)event_info;
 	bible_verse_item *verse_item = (bible_verse_item*)elm_object_item_data_get(it);
 	elm_genlist_item_selected_set(it, EINA_FALSE);
@@ -377,8 +440,12 @@ gl_longpressed_cb(void *data, Evas_Object *obj, void *event_info)
 static void
 gl_selected_cb(void *data, Evas_Object *obj, void *event_info)
 {
-	Elm_Object_Item *it = (Elm_Object_Item*)event_info;
-	elm_genlist_item_selected_set(it, EINA_FALSE);
+	appdata_s *ad = (appdata_s*)data;
+	if (!ad->share_copy_mode)
+	{
+		Elm_Object_Item *it = (Elm_Object_Item*)event_info;
+		elm_genlist_item_selected_set(it, EINA_FALSE);
+	}
 }
 
 void
@@ -397,7 +464,6 @@ _load_chapter(void *data)
 	_query_chapter(data, ad->cur_book, ad->cur_chapter);
 	_get_chapter_count_query(data, ad->cur_book);
 	elm_layout_signal_emit(ad->layout, "elm,holy_bible,loading,done", "elm");
-	eext_object_event_callback_add(ad->naviframe, EEXT_CALLBACK_MORE, eext_naviframe_more_cb, NULL);
 	return ECORE_CALLBACK_CANCEL;
 }
 
@@ -416,7 +482,7 @@ _home_screen(appdata_s *ad)
 	elm_layout_signal_callback_add(ad->layout, "elm,holy_bible,splash,over", "elm", _first_launch_check, (void*)ad);
 
 	elm_object_part_text_set(ad->layout, "elm.text.copyright", "Copyright © 2015 Godly T Alias");
-	elm_object_part_text_set(ad->layout, "elm.text.version", "GTA v0.3");
+	elm_object_part_text_set(ad->layout, "elm.text.version", "GTA v0.4");
 	elm_object_part_text_set(ad->layout, "elm.text.apptitle", "സത്യവേദപുസ്തകം");
 	elm_object_part_text_set(ad->layout, "elm.text.loading", "ഡാറ്റാബേസ് ലോഡ് ചെയ്യുന്നു...");
 	Evas_Object *progressbar = elm_progressbar_add(ad->layout);
@@ -426,6 +492,15 @@ _home_screen(appdata_s *ad)
 	evas_object_size_hint_weight_set(progressbar, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
 	elm_progressbar_pulse(progressbar, EINA_TRUE);
 	elm_object_part_content_set(ad->layout, "elm.swallow.progressbar", progressbar);
+
+	Evas_Object *cancel_btn = elm_button_add(ad->naviframe);
+	elm_object_style_set(cancel_btn, "naviframe/title_cancel");
+	elm_layout_content_set(ad->layout, "title_left_button", cancel_btn);
+	evas_object_smart_callback_add(cancel_btn, "clicked", _cancel_cb, ad);
+
+	Evas_Object *done_btn = elm_button_add(ad->layout);
+	elm_object_style_set(done_btn, "naviframe/title_done");
+	elm_layout_content_set(ad->layout, "title_right_button", done_btn);
 
 	ad->itc = elm_genlist_item_class_new();
 	ad->itc->item_style = "full";
@@ -439,11 +514,24 @@ _home_screen(appdata_s *ad)
 	elm_object_part_content_set(ad->layout, "elm.swallow.content", ad->genlist);
 	elm_genlist_mode_set(ad->genlist, ELM_LIST_COMPRESS);
 	elm_genlist_homogeneous_set(ad->genlist, EINA_FALSE);
-	evas_object_smart_callback_add(ad->genlist, "selected", gl_selected_cb, NULL);
+	elm_genlist_multi_select_set(ad->genlist, EINA_TRUE);
+	evas_object_smart_callback_add(ad->genlist, "selected", gl_selected_cb, ad);
 	evas_object_smart_callback_add(ad->genlist, "longpressed", gl_longpressed_cb, ad);
 	evas_object_smart_callback_add(ad->genlist, "clicked,double", gl_longpressed_cb, ad);
     evas_object_event_callback_add(ad->genlist, EVAS_CALLBACK_MOUSE_DOWN, _content_mouse_down, ad);
     evas_object_event_callback_add(ad->genlist, EVAS_CALLBACK_MOUSE_UP, _content_mouse_up, ad);
+
+    Evas_Object *layout = elm_layout_add(ad->layout);
+    elm_layout_file_set(layout, ad->edj_path, "select_all_layout");
+	evas_object_size_hint_align_set(layout, EVAS_HINT_FILL, EVAS_HINT_FILL);
+	evas_object_size_hint_weight_set(layout, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
+	elm_layout_text_set(layout, "select_all", "എല്ലാം തിരഞ്ഞെടുക്കുക");
+	Evas_Object *check = elm_check_add(layout);
+	elm_layout_content_set(layout, "elm.swallow.check", check);
+	elm_layout_content_set(ad->layout, "elm.select.all", layout);
+	evas_object_data_set(check, "appdata", ad);
+	elm_layout_signal_callback_add(ad->layout, "elm,holy_bible,share_copy,on", "elm", _reset_select_check, check);
+	elm_layout_signal_callback_add(layout, "elm,holy_bible,select_all", "elm", _select_all_verses, check);
 
 	_load_appdata(ad);
 	ecore_idler_add(_load_chapter, ad);
@@ -456,6 +544,11 @@ static Eina_Bool
 naviframe_pop_cb(void *data, Elm_Object_Item *it)
 {
 	appdata_s *ad = (appdata_s*)data;
+	if (ad->share_copy_mode)
+	{
+		_cancel_cb(data, NULL, NULL);
+		return EINA_FALSE;
+	}
 	Evas_Object *popup = _loading_progress_show(ad->win);
 	if (ad->genlist)
 		elm_genlist_clear(ad->genlist);
@@ -540,11 +633,6 @@ create_base_gui(appdata_s *ad)
 	evas_object_show(conform);
 	elm_win_indicator_mode_set(ad->win, ELM_WIN_INDICATOR_SHOW);
 	elm_win_indicator_opacity_set(ad->win, ELM_WIN_INDICATOR_TRANSPARENT);
-
-	if (elm_win_wm_rotation_supported_get(ad->win)) {
-		int rots[4] = { 0, 90, 180, 270 };
-		elm_win_wm_rotation_available_rotations_set(ad->win, (const int *)(&rots), 4);
-	}
 
 	evas_object_smart_callback_add(ad->win, "delete,request", win_delete_request_cb, NULL);
 	ad->naviframe = elm_naviframe_add(conform);
@@ -638,6 +726,8 @@ static void
 ui_app_low_memory(app_event_info_h event_info, void *user_data)
 {
 	/*APP_EVENT_LOW_MEMORY*/
+	appdata_s *ad = (appdata_s*)user_data;
+	if (ad) _app_no_memory(ad);
 }
 
 int

@@ -406,6 +406,20 @@ ctxpopup_item_select_cb(void *data, Evas_Object *obj, void *event_info)
        return;
 	}
 
+	if (!strcmp(title_label, "പങ്കിടുക"))
+	{
+		_popup_del(obj, NULL, NULL);
+	   _share_verse_cb(ad);
+       return;
+	}
+
+	if (!strcmp(title_label, "പകർത്തുക"))
+	{
+		_popup_del(obj, NULL, NULL);
+	   _copy_verse_cb(ad);
+       return;
+	}
+
 	if (!strcmp(title_label, "അദ്ധ്യായം തിരഞ്ഞെടുക്കുക"))
 	{
 	   _change_book(data, ad->layout, NULL, NULL);
@@ -443,7 +457,7 @@ ctxpopup_item_select_cb(void *data, Evas_Object *obj, void *event_info)
 		evas_object_size_hint_weight_set(label, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
 		evas_object_size_hint_align_set(label, EVAS_HINT_FILL, EVAS_HINT_FILL);
 		elm_label_line_wrap_set(label, ELM_WRAP_WORD);
-		sprintf(text_content, "<color=#000000FF><align=center><em><font_size=20>GTA v0.3</font_size></em></align></color>");
+		sprintf(text_content, "<color=#000000FF><align=center><em><font_size=20>GTA v0.4</font_size></em></align></color>");
 		elm_object_text_set(label, text_content);
 		evas_object_show(label);
 		elm_box_pack_end(content_box, label);
@@ -530,7 +544,7 @@ ctxpopup_item_select_cb(void *data, Evas_Object *obj, void *event_info)
 		evas_object_size_hint_weight_set(label, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
 		evas_object_size_hint_align_set(label, EVAS_HINT_FILL, EVAS_HINT_FILL);
 		elm_label_line_wrap_set(label, ELM_WRAP_WORD);
-		sprintf(text_content, "<color=#000000FF><align=center><em><font_size=20>GTA v0.3</font_size></em></align></color>");
+		sprintf(text_content, "<color=#000000FF><align=center><em><font_size=20>GTA v0.4</font_size></em></align></color>");
 		elm_object_text_set(label, text_content);
 		evas_object_show(label);
 		elm_box_pack_end(content_box, label);
@@ -637,7 +651,7 @@ ctxpopup_item_select_cb(void *data, Evas_Object *obj, void *event_info)
 						"<b>Whole Word:</b><br/>User will get only the words exactly matching the keyword entered if this option is enabled. "
 						"If it is not enabled search results will include verses with words partially matching the keyword entered also. For eg. on searching Love, if "
 						"this option is enabled search results will include verses which contain 'Loves' 'Loved' etc.. else only verses which contain a word "
-						"exactly matching 'Love' only will be included in the result.<br/>"
+						"exactly matching 'Love' only will be included in the result.<br/> "
 						"<b>Strict Search:</b><br/>This option is useful only when searching with more than one keyword. "
 						"If this option is enabled, only verses which contain all the entered keyword "
 						"will be included, otherwise even if one keyword entered is present in the verse, it will be included in the result. </font_size></align></color>");
@@ -742,8 +756,12 @@ ctxpopup_item_select_cb(void *data, Evas_Object *obj, void *event_info)
 
 		sprintf(text_content, "<color=#000000FF><align=left><font_size=20>"
 		"User can share or copy the desired verses by long pressing / double click on verses. "
-		"Reference of verse also will get appended to verse automatically. "
-		"Users can copy more than one verses one by one and can get the verses from clipboard.</font_size></align></color>");
+		"Verses can also be shared / copied using the Share / Copy options "
+		"available in the application menu and then selecting the desired verses. "
+		"Reference of verse also will get appended to verse automatically. Verses will be "
+		"listed based on the order of selection of verses. "
+		"Users can copy more than one verses by selecting the verses needed to copy / share and "
+		"then clicking the done button in the header part. Users can get the copied verses from clipboard.</font_size></align></color>");
 
 		label = elm_label_add(popup);
 		evas_object_size_hint_weight_set(label, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
@@ -791,6 +809,7 @@ create_ctxpopup_more_button_cb(void *data, Evas_Object *obj, void *event_info)
 {
 	Evas_Object *win;
 	appdata_s *ad = (appdata_s*)data;
+	Elm_Object_Item *item;
 
 	Evas_Object *ctxpopup = elm_ctxpopup_add(ad->naviframe);
 	elm_ctxpopup_auto_hide_disabled_set(ctxpopup, EINA_TRUE);
@@ -805,6 +824,10 @@ create_ctxpopup_more_button_cb(void *data, Evas_Object *obj, void *event_info)
 	elm_ctxpopup_item_append(ctxpopup, "തിരയുക", NULL, ctxpopup_item_select_cb, ad);
 	elm_ctxpopup_item_append(ctxpopup, "ബുക്ക്മാർക്കുകൾ", NULL, ctxpopup_item_select_cb, ad);
 	elm_ctxpopup_item_append(ctxpopup, "കുറിപ്പുകൾ", NULL, ctxpopup_item_select_cb, ad);
+	item = elm_ctxpopup_item_append(ctxpopup, "പങ്കിടുക", NULL, ctxpopup_item_select_cb, ad);
+	if (ad->share_copy_mode) elm_object_item_disabled_set(item, EINA_TRUE);
+	item = elm_ctxpopup_item_append(ctxpopup, "പകർത്തുക", NULL, ctxpopup_item_select_cb, ad);
+	if (ad->share_copy_mode) elm_object_item_disabled_set(item, EINA_TRUE);
 	elm_ctxpopup_item_append(ctxpopup, "അദ്ധ്യായം തിരഞ്ഞെടുക്കുക", NULL, ctxpopup_item_select_cb, ad);
 	elm_ctxpopup_item_append(ctxpopup, "സഹായം", NULL, ctxpopup_item_select_cb, ad);
 	elm_ctxpopup_item_append(ctxpopup, "വിവരണം", NULL, ctxpopup_item_select_cb, ad);
