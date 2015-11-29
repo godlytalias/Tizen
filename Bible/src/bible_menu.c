@@ -377,6 +377,24 @@ naviframe_pop_cb(void *data, Elm_Object_Item *it)
 	return EINA_TRUE;
 }
 
+void
+_change_read_mode(appdata_s *ad, Eina_Bool read_mode)
+{
+	Evas_Object *glayout;
+	Elm_Object_Item *item;
+	Eina_List *verse_list_temp;
+	Eina_List *verse_list = elm_genlist_realized_items_get(ad->genlist);
+	EINA_LIST_FOREACH(verse_list, verse_list_temp, item)
+	{
+		glayout = elm_object_item_part_content_get(item, "elm.swallow.content");
+		if (read_mode)
+			elm_layout_signal_emit(glayout, "elm,holy_bible,night_mode,on", "elm");
+		else
+			elm_layout_signal_emit(glayout, "elm,holy_bible,night_mode,off", "elm");
+	}
+	return;
+}
+
 static void
 ctxpopup_item_select_cb(void *data, Evas_Object *obj, void *event_info)
 {
@@ -392,6 +410,22 @@ ctxpopup_item_select_cb(void *data, Evas_Object *obj, void *event_info)
 		return;
 	}
 
+	if (!strcmp(title_label, "Day Mode Reading"))
+	{
+		_change_read_mode(ad, EINA_FALSE);
+		preference_set_int("readmode", 1);
+		_popup_del(obj, NULL, NULL);
+		return;
+	}
+
+	if (!strcmp(title_label, "Night Mode Reading"))
+	{
+		_change_read_mode(ad, EINA_TRUE);
+		preference_set_int("readmode", 0);
+		_popup_del(obj, NULL, NULL);
+		return;
+	}
+
 	if (!strcmp(title_label, "Bookmarks"))
 	{
 	   nf_it = elm_naviframe_item_push(ad->naviframe, "Bookmarks", NULL, NULL, _get_bookmarks(ad), NULL);
@@ -402,31 +436,33 @@ ctxpopup_item_select_cb(void *data, Evas_Object *obj, void *event_info)
 
 	if (!strcmp(title_label, "Notes"))
 	{
-	   nf_it = elm_naviframe_item_push(ad->naviframe, "Notes", NULL, NULL, _get_notes(ad), NULL);
-	   elm_naviframe_item_pop_cb_set(nf_it, naviframe_pop_cb, ad);
+		nf_it = elm_naviframe_item_push(ad->naviframe, "Notes", NULL, NULL, _get_notes(ad), NULL);
+		elm_naviframe_item_pop_cb_set(nf_it, naviframe_pop_cb, ad);
 		_popup_del(obj, NULL, NULL);
-       return;
+		return;
 	}
 
 	if (!strcmp(title_label, "Share"))
 	{
 		_popup_del(obj, NULL, NULL);
-	   _share_verse_cb(ad);
-       return;
+		_change_read_mode(ad, EINA_FALSE);
+		_share_verse_cb(ad);
+		return;
 	}
 
 	if (!strcmp(title_label, "Copy"))
 	{
 		_popup_del(obj, NULL, NULL);
-	   _copy_verse_cb(ad);
-       return;
+		_change_read_mode(ad, EINA_TRUE);
+		_copy_verse_cb(ad);
+		return;
 	}
 
 	if (!strcmp(title_label, "Select Chapter"))
 	{
-	   _change_book(data, ad->layout, NULL, NULL);
+		_change_book(data, ad->layout, NULL, NULL);
 		_popup_del(obj, NULL, NULL);
-       return;
+		return;
 	}
 
 	Evas_Object *popup = elm_popup_add(elm_object_top_widget_get(obj));
@@ -812,6 +848,7 @@ create_ctxpopup_more_button_cb(void *data, Evas_Object *obj, void *event_info)
 	Evas_Object *win;
 	appdata_s *ad = (appdata_s*)data;
 	Elm_Object_Item *item;
+	int readmode = 1;
 
 	Evas_Object *ctxpopup = elm_ctxpopup_add(ad->naviframe);
 	elm_ctxpopup_auto_hide_disabled_set(ctxpopup, EINA_TRUE);
@@ -830,6 +867,11 @@ create_ctxpopup_more_button_cb(void *data, Evas_Object *obj, void *event_info)
 	if (ad->share_copy_mode) elm_object_item_disabled_set(item, EINA_TRUE);
 	item = elm_ctxpopup_item_append(ctxpopup, "Copy", NULL, ctxpopup_item_select_cb, ad);
 	if (ad->share_copy_mode) elm_object_item_disabled_set(item, EINA_TRUE);
+	preference_get_int("readmode", &readmode);
+	if (readmode == 0)
+		elm_ctxpopup_item_append(ctxpopup, "Day Mode Reading", NULL, ctxpopup_item_select_cb, ad);
+	else
+		elm_ctxpopup_item_append(ctxpopup, "Night Mode Reading", NULL, ctxpopup_item_select_cb, ad);
 	elm_ctxpopup_item_append(ctxpopup, "Select Chapter", NULL, ctxpopup_item_select_cb, ad);
 	elm_ctxpopup_item_append(ctxpopup, "Help", NULL, ctxpopup_item_select_cb, ad);
 	elm_ctxpopup_item_append(ctxpopup, "About", NULL, ctxpopup_item_select_cb, ad);

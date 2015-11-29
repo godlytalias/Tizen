@@ -58,17 +58,6 @@ _prev_chapter(void *data, Evas_Object *obj, const char *emission, const char *so
 	ecore_idle_enterer_add(_get_prev_chapter, data);
 }
 
-static void
-_splash_over(void *data, Evas_Object *obj, const char *emission, const char *source)
-{
-	appdata_s *ad = (appdata_s*)data;
-	if (elm_win_wm_rotation_supported_get(ad->win)) {
-		int rots[4] = { 0, 90, 180, 270 };
-		elm_win_wm_rotation_available_rotations_set(ad->win, (const int *)(&rots), 4);
-	}
-	eext_object_event_callback_add(ad->naviframe, EEXT_CALLBACK_MORE, eext_naviframe_more_cb, NULL);
-}
-
 void _show_verse(void *data, int verse)
 {
 	appdata_s *ad = (appdata_s*)data;
@@ -104,6 +93,39 @@ static void
 _nxt_chapter(void *data, Evas_Object *obj, const char *emission, const char *source)
 {
 	ecore_idle_enterer_add(_get_nxt_chapter, data);
+}
+
+static void
+_set_reading_mode(appdata_s *ad)
+{
+	preference_set_int("readmode", 1);
+}
+
+static void
+_first_launch_check(appdata_s *ad)
+{
+	bool exist;
+	if (preference_is_existing("first_launch", &exist) == 0)
+	{
+		if (!exist)
+		{
+			_set_reading_mode(ad);
+			preference_set_int("first_launch", 0);
+		}
+	}
+	else _set_reading_mode(ad);
+}
+
+static void
+_splash_over(void *data, Evas_Object *obj, const char *emission, const char *source)
+{
+	appdata_s *ad = (appdata_s*)data;
+	_first_launch_check(ad);
+	if (elm_win_wm_rotation_supported_get(ad->win)) {
+		int rots[4] = { 0, 90, 180, 270 };
+		elm_win_wm_rotation_available_rotations_set(ad->win, (const int *)(&rots), 4);
+	}
+	eext_object_event_callback_add(ad->naviframe, EEXT_CALLBACK_MORE, eext_naviframe_more_cb, NULL);
 }
 
 static void
@@ -190,12 +212,19 @@ gl_content_get_cb(void *data, Evas_Object *obj, const char *part)
     {
     	Evas_Object *layout = elm_layout_add(obj);
     	char verse_count[5];
+    	int readmode = 1;
     	elm_layout_file_set(layout, verse_item->appdata->edj_path, "verse_layout");
+    	preference_get_int("readmode", &readmode);
+    	if (readmode == 0 && !verse_item->appdata->share_copy_mode)
+    		elm_layout_signal_emit(layout, "elm,holy_bible,night_mode,on", "elm");
+    	else
+    		elm_layout_signal_emit(layout, "elm,holy_bible,night_mode,off", "elm");
      	elm_object_part_text_set(layout,"elm.text.verse",verse_item->verse);
     	sprintf(verse_count, "%d", verse_item->versecount+1);
     	elm_object_part_text_set(layout, "elm.text.verse_count", verse_count);
     	if (verse_item->bookmark) elm_layout_signal_emit(layout, "elm,holy_bible,bookmark,show", "elm");
     	if (verse_item->note) elm_layout_signal_emit(layout, "elm,holy_bible,note,show", "elm");
+
     	evas_object_show(layout);
     	return layout;
     }

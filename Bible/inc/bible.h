@@ -2,6 +2,7 @@
 #define __bible_H__
 
 #include <app.h>
+#include <app_preference.h>
 #include <Elementary.h>
 #include <system_settings.h>
 #include <efl_extension.h>
@@ -91,3 +92,4 @@ void _share_verse_cb(appdata_s *);
 void _copy_verse_cb(appdata_s *);
 void _cancel_cb(void *, Evas_Object *, void *);
 void _app_no_memory(appdata_s *);
+void _change_read_mode(appdata_s *, Eina_Bool);

@@ -38,8 +38,26 @@ collections {
          tag: "tab" "\t";
       }
       style {
+         name: "main_verse_style_night_mode";
+         base: "font=Tizen:style=Regular align=left font_size=25 color=#ffffff wrap=mixed";
+         tag: "br" "\n";
+         tag: "ps" "ps";
+         tag: "hilight" "+ font_weight=Bold";
+         tag: "b" "+ font_weight=Bold";
+         tag: "tab" "\t";
+      }
+      style {
          name: "bookmark_style";
          base: "font=Tizen:style=Regular align=left font_size=25 color=#500000 wrap=mixed";
+         tag: "br" "\n";
+         tag: "ps" "ps";
+         tag: "hilight" "+ font_weight=Bold";
+         tag: "b" "+ font_weight=Bold";
+         tag: "tab" "\t";
+      }
+      style {
+         name: "bookmark_style_night_mode";
+         base: "font=Tizen:style=Bold align=left font_size=25 color=#ffffff wrap=mixed";
          tag: "br" "\n";
          tag: "ps" "ps";
          tag: "hilight" "+ font_weight=Bold";
@@ -67,6 +85,15 @@ collections {
       style {
          name: "verse_count_style";
          base: "font=Tizen:style=Light align=center font_size=15 color=#000000 wrap=mixed";
+         tag: "br" "\n";
+         tag: "ps" "ps";
+         tag: "hilight" "+ font_weight=Bold";
+         tag: "b" "+ font_weight=Bold";
+         tag: "tab" "\t";
+      }
+      style {
+         name: "verse_count_style_night_mode";
+         base: "font=Tizen:style=Regular align=center font_size=15 color=#ffffff wrap=mixed";
          tag: "br" "\n";
          tag: "ps" "ps";
          tag: "hilight" "+ font_weight=Bold";
@@ -1066,13 +1093,21 @@ collections {
    
    
    group{ name: "verse_layout";
+      script {
+      	public bookmark = 0;
+      }
       parts {
          part{ name: "base";
             scale: 1;
-            type: SPACER;
+            type: RECT;
             description { state: "default" 0.0;
                min: 480 64;
                fixed: 1 0;
+               color: 0 0 0 0;
+            }
+            description { state: "night_mode" 0.0;
+               inherit: "default" 0.0;
+               color: 0 0 0 255;
             }
          }
          part{ name: "left_top_padding";
@@ -1116,6 +1151,14 @@ collections {
             description { state: "bookmark" 0.0;
                inherit: "default" 0.0;               
                text.style: "bookmark_style";
+            }
+            description { state: "night_mode" 0.0;
+               inherit: "default" 0.0;               
+               text.style: "main_verse_style_night_mode";
+            }  
+            description { state: "bookmark_night_mode" 0.0;
+               inherit: "default" 0.0;               
+               text.style: "bookmark_style_night_mode";
             }  
          }
          part {name: "elm.text.verse_count";
@@ -1132,6 +1175,10 @@ collections {
                fixed: 1 1;
                min: 32 0;
                align: 0.0 0.0;
+            }
+            description {state: "night_mode" 0.0;
+               inherit: "default" 0.0;
+               text.style: "verse_count_style_night_mode";
             }
         }
          part{ name: "bookmark_note_label";
@@ -1181,12 +1228,58 @@ collections {
          }
      }
      programs {
+        program { name: "bookmark_nightmode_activate";
+        	script {
+        		if (get_int(bookmark) == 1)
+        		{
+        			set_state(PART:"elm.text.verse", "bookmark_night_mode", 0.0);
+        		}
+        	}
+        }
+        program { name: "bookmark_nightmode_deactivate";
+        	script {
+        		if (get_int(bookmark) == 1)
+        		{
+        			set_state(PART:"elm.text.verse", "bookmark", 0.0);
+        		}
+        	}
+        }
+        program { name: "night_mode_activate";
+           signal: "elm,holy_bible,night_mode,on";
+           source: "elm";
+           action: STATE_SET "night_mode" 0.0;
+           target: "base";
+           target: "elm.text.verse";
+           target: "elm.text.verse_count";
+           after: "bookmark_nightmode_activate";
+        }
+        program { name: "night_mode_deactivate";
+           signal: "elm,holy_bible,night_mode,off";
+           source: "elm";
+           action: STATE_SET "default" 0.0;
+           target: "base";
+           target: "elm.text.verse";
+           target: "elm.text.verse_count";
+           after: "bookmark_nightmode_deactivate";
+        }
+        program { name: "bookmark_activate_script";
+           script
+           {
+              new st[31], Float:vl;
+              get_state(PART:"elm.text.verse_count", st, 30, vl);
+              if (!strcmp(st, "night_mode")) {
+                 set_state(PART:"elm.text.verse", "bookmark_night_mode", 0.0);
+              }
+              set_int(bookmark, 1);
+           }
+        }
         program { name: "bookmark_show";
            signal: "elm,holy_bible,bookmark,show";
            source: "elm";
            action: STATE_SET "bookmark" 0.0;
            target: "bookmark_note_label";
            target: "elm.text.verse";
+           after: "bookmark_activate_script";
         }
         program { name: "note_show";
            signal: "elm,holy_bible,note,show";
