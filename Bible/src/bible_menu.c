@@ -869,9 +869,10 @@ create_ctxpopup_more_button_cb(void *data, Evas_Object *obj, void *event_info)
 	if (ad->share_copy_mode) elm_object_item_disabled_set(item, EINA_TRUE);
 	preference_get_int("readmode", &readmode);
 	if (readmode == 0)
-		elm_ctxpopup_item_append(ctxpopup, "Day Mode Reading", NULL, ctxpopup_item_select_cb, ad);
+		item = elm_ctxpopup_item_append(ctxpopup, "Day Mode Reading", NULL, ctxpopup_item_select_cb, ad);
 	else
-		elm_ctxpopup_item_append(ctxpopup, "Night Mode Reading", NULL, ctxpopup_item_select_cb, ad);
+		item = elm_ctxpopup_item_append(ctxpopup, "Night Mode Reading", NULL, ctxpopup_item_select_cb, ad);
+	if (ad->share_copy_mode) elm_object_item_disabled_set(item, EINA_TRUE);
 	elm_ctxpopup_item_append(ctxpopup, "Select Chapter", NULL, ctxpopup_item_select_cb, ad);
 	elm_ctxpopup_item_append(ctxpopup, "Help", NULL, ctxpopup_item_select_cb, ad);
 	elm_ctxpopup_item_append(ctxpopup, "About", NULL, ctxpopup_item_select_cb, ad);
