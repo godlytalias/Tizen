@@ -85,7 +85,7 @@ _search_result_selected(void *data, Evas_Object *obj, void *event_info)
 	bible_verse_item *verse_item = (bible_verse_item*)data;
 	char title[128];
 	Elm_Object_Item *item = (Elm_Object_Item*)event_info;
-	Evas_Object *verse_popup = elm_popup_add(verse_item->appdata->search_result_genlist);
+	Evas_Object *verse_popup = elm_popup_add(verse_item->appdata->search_layout);
 	elm_popup_align_set(verse_popup, ELM_NOTIFY_ALIGN_FILL, 1.0);
 	sprintf(title, "%s %d : %d", Books[verse_item->bookcount], verse_item->chaptercount, verse_item->versecount + 1);
 	elm_object_part_text_set(verse_popup, "title,text", title);
@@ -148,6 +148,7 @@ static int
 _get_search_results(void *data, int argc, char **argv, char **azColName)
 {
 	   appdata_s *ad = (appdata_s*) data;
+	   Elm_Object_Item *gl_item;
 	   int i;
 	   bible_verse_item *verse_item = malloc(sizeof(bible_verse_item));
 	   for (i = 0; i < argc; i++)
@@ -164,7 +165,9 @@ _get_search_results(void *data, int argc, char **argv, char **azColName)
 			   verse_item->verse = strdup(argv[i]);
 	   }
 	   verse_item->appdata = ad;
-	   elm_genlist_item_append(ad->search_result_genlist, ad->search_itc, (void*)verse_item, NULL, ELM_GENLIST_ITEM_NONE, _search_result_selected, (void*)verse_item);
+
+	   gl_item = elm_genlist_item_append(ad->search_result_genlist, ad->search_itc, (void*)verse_item, NULL, ELM_GENLIST_ITEM_NONE, _search_result_selected, (void*)verse_item);
+	   elm_object_item_data_set(gl_item, verse_item);
 	   return 0;
 }
 

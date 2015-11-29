@@ -281,6 +281,38 @@ collections {
                rel2.relative: 0.0 1.0;
             }
          }
+         part { name: "title_left_button";
+            type: SWALLOW;
+            scale: 1;
+            description { state: "default" 0.0;
+               rel1.to: "base";
+               rel2.to: "elm.header.part";
+               rel2.relative: 0.0 1.0;
+               align: 0.0 0.5;
+               min: 80 40;
+               visible: 0;
+            }
+            description { state: "visible" 0.0;
+               inherit: "default" 0.0;
+               visible: 1;
+            }
+         }
+         part { name: "title_right_button";
+            type: SWALLOW;
+            scale: 1;
+            description { state: "default" 0.0;
+               rel1.to: "base";
+               rel1.relative: 1.0 0.0;
+               rel2.to: "elm.header.part";
+               align: 1.0 0.5;
+               min: 80 40;
+               visible: 0;
+            }
+            description { state: "visible" 0.0;
+               inherit: "default" 0.0;
+               visible: 1;
+            }
+         }
          part { name: "change_book_event";
             type: RECT;
             scale: 1;
@@ -298,12 +330,40 @@ collections {
                visible: 1;
             }
          }
+         part {name: "select_all_clipper";
+            type: RECT;
+            scale: 1;
+            description { state: "default" 0.0;
+               rel1.to: "elm.header.part";
+               rel1.relative: 0.0 1.0;
+               rel2.to: "elm.select.all";
+               align: 0.5 0.0;
+               color: 255 255 255 255;
+            }
+         }
+         part {name: "elm.select.all";
+            type: SWALLOW;
+            scale: 1;
+            clip_to: "select_all_clipper";
+            description { state: "default" 0.0;
+               rel1.to: "elm.header.part";
+               rel1.relative: 0.0 1.0;
+               rel2.to: "elm.header.part";
+               min: 480 80;
+               fixed: 1 1;
+               align: 0.5 1.0;
+            }
+            description { state: "visible" 0.0;
+               inherit: "default" 0.0;
+               align: 0.5 0.0;
+            }
+         }
          part {name: "elm.swallow.content";
             type: SWALLOW;
             scale: 1;
             clip_to: "clipper";
             description { state: "default" 0.0;
-               rel1.to_y: "elm.header.part";
+               rel1.to_y: "elm.select.all";
                rel1.to_x: "base";
                rel1.relative: 0.0 1.0;
                rel2.to: "base";
@@ -318,17 +378,22 @@ collections {
               rel2.to: "base";
               rel2.relative: 0.0 1.0;
               color: 255 255 255 50;
-              min: 50 50;
+              min: 32 32;
               fixed: 1 1;
               align: 0.0 1.0;
               image.normal: "left_arrow.png";
+              visible: 0;
            }
-          description { state: "highlight" 0.0;
+          description { state: "loaded" 0.0;
              inherit: "default" 0.0;
+             visible: 1;
+          }
+          description { state: "highlight" 0.0;
+             inherit: "loaded" 0.0;
              color: 255 255 255 100;
           }
           description { state: "clicked" 0.0;
-             inherit: "default" 0.0;
+             inherit: "loaded" 0.0;
              color: 255 255 255 200;
           }
         }
@@ -341,17 +406,22 @@ collections {
               rel2.to: "base";
               rel2.relative: 1.0 1.0;
               color: 255 255 255 50;
-              min: 50 50;
+              min: 32 32;
               fixed: 1 1;
               align: 1.0 1.0;
               image.normal: "right_arrow.png";
-           }
-          description { state: "highlight" 0.0;
+              visible: 0;
+          }
+          description { state: "loaded" 0.0;
              inherit: "default" 0.0;
+             visible: 1;
+          }
+          description { state: "highlight" 0.0;
+             inherit: "loaded" 0.0;
              color: 255 255 255 100;
           }
           description { state: "clicked" 0.0;
-             inherit: "default" 0.0;
+             inherit: "loaded" 0.0;
              color: 255 255 255 200;
           }
         }
@@ -359,6 +429,40 @@ collections {
      programs {
         program { name: "signal_emit";
            action: SIGNAL_EMIT "elm,holy_bible,book,change" "elm";
+        }
+        program { name: "select_all_show";
+           action: STATE_SET "visible" 0.0;
+           target: "elm.select.all";
+           transition: LINEAR 0.2;
+        }
+        program { name: "select_all_hide";
+           action: STATE_SET "default" 0.0;
+           target: "elm.select.all";
+           transition: LINEAR 0.2;
+        }
+        program { name: "share_copy_mode_on";
+           signal: "elm,holy_bible,share_copy,on";
+           source: "elm";
+           script {
+              set_state(PART:"title_left_button", "visible", 0.0);
+              set_state(PART:"title_right_button", "visible", 0.0);
+              set_state(PART:"change_book_event", "default", 0.0);
+              set_state(PART:"nxt_btn", "default", 0.0);
+              set_state(PART:"prev_btn", "default", 0.0);
+           }
+           after: "select_all_show";
+        }
+        program { name: "share_copy_mode_off";
+           signal: "elm,holy_bible,share_copy,off";
+           source: "elm";
+           script {
+              set_state(PART:"title_left_button", "default", 0.0);
+              set_state(PART:"title_right_button", "default", 0.0);
+              set_state(PART:"change_book_event", "loaded", 0.0);
+              set_state(PART:"nxt_btn", "loaded", 0.0);
+              set_state(PART:"prev_btn", "loaded", 0.0);
+           }
+           after: "select_all_hide";
         }
         program { name: "change_book_event_run";
            action: RUN_PLUGIN "touch_sound";
@@ -375,7 +479,7 @@ collections {
            signal: "mouse,up,*";
            source: "change_book_event";
            script {
-              if (get_int(click_mod) < 10) {
+              if (get_int(click_mod) < 5) {
                  run_program(PROGRAM:"change_book_event_run");
               }
            }
@@ -415,7 +519,7 @@ collections {
            signal: "mouse,up,*";
            source: "prev_btn";
            transition: LINEAR 0.3;
-           action: STATE_SET "default" 0.0;
+           action: STATE_SET "loaded" 0.0;
            target: "prev_btn";
         }
         program { name: "nxt_btn_pressed";
@@ -428,11 +532,11 @@ collections {
            signal: "mouse,up,*";
            source: "nxt_btn";
            transition: LINEAR 0.3;
-           action: STATE_SET "default" 0.0;
+           action: STATE_SET "loaded" 0.0;
            target: "nxt_btn";
         }
         program { name: "arrow_unhighlight";
-           action: STATE_SET "default" 0.0;
+           action: STATE_SET "loaded" 0.0;
            in: 0.5 0;
            transition: LINEAR 0.3;
            target: "nxt_btn";
@@ -464,9 +568,93 @@ collections {
            target: "elm.text.copyright";
            target: "elm.text.loading";
            target: "elm.swallow.progressbar";
+           target: "nxt_btn";
+           target: "prev_btn";
            after: "splash_finish";
         }
      }
+   }
+   
+   group{ name: "select_all_layout";
+      parts {
+         part { name: "base";
+            type: RECT;
+            scale: 1;
+            description { state: "default" 0.0;
+               color: 255 255 255 255;
+               min: 480 80;
+            }
+         }
+         part { name: "elm.padding.left_top";
+            type: RECT;
+            scale: 1;
+            description { state: "default" 0.0;
+               color: 0 0 0 0;
+               min: 32 10;
+               fixed: 1 1;
+               rel1.to: "base";
+               rel2.to: "base";
+               rel2.relative: 0.0 1.0;
+            }
+         }
+         part { name: "elm.padding.right_bottom";
+            type: RECT;
+            scale: 1;
+            description { state: "default" 0.0;
+               color: 0 0 0 0;
+               min: 32 10;
+               fixed: 1 1;
+               rel1.to: "base";
+               rel1.relative: 1.0 0.0;
+               rel2.to: "base";
+            }
+         }
+         part { name: "select_all";
+            type: TEXTBLOCK;
+            scale: 1;
+            description { state: "default" 0.0;
+               text.style: "main_verse_style";
+               min: 200 60;
+               fixed: 1 1;
+               rel1.to: "elm.padding.left_top";
+               rel1.relative: 1.0 1.0;
+               rel2.to_x: "elm.padding.left_top";
+               rel2.to_y: "elm.padding.right_bottom";
+               rel2.relative: 1.0 0.0;
+               align: 0.0 0.5;
+            }
+         }
+         part { name: "elm.swallow.check";
+            type: SWALLOW;
+            scale: 1;
+            description { state: "default" 0.0;
+               min: 60 60;
+               fixed: 1 1;
+               rel1.to_x: "elm.padding.right_bottom";
+               rel1.to_y: "elm.padding.left_top";
+               rel1.relative: 0.0 1.0;
+               rel2.to: "elm.padding.right_bottom";
+               rel2.relative: 0.0 0.0;
+               align: 1.0 0.5;
+            }
+         }
+         part { name: "select_all_event";
+            type: RECT;
+            scale: 1;
+            description { state: "default" 0.0;
+               rel1.to: "base";
+               rel2.to: "base";
+               color: 0 0 0 0;
+            }
+         }
+      }
+      programs {
+         program { name: "select_all";
+            signal: "mouse,clicked,*";
+            source: "select_all_event";
+            action: SIGNAL_EMIT "elm,holy_bible,select_all" "elm";
+         }
+      }
    }
 
    group{ name: "search_layout";
@@ -615,7 +803,7 @@ collections {
          part { name: "down_arrow";
             scale: 1;
             description { state: "default" 0.0;
-               min: 50 50;
+               min: 32 32;
                fixed: 1 1;
                rel1.to: "elm.swallow.result";
                rel1.relative: 0.0 1.0;
@@ -638,7 +826,7 @@ collections {
          part { name: "up_arrow";
             scale: 1;
             description { state: "default" 0.0;
-               min: 50 50;
+               min: 32 32;
                fixed: 1 1;
                rel1.to: "elm.swallow.result";
                rel2.to: "elm.swallow.result";

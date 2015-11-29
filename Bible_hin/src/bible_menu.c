@@ -408,6 +408,20 @@ ctxpopup_item_select_cb(void *data, Evas_Object *obj, void *event_info)
        return;
 	}
 
+	if (!strcmp(title_label, "साझा करें"))
+	{
+		_popup_del(obj, NULL, NULL);
+	   _share_verse_cb(ad);
+       return;
+	}
+
+	if (!strcmp(title_label, "कापी करें"))
+	{
+		_popup_del(obj, NULL, NULL);
+	   _copy_verse_cb(ad);
+       return;
+	}
+
 	if (!strcmp(title_label, "अध्यायों चुनें"))
 	{
 	   _change_book(data, ad->layout, NULL, NULL);
@@ -744,8 +758,12 @@ ctxpopup_item_select_cb(void *data, Evas_Object *obj, void *event_info)
 
 		sprintf(text_content, "<color=#000000FF><align=left><font_size=20>"
 		"User can share or copy the desired verses by long pressing / double click on verses. "
-		"Reference of verse also will get appended to verse automatically. "
-		"Users can copy more than one verses one by one and can get the verses from clipboard.</font_size></align></color>");
+		"Verses can also be shared / copied using the Share / Copy options "
+		"available in the application menu and then selecting the desired verses. "
+		"Reference of verse also will get appended to verse automatically. Verses will be "
+		"listed based on the order of selection of verses. "
+		"Users can copy more than one verses by selecting the verses needed to copy / share and "
+		"then clicking the done button in the header part. Users can get the copied verses from clipboard.</font_size></align></color>");
 
 		label = elm_label_add(popup);
 		evas_object_size_hint_weight_set(label, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
@@ -807,6 +825,10 @@ create_ctxpopup_more_button_cb(void *data, Evas_Object *obj, void *event_info)
 	elm_ctxpopup_item_append(ctxpopup, "खोजें", NULL, ctxpopup_item_select_cb, ad);
 	elm_ctxpopup_item_append(ctxpopup, "बुकमार्क", NULL, ctxpopup_item_select_cb, ad);
 	elm_ctxpopup_item_append(ctxpopup, "नोट्स", NULL, ctxpopup_item_select_cb, ad);
+	item = elm_ctxpopup_item_append(ctxpopup, "साझा करें", NULL, ctxpopup_item_select_cb, ad);
+	if (ad->share_copy_mode) elm_object_item_disabled_set(item, EINA_TRUE);
+	item = elm_ctxpopup_item_append(ctxpopup, "कापी करें", NULL, ctxpopup_item_select_cb, ad);
+	if (ad->share_copy_mode) elm_object_item_disabled_set(item, EINA_TRUE);
 	elm_ctxpopup_item_append(ctxpopup, "अध्यायों चुनें", NULL, ctxpopup_item_select_cb, ad);
 	elm_ctxpopup_item_append(ctxpopup, "मदद", NULL, ctxpopup_item_select_cb, ad);
 	elm_ctxpopup_item_append(ctxpopup, "हमारे बारे में", NULL, ctxpopup_item_select_cb, ad);
