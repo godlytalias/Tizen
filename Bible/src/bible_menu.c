@@ -818,6 +818,40 @@ ctxpopup_item_select_cb(void *data, Evas_Object *obj, void *event_info)
 		evas_object_show(label);
 		elm_box_pack_end(content_box, label);
 
+		sprintf(text_content, "<color=#000000FF><align=left><font_size=25>"
+	"<b>Day / Night Reading mode</b></font_size></align></color>");
+
+		label = elm_label_add(popup);
+		evas_object_size_hint_weight_set(label, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
+		evas_object_size_hint_align_set(label, EVAS_HINT_FILL, EVAS_HINT_FILL);
+		elm_label_line_wrap_set(label, ELM_WRAP_WORD);
+		elm_object_text_set(label, text_content);
+		evas_object_show(label);
+		elm_box_pack_end(content_box, label);
+
+		sprintf(text_content, "<color=#000000FF><align=left><font_size=20>"
+		"This is an option that enables user to get a better reading experience. If user wants "
+		"to read in a darker environment selecting Night Reading Mode option will help user to "
+		"reduce the strain in eyes and Day reading mode can be used for reading in bright "
+		"environments. </font_size></align></color>");
+
+		label = elm_label_add(popup);
+		evas_object_size_hint_weight_set(label, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
+		evas_object_size_hint_align_set(label, EVAS_HINT_FILL, EVAS_HINT_FILL);
+		elm_label_line_wrap_set(label, ELM_WRAP_WORD);
+		elm_object_text_set(label, text_content);
+		evas_object_show(label);
+		elm_box_pack_end(content_box, label);
+
+		label = elm_label_add(popup);
+		evas_object_size_hint_weight_set(label, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
+		evas_object_size_hint_align_set(label, EVAS_HINT_FILL, EVAS_HINT_FILL);
+		elm_label_line_wrap_set(label, ELM_WRAP_WORD);
+		sprintf(text_content, " ");
+		elm_object_text_set(label, text_content);
+		evas_object_show(label);
+		elm_box_pack_end(content_box, label);
+
 		sprintf(text_content, "<color=#000000FF><align=center><font_size=16>"
 		"Report the bugs or suggestions to "
 		"Godly T.Alias (<em>godlytalias@yahoo.co.in</em>).</font_size></align></color>");
