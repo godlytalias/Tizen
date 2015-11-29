@@ -127,9 +127,16 @@ _copy_verse_done_cb(void *data, Evas_Object *obj, void *event_info)
 void
 _cancel_cb(void *data, Evas_Object *obj, void *event_info)
 {
+	int readmode;
 	appdata_s *ad = (appdata_s*)data;
 	Eina_List *sel_list_iter;
 	Elm_Object_Item *item;
+
+	preference_get_int("readmode", &readmode);
+	if (readmode == 0)
+		_change_read_mode(ad, EINA_TRUE);
+	else
+		_change_read_mode(ad, EINA_FALSE);
 	Eina_List *sel_list = elm_genlist_selected_items_get(ad->genlist);
 	EINA_LIST_FOREACH(sel_list, sel_list_iter, item)
 	{

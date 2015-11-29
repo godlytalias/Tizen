@@ -377,6 +377,24 @@ naviframe_pop_cb(void *data, Elm_Object_Item *it)
 	return EINA_TRUE;
 }
 
+void
+_change_read_mode(appdata_s *ad, Eina_Bool read_mode)
+{
+	Evas_Object *glayout;
+	Elm_Object_Item *item;
+	Eina_List *verse_list_temp;
+	Eina_List *verse_list = elm_genlist_realized_items_get(ad->genlist);
+	EINA_LIST_FOREACH(verse_list, verse_list_temp, item)
+	{
+		glayout = elm_object_item_part_content_get(item, "elm.swallow.content");
+		if (read_mode)
+			elm_layout_signal_emit(glayout, "elm,holy_bible,night_mode,on", "elm");
+		else
+			elm_layout_signal_emit(glayout, "elm,holy_bible,night_mode,off", "elm");
+	}
+	return;
+}
+
 static void
 ctxpopup_item_select_cb(void *data, Evas_Object *obj, void *event_info)
 {
@@ -388,6 +406,22 @@ ctxpopup_item_select_cb(void *data, Evas_Object *obj, void *event_info)
 	if (!strcmp(title_label, "खोजें"))
 	{
 		_search_word(ad, NULL, NULL);
+		_popup_del(obj, NULL, NULL);
+		return;
+	}
+
+	if (!strcmp(title_label, "दिन मोड"))
+	{
+		_change_read_mode(ad, EINA_FALSE);
+		preference_set_int("readmode", 1);
+		_popup_del(obj, NULL, NULL);
+		return;
+	}
+
+	if (!strcmp(title_label, "रात मोड"))
+	{
+		_change_read_mode(ad, EINA_TRUE);
+		preference_set_int("readmode", 0);
 		_popup_del(obj, NULL, NULL);
 		return;
 	}
@@ -782,6 +816,41 @@ ctxpopup_item_select_cb(void *data, Evas_Object *obj, void *event_info)
 		evas_object_show(label);
 		elm_box_pack_end(content_box, label);
 
+		sprintf(text_content, "<color=#000000FF><align=left><font_size=25>"
+	"<b>Day / Night Reading mode</b></font_size></align></color>");
+
+		label = elm_label_add(popup);
+		evas_object_size_hint_weight_set(label, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
+		evas_object_size_hint_align_set(label, EVAS_HINT_FILL, EVAS_HINT_FILL);
+		elm_label_line_wrap_set(label, ELM_WRAP_WORD);
+		elm_object_text_set(label, text_content);
+		evas_object_show(label);
+		elm_box_pack_end(content_box, label);
+
+		sprintf(text_content, "<color=#000000FF><align=left><font_size=20>"
+		"This is an option that enables user to get a better reading experience. If user wants "
+		"to read in a darker environment selecting Night Reading Mode option will help user to "
+		"reduce the strain in eyes and Day reading mode can be used for reading in bright "
+		"environments. Night mode is intended for reading purpose only, verses won't be highlighted"
+		"on selection while on this mode. </font_size></align></color>");
+
+		label = elm_label_add(popup);
+		evas_object_size_hint_weight_set(label, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
+		evas_object_size_hint_align_set(label, EVAS_HINT_FILL, EVAS_HINT_FILL);
+		elm_label_line_wrap_set(label, ELM_WRAP_WORD);
+		elm_object_text_set(label, text_content);
+		evas_object_show(label);
+		elm_box_pack_end(content_box, label);
+
+		label = elm_label_add(popup);
+		evas_object_size_hint_weight_set(label, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
+		evas_object_size_hint_align_set(label, EVAS_HINT_FILL, EVAS_HINT_FILL);
+		elm_label_line_wrap_set(label, ELM_WRAP_WORD);
+		sprintf(text_content, " ");
+		elm_object_text_set(label, text_content);
+		evas_object_show(label);
+		elm_box_pack_end(content_box, label);
+
 		sprintf(text_content, "<color=#000000FF><align=center><font_size=16>"
 		"Report the bugs or suggestions to "
 		"Godly T.Alias (<em>godlytalias@yahoo.co.in</em>).</font_size></align></color>");
@@ -811,6 +880,8 @@ create_ctxpopup_more_button_cb(void *data, Evas_Object *obj, void *event_info)
 {
 	Evas_Object *win;
 	appdata_s *ad = (appdata_s*)data;
+	Elm_Object_Item *item;
+	int readmode = 1;
 
 	Evas_Object *ctxpopup = elm_ctxpopup_add(ad->naviframe);
 	elm_ctxpopup_auto_hide_disabled_set(ctxpopup, EINA_TRUE);
@@ -829,6 +900,11 @@ create_ctxpopup_more_button_cb(void *data, Evas_Object *obj, void *event_info)
 	if (ad->share_copy_mode) elm_object_item_disabled_set(item, EINA_TRUE);
 	item = elm_ctxpopup_item_append(ctxpopup, "कापी करें", NULL, ctxpopup_item_select_cb, ad);
 	if (ad->share_copy_mode) elm_object_item_disabled_set(item, EINA_TRUE);
+	preference_get_int("readmode", &readmode);
+	if (readmode == 0)
+		item = elm_ctxpopup_item_append(ctxpopup, "दिन मोड", NULL, ctxpopup_item_select_cb, ad);
+	else
+		item = elm_ctxpopup_item_append(ctxpopup, "रात मोड", NULL, ctxpopup_item_select_cb, ad);
 	elm_ctxpopup_item_append(ctxpopup, "अध्यायों चुनें", NULL, ctxpopup_item_select_cb, ad);
 	elm_ctxpopup_item_append(ctxpopup, "मदद", NULL, ctxpopup_item_select_cb, ad);
 	elm_ctxpopup_item_append(ctxpopup, "हमारे बारे में", NULL, ctxpopup_item_select_cb, ad);

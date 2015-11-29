@@ -833,7 +833,8 @@ ctxpopup_item_select_cb(void *data, Evas_Object *obj, void *event_info)
 		"This is an option that enables user to get a better reading experience. If user wants "
 		"to read in a darker environment selecting Night Reading Mode option will help user to "
 		"reduce the strain in eyes and Day reading mode can be used for reading in bright "
-		"environments. </font_size></align></color>");
+		"environments. Night mode is intended for reading purpose only, verses won't be highlighted"
+		"on selection while on this mode. </font_size></align></color>");
 
 		label = elm_label_add(popup);
 		evas_object_size_hint_weight_set(label, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
