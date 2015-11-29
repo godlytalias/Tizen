@@ -289,7 +289,7 @@ _bookmark_verse_cb(void *data, Evas_Object *obj, void *event_info)
 	   verse_item->bookmark = EINA_TRUE;
 	   elm_genlist_item_update(verse_item->it);
    }
-   else elm_object_text_set(toast, "Verse already bookmarked!");
+   else elm_object_text_set(toast, "വാക്യം നേരത്തെ ബുക്ക്മാർക്ക് ചെയ്തതാണ്");
    elm_popup_timeout_set(toast, 2.0);
    evas_object_show(toast);
    evas_object_smart_callback_add(toast, "timeout", eext_popup_back_cb, toast);
