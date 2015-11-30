@@ -97,7 +97,7 @@ _search_result_selected(void *data, Evas_Object *obj, void *event_info)
 	evas_object_smart_callback_add(verse_entry,"selection,copy",_copy_verse,(void*)verse_item);
 	elm_object_content_set(verse_popup, verse_entry);
 	Evas_Object *ok = elm_button_add(verse_popup);
-	elm_object_text_set(ok, "ശരി");
+	elm_object_text_set(ok, OK);
 	evas_object_smart_callback_add(ok, "clicked", _dismiss_verse_popup, verse_popup);
 	elm_object_part_content_set(verse_popup, "button1", ok);
 	evas_object_show(verse_popup);
@@ -115,13 +115,13 @@ _gl_longpressed_cb(void *data, Evas_Object *obj, void *event_info)
     Evas_Object *popup = elm_popup_add(ad->win);
 	elm_genlist_item_selected_set(item, EINA_FALSE);
     elm_popup_align_set(popup, ELM_NOTIFY_ALIGN_FILL, 0.5);
-    sprintf(popup_text, "<align='center'>%s %d : %d -ലേക്ക് പോകുക ?</align>", Books[verse_item->bookcount], verse_item->chaptercount, verse_item->versecount + 1);
+    sprintf(popup_text, "<align='center'>%s %d : %d -%s ?</align>", Books[verse_item->bookcount], verse_item->chaptercount, verse_item->versecount + 1, GO_TO);
     elm_object_text_set(popup, popup_text);
     Evas_Object *button1 = elm_button_add(ad->win);
-    elm_object_text_set(button1, "വേണ്ട");
+    elm_object_text_set(button1, NO);
     evas_object_smart_callback_add(button1, "clicked", _popup_del, popup);
     Evas_Object *button2 = elm_button_add(ad->win);
-    elm_object_text_set(button2, "വേണം");
+    elm_object_text_set(button2, YES);
     evas_object_smart_callback_add(button2, "clicked", _get_chapter, popup);
     evas_object_data_set(popup, "verse_item", verse_item);
     elm_object_part_content_set(popup, "button1", button1);
@@ -203,7 +203,7 @@ _bible_search_query(char* search_query, appdata_s *ad)
 	else
 		elm_layout_signal_emit(ad->search_layout, "elm,holy_bible,bg,show", "elm");
 	sprintf(toast, "%d റിസൽറ്റ് കിട്ടി!", res_count);
-	Evas_Object *toastp = elm_popup_add(ad->win);
+	Evas_Object *toastp = elm_popup_add(ad->naviframe);
 	elm_object_style_set(toastp, "toast");
 	elm_popup_allow_events_set(toastp, EINA_TRUE);
 	elm_object_text_set(toastp, toast);
@@ -226,20 +226,20 @@ _search_keyword(void *data,
 	char condition_key[5];
 	if (keyword && (strlen(keyword) > 1024))
 	{
-		Evas_Object *toast_popup = elm_popup_add(ad->win);
+		Evas_Object *toast_popup = elm_popup_add(ad->naviframe);
 		elm_popup_timeout_set(toast_popup, 2);
 		elm_object_style_set(toast_popup, "toast");
-		elm_object_text_set(toast_popup, "വാക്ക് വളരെ വലുതാണ്");
+		elm_object_text_set(toast_popup, SEARCH_KEYWORD_IS_TOO_LARGE);
 		evas_object_smart_callback_add(toast_popup, "timeout", _dismiss_verse_popup, toast_popup);
 		evas_object_show(toast_popup);
 		return;
 	}
 	else if (keyword && (strlen(keyword) < 2))
 		{
-			Evas_Object *toast_popup = elm_popup_add(ad->win);
+			Evas_Object *toast_popup = elm_popup_add(ad->naviframe);
 			elm_popup_timeout_set(toast_popup, 2);
 			elm_object_style_set(toast_popup, "toast");
-			elm_object_text_set(toast_popup, "വാക്ക് വളരെ ചെറുതാണ്");
+			elm_object_text_set(toast_popup, SEARCH_KEYWORD_IS_TOO_SMALL);
 			evas_object_smart_callback_add(toast_popup, "timeout", _dismiss_verse_popup, toast_popup);
 			evas_object_show(toast_popup);
 			return;
@@ -403,7 +403,7 @@ _hoversel_item_add(void *data)
 	appdata_s *ad = (appdata_s*)evas_object_data_get(hoversel, "appdata");
 	Evas_Object *loading = elm_popup_add(ad->naviframe);
 	elm_object_style_set(loading, "toast");
-	elm_object_text_set(loading, "ലോഡ് ചെയ്യുന്നു...");
+	elm_object_text_set(loading, LOADING_BOOKS);
 	evas_object_data_set(hoversel, "loading", loading);
 	evas_object_show(loading);
 	ecore_timer_add(0.3, _hoversel_item_creation, hoversel);
@@ -420,9 +420,9 @@ _entire_pref_changed(void *data, Evas_Object *obj, void *event_info)
 		elm_check_state_set(ad->check_ot, EINA_FALSE);
 		elm_check_state_set(ad->check_custom, EINA_FALSE);
 		elm_object_disabled_set(ad->from_dropdown, EINA_TRUE);
-		elm_object_text_set(ad->from_dropdown, "ഉല്പത്തി");
+		elm_object_text_set(ad->from_dropdown, Books[0]);
 		elm_object_disabled_set(ad->to_dropdown, EINA_TRUE);
-		elm_object_text_set(ad->to_dropdown, "വെളിപ്പാട്");
+		elm_object_text_set(ad->to_dropdown, Books[65]);
 	}
 	else elm_check_state_set(ad->check_entire, EINA_TRUE);
 }
@@ -437,9 +437,9 @@ _nt_pref_changed(void *data, Evas_Object *obj, void *event_info)
 		elm_check_state_set(ad->check_ot, EINA_FALSE);
 		elm_check_state_set(ad->check_custom, EINA_FALSE);
 		elm_object_disabled_set(ad->from_dropdown, EINA_TRUE);
-		elm_object_text_set(ad->from_dropdown, "മത്തായി");
+		elm_object_text_set(ad->from_dropdown, Books[39]);
 		elm_object_disabled_set(ad->to_dropdown, EINA_TRUE);
-		elm_object_text_set(ad->to_dropdown, "വെളിപ്പാട്");
+		elm_object_text_set(ad->to_dropdown, Books[65]);
 	}
 	else elm_check_state_set(ad->check_nt, EINA_TRUE);
 }
@@ -454,9 +454,9 @@ _ot_pref_changed(void *data, Evas_Object *obj, void *event_info)
 		elm_check_state_set(ad->check_nt, EINA_FALSE);
 		elm_check_state_set(ad->check_custom, EINA_FALSE);
 		elm_object_disabled_set(ad->from_dropdown, EINA_TRUE);
-		elm_object_text_set(ad->from_dropdown, "ഉല്പത്തി");
+		elm_object_text_set(ad->from_dropdown, Books[0]);
 		elm_object_disabled_set(ad->to_dropdown, EINA_TRUE);
-		elm_object_text_set(ad->to_dropdown, "മലാഖി");
+		elm_object_text_set(ad->to_dropdown, Books[38]);
 	}
 	else elm_check_state_set(ad->check_ot, EINA_TRUE);
 }
@@ -477,8 +477,8 @@ _custom_pref_changed(void *data, Evas_Object *obj, void *event_info)
 		   ecore_idler_add(_hoversel_item_add, ad->from_dropdown);
 		else
 			elm_object_disabled_set(ad->from_dropdown, EINA_FALSE);
-		elm_object_text_set(ad->from_dropdown, "പുസ്തകം തിരഞ്ഞെടുക്കുക");
-		elm_object_text_set(ad->to_dropdown, "പുസ്തകം തിരഞ്ഞെടുക്കുക");
+		elm_object_text_set(ad->from_dropdown, SELECT_BOOK);
+		elm_object_text_set(ad->to_dropdown, SELECT_BOOK);
 	}
 	else elm_check_state_set(ad->check_custom, EINA_TRUE);
 }
@@ -487,6 +487,7 @@ static Evas_Object*
 create_panel(appdata_s *ad)
 {
 	Evas_Object *panel, *layout, *rect;
+	char label_str[256];
 
 	/* Panel */
 	panel = elm_panel_add(ad->naviframe);
@@ -505,7 +506,7 @@ create_panel(appdata_s *ad)
 	evas_object_size_hint_weight_set(layout, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
 	evas_object_size_hint_align_set(layout, EVAS_HINT_FILL, EVAS_HINT_FILL);
 	elm_layout_file_set(layout, ad->edj_path, "panel_layout");
-	elm_layout_text_set(layout, "elm.text.title", "തിരച്ചിൽ മുൻഗണനകൾ");
+	elm_layout_text_set(layout, "elm.text.title", SEARCH_PREFERENCES);
 
 	Evas_Object *main_table = elm_table_add(panel);
 	evas_object_size_hint_weight_set(main_table, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
@@ -515,7 +516,8 @@ create_panel(appdata_s *ad)
 	elm_table_padding_set(main_table, 0, ELM_SCALE_SIZE(16));
 
 	Evas_Object *label = elm_label_add(panel);
-	elm_object_text_set(label, "<color=#000000FF><align=left><font_size=30>മുഴുവൻ<br/>ബൈബിൾ</font></align></color>");
+	sprintf(label_str, "<color=#000000FF><align=left><font_size=30>%s</font></align></color>", ENTIRE_BIBLE);
+	elm_object_text_set(label, label_str);
 	evas_object_show(label);
 	elm_table_pack(main_table, label, 0, 0, 1, 1);
 
@@ -533,7 +535,8 @@ create_panel(appdata_s *ad)
 	elm_table_pack(main_table, rect, 0, 1, 2, 1);
 
 	Evas_Object *label_new = elm_label_add(panel);
-	elm_object_text_set(label_new, "<color=#000000FF><align=left><font_size=30>പുതിയ<br/>നിയമം</font></align></color>");
+	sprintf(label_str, "<color=#000000FF><align=left><font_size=30>%s</font></align></color>", NEW_TESTAMENT);
+	elm_object_text_set(label_new, label_str);
 	evas_object_show(label_new);
 	elm_table_pack(main_table, label_new, 0, 2, 1, 1);
 
@@ -544,7 +547,8 @@ create_panel(appdata_s *ad)
 	elm_table_pack(main_table, ad->check_nt, 1, 2, 1, 1);
 
 	Evas_Object *label_old = elm_label_add(panel);
-	elm_object_text_set(label_old, "<color=#000000FF><align=left><font_size=30>പഴയ<br/>നിയമം</font></align></color>");
+	sprintf(label_str, "<color=#000000FF><align=left><font_size=30>%s</font></align></color>", OLD_TESTAMENT);
+	elm_object_text_set(label_old, label_str);
 	evas_object_show(label_old);
 	elm_table_pack(main_table, label_old, 0, 3, 1, 1);
 
@@ -561,7 +565,8 @@ create_panel(appdata_s *ad)
 	elm_table_pack(main_table, rect, 0, 4, 2, 1);
 
 	Evas_Object *label_custom = elm_label_add(panel);
-	elm_object_text_set(label_custom, "<color=#000000FF><align=left><font_size=30>സ്വതന്ത്ര<br/>തിരയൽ</font></align></color>");
+	sprintf(label_str, "<color=#000000FF><align=left><font_size=30>%s</font></align></color>", CUSTOM_SEARCH);
+	elm_object_text_set(label_custom, label_str);
 	evas_object_show(label_custom);
 	elm_table_pack(main_table, label_custom, 0, 5, 1, 1);
 
@@ -572,7 +577,8 @@ create_panel(appdata_s *ad)
 	elm_table_pack(main_table, ad->check_custom, 1, 5, 1, 1);
 
 	Evas_Object *label_from = elm_label_add(panel);
-	elm_object_text_set(label_from, "<color=#000000FF><align=left><font_size=30>മുതൽ</font></align></color>");
+	sprintf(label_str, "<color=#000000FF><align=left><font_size=30>%s</font></align></color>", FROM);
+	elm_object_text_set(label_from, label_str);
 	evas_object_show(label_from);
 	elm_table_pack(main_table, label_from, 0, 6, 1, 1);
 
@@ -580,13 +586,14 @@ create_panel(appdata_s *ad)
 	elm_hoversel_hover_parent_set(ad->from_dropdown, panel);
 	evas_object_size_hint_weight_set(ad->from_dropdown, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
 	evas_object_size_hint_align_set(ad->from_dropdown, EVAS_HINT_FILL, EVAS_HINT_FILL);
-	elm_object_text_set(ad->from_dropdown, "ഉല്പത്തി");
+	elm_object_text_set(ad->from_dropdown, Books[0]);
 	evas_object_show(ad->from_dropdown);
 	elm_object_disabled_set(ad->from_dropdown, EINA_TRUE);
 	elm_table_pack(main_table, ad->from_dropdown, 1, 6, 1, 1);
 
 	Evas_Object *label_to = elm_label_add(panel);
-	elm_object_text_set(label_to, "<color=#000000FF><align=left><font_size=30>വരെ</font></align></color>");
+	sprintf(label_str, "<color=#000000FF><align=left><font_size=30>%s</font></align></color>", TO);
+	elm_object_text_set(label_to, label_str);
 	evas_object_show(label_to);
 	elm_table_pack(main_table, label_to, 0, 7, 1, 1);
 
@@ -594,7 +601,7 @@ create_panel(appdata_s *ad)
 	elm_hoversel_hover_parent_set(ad->to_dropdown, panel);
 	evas_object_size_hint_weight_set(ad->to_dropdown, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
 	evas_object_size_hint_align_set(ad->to_dropdown, EVAS_HINT_FILL, EVAS_HINT_FILL);
-	elm_object_text_set(ad->to_dropdown, "വെളിപ്പാട്");
+	elm_object_text_set(ad->to_dropdown, Books[65]);
 	evas_object_show(ad->to_dropdown);
 	elm_object_disabled_set(ad->to_dropdown, EINA_TRUE);
 	elm_table_pack(main_table, ad->to_dropdown, 1, 7, 1, 1);
@@ -606,7 +613,8 @@ create_panel(appdata_s *ad)
 	elm_table_pack(main_table, rect, 0, 8, 2, 1);
 
 	Evas_Object *label_whole = elm_label_add(panel);
-	elm_object_text_set(label_whole, "<color=#000000FF><align=left><font_size=30>മുഴുവൻ<br/>വാക്ക്</font></align></color>");
+	sprintf(label_str, "<color=#000000FF><align=left><font_size=30>%s</font></align></color>", WHOLE_WORD);
+	elm_object_text_set(label_whole, label_str);
 	evas_object_show(label_whole);
 	elm_table_pack(main_table, label_whole, 0, 9, 1, 1);
 
@@ -615,7 +623,8 @@ create_panel(appdata_s *ad)
 	elm_table_pack(main_table, ad->check_whole, 1, 9, 1, 1);
 
 	Evas_Object *label_strict = elm_label_add(panel);
-	elm_object_text_set(label_strict, "<color=#000000FF><align=left><font_size=30>കർശന<br/>തിരച്ചിൽ</font></align></color>");
+	sprintf(label_str, "<color=#000000FF><align=left><font_size=30>%s</font></align></color>", STRICT_SEARCH);
+	elm_object_text_set(label_strict, label_str);
 	evas_object_show(label_strict);
 	elm_table_pack(main_table, label_strict, 0, 10, 1, 1);
 
@@ -717,19 +726,19 @@ _search_word(void *data,
 	evas_object_size_hint_align_set(ad->search_entry, EVAS_HINT_FILL, EVAS_HINT_FILL);
 	elm_entry_single_line_set(ad->search_entry, EINA_TRUE);
 	elm_entry_scrollable_set(ad->search_entry, EINA_TRUE);
-	elm_object_part_text_set(ad->search_entry, "elm.guide", "വാക്ക് ടൈപ്പ് ചെയ്യുക");
+	elm_object_part_text_set(ad->search_entry, "elm.guide", ENTER_THE_KEYWORD);
 	elm_entry_input_panel_return_key_type_set(ad->search_entry, ELM_INPUT_PANEL_RETURN_KEY_TYPE_SEARCH);
 	evas_object_show(ad->search_entry);
 	elm_object_part_content_set(ad->search_layout, "elm.swallow.entry", ad->search_entry);
 	Evas_Object *go_btn = elm_button_add(ad->search_layout);
-	elm_object_text_set(go_btn, "ശരി");
+	elm_object_text_set(go_btn, GO);
 	evas_object_smart_callback_add(go_btn, "clicked", _search_keyword, (void*)ad);
 	evas_object_smart_callback_add(ad->search_entry, "activated", _search_keyword, (void*)ad);
 	evas_object_show(go_btn);
 	elm_object_part_content_set(ad->search_layout, "elm.swallow.go", go_btn);
 	evas_object_event_callback_add(ad->search_layout, EVAS_CALLBACK_MOUSE_DOWN, _content_mouse_down, ad);
 	evas_object_event_callback_add(ad->search_layout, EVAS_CALLBACK_MOUSE_UP, _content_mouse_up, ad);
-	nf_it = elm_naviframe_item_push(ad->naviframe, "തിരയുക", NULL, NULL, ad->search_layout, "drawers");
+	nf_it = elm_naviframe_item_push(ad->naviframe, SEARCH, NULL, NULL, ad->search_layout, "drawers");
 	elm_naviframe_item_pop_cb_set(nf_it, _search_navi_pop_cb, ad);
 	ecore_idler_add(_panel_create, ad);
 }

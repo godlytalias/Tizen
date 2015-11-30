@@ -11,7 +11,7 @@ _prepare_verse_list(appdata_s *ad)
     	Evas_Object *toast = elm_popup_add(ad->naviframe);
     	elm_object_style_set(toast, "toast");
     	elm_popup_allow_events_set(toast, EINA_TRUE);
-    	elm_object_text_set(toast, "വാക്യം തിരഞ്ഞെടുത്തിട്ടില്ല");
+    	elm_object_text_set(toast, NO_VERSE_SELECTED);
     	evas_object_show(toast);
     	elm_popup_timeout_set(toast, 2.0);
     	evas_object_smart_callback_add(toast, "timeout", _popup_del, toast);

@@ -24,7 +24,7 @@ _app_no_memory(appdata_s *ad)
 	elm_object_style_set(toast, "toast");
 	elm_popup_allow_events_set(toast, EINA_TRUE);
 	elm_popup_timeout_set(toast, 2.0);
-	elm_object_text_set(toast, "Not enough memory to do the operation!");
+	elm_object_text_set(toast, NOT_ENOUGH_MEMORY);
 	evas_object_smart_callback_add(toast, "timeout", _popup_del, toast);
 	evas_object_show(toast);
 	return;
@@ -244,7 +244,7 @@ _remove_bookmark_query(void *data, Evas_Object *obj, void *event_info)
     elm_popup_allow_events_set(toast, EINA_TRUE);
     elm_popup_timeout_set(toast, 2.0);
     evas_object_show(toast);
-    elm_object_text_set(toast, "Bookmark removed");
+    elm_object_text_set(toast, BOOKMARK_REMOVED);
     evas_object_smart_callback_add(toast, "timeout", eext_popup_back_cb, toast);
     elm_ctxpopup_dismiss(obj);
     elm_object_focus_set(verse_item->appdata->genlist, EINA_TRUE);
@@ -281,12 +281,12 @@ _bookmark_verse_cb(void *data, Evas_Object *obj, void *event_info)
 	   char query[2048];
 	   sprintf(query, "INSERT INTO bookmark VALUES(%d, %d, %d, '%s')", verse_item->bookcount, verse_item->chaptercount, verse_item->versecount, verse_item->verse);
 	   _app_database_query(query, NULL, NULL);
-	   sprintf(query, "Bookmarked %s %d : %d", Books[verse_item->bookcount], verse_item->chaptercount, verse_item->versecount + 1);
+	   sprintf(query, "%s %s %d : %d", BOOKMARKED, Books[verse_item->bookcount], verse_item->chaptercount, verse_item->versecount + 1);
 	   elm_object_text_set(toast, query);
 	   verse_item->bookmark = EINA_TRUE;
 	   elm_genlist_item_update(verse_item->it);
    }
-   else elm_object_text_set(toast, "Verse already bookmarked!");
+   else elm_object_text_set(toast, VERSE_ALREADY_BOOKMARKED);
    elm_popup_timeout_set(toast, 2.0);
    evas_object_show(toast);
    evas_object_smart_callback_add(toast, "timeout", eext_popup_back_cb, toast);
@@ -306,9 +306,9 @@ _save_note_query(void *data, Evas_Object *obj, void *event_info)
 		Evas_Object *toast = elm_popup_add(verse_item->appdata->naviframe);
 		elm_object_style_set(toast, "toast");
 		if (strlen(note) == 0)
-			elm_object_text_set(toast, "Nothing to save!");
+			elm_object_text_set(toast, NOTHING_TO_SAVE);
 		else
-			elm_object_text_set(toast, "Note is too large :(");
+			elm_object_text_set(toast, NOTE_IS_TOO_LARGE);
 		elm_popup_allow_events_set(toast, EINA_TRUE);
 		elm_popup_timeout_set(toast, 2.0);
 		evas_object_smart_callback_add(toast, "timeout", _popup_del, toast);
@@ -321,7 +321,7 @@ _save_note_query(void *data, Evas_Object *obj, void *event_info)
 	_app_database_query(query, NULL, NULL);
 	Evas_Object *toast = elm_popup_add(verse_item->appdata->naviframe);
 	elm_object_style_set(toast, "toast");
-	elm_object_text_set(toast, "Note saved");
+	elm_object_text_set(toast, NOTE_SAVED);
 	elm_popup_allow_events_set(toast, EINA_TRUE);
 	elm_popup_timeout_set(toast, 2.0);
 	evas_object_smart_callback_add(toast, "timeout", _popup_del, toast);
@@ -334,7 +334,7 @@ _edit_note_cb(void *data, Evas_Object *obj, void *event_info)
 {
 	bible_verse_item *verse_item = (bible_verse_item*)data;
 	elm_entry_editable_set(verse_item->appdata->note_entry, EINA_TRUE);
-	elm_object_text_set(obj, "Save");
+	elm_object_text_set(obj, SAVE);
 	evas_object_smart_callback_del_full(obj, "clicked", _edit_note_cb, data);
 	evas_object_smart_callback_add(obj, "clicked", _save_note_query, data);
 	elm_object_focus_set(verse_item->appdata->note_entry, EINA_TRUE);
@@ -357,17 +357,17 @@ _add_note_cb(void *data, Evas_Object *obj, void *event_info)
    bible_verse_item *verse_item = (bible_verse_item*)data;
    elm_ctxpopup_dismiss(obj);
    Evas_Object *note_popup = elm_popup_add(verse_item->appdata->naviframe);
-   elm_object_part_text_set(note_popup, "title,text", "Notes");
+   elm_object_part_text_set(note_popup, "title,text", NOTES);
    if (!verse_item->note)
    {
 	   verse_item->appdata->note_entry = elm_entry_add(note_popup);
 	   note_entry = verse_item->appdata->note_entry;
 	   elm_entry_single_line_set(note_entry, EINA_FALSE);
-	   elm_object_part_text_set(note_entry, "elm.guide", "Enter the notes");
+	   elm_object_part_text_set(note_entry, "elm.guide", ENTER_THE_NOTES);
 	   evas_object_size_hint_weight_set(note_entry, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
 	   elm_object_content_set(note_popup, note_entry);
 	   Evas_Object *save_btn = elm_button_add(note_popup);
-	   elm_object_text_set(save_btn, "Save");
+	   elm_object_text_set(save_btn, SAVE);
 	   elm_object_part_content_set(note_popup, "button2", save_btn);
 	   evas_object_smart_callback_add(save_btn, "clicked", _save_note_query, verse_item);
    }
@@ -382,18 +382,18 @@ _add_note_cb(void *data, Evas_Object *obj, void *event_info)
 	   evas_object_size_hint_weight_set(note_entry, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
 	   elm_object_content_set(note_popup, note_entry);
 	   Evas_Object *edit_btn = elm_button_add(note_popup);
-	   elm_object_text_set(edit_btn, "Edit");
+	   elm_object_text_set(edit_btn, EDIT);
 	   elm_object_part_content_set(note_popup, "button2", edit_btn);
 	   evas_object_smart_callback_add(edit_btn, "clicked", _edit_note_cb, verse_item);
 	   Evas_Object *del_btn = elm_button_add(note_popup);
-	   elm_object_text_set(del_btn, "Delete");
+	   elm_object_text_set(del_btn, DELETE);
 	   elm_object_part_content_set(note_popup, "button3", del_btn);
 	   evas_object_data_set(note_popup, "verse_item", verse_item);
 	   evas_object_smart_callback_add(del_btn, "clicked", note_remove_cb, verse_item);
 	   evas_object_smart_callback_add(del_btn, "clicked", _popup_del, note_popup);
    }
    Evas_Object *close = elm_button_add(note_popup);
-   elm_object_text_set(close, "Close");
+   elm_object_text_set(close, CLOSE);
    evas_object_smart_callback_add(close, "clicked", _popup_del, note_popup);
    elm_object_part_content_set(note_popup, "button1", close);
    elm_popup_align_set(note_popup, ELM_NOTIFY_ALIGN_FILL, 1.0);
@@ -417,15 +417,15 @@ gl_longpressed_cb(void *data, Evas_Object *obj, void *event_info)
 	elm_ctxpopup_auto_hide_disabled_set(verse_popup, EINA_TRUE);
     elm_object_style_set(verse_popup, "more/default");
     if (!verse_item->bookmark)
-    	elm_ctxpopup_item_append(verse_popup, "Bookmark Verse", NULL, _bookmark_verse_cb, verse_item);
+    	elm_ctxpopup_item_append(verse_popup, BOOKMARK_VERSE, NULL, _bookmark_verse_cb, verse_item);
     else
-    	elm_ctxpopup_item_append(verse_popup, "Remove bookmark", NULL, _remove_bookmark_query, verse_item);
+    	elm_ctxpopup_item_append(verse_popup, REMOVE_BOOKMARK, NULL, _remove_bookmark_query, verse_item);
     if (!verse_item->note)
-    	elm_ctxpopup_item_append(verse_popup, "Add notes", NULL, _add_note_cb, verse_item);
+    	elm_ctxpopup_item_append(verse_popup, ADD_NOTES, NULL, _add_note_cb, verse_item);
     else
-    	elm_ctxpopup_item_append(verse_popup, "View notes", NULL, _add_note_cb, verse_item);
-	elm_ctxpopup_item_append(verse_popup, "Share Verse", NULL, _share_verse_item_cb, verse_item);
-	elm_ctxpopup_item_append(verse_popup, "Copy Verse", NULL, _copy_verse_item_cb, verse_item);
+    	elm_ctxpopup_item_append(verse_popup, VIEW_NOTES, NULL, _add_note_cb, verse_item);
+	elm_ctxpopup_item_append(verse_popup, SHARE_VERSE, NULL, _share_verse_item_cb, verse_item);
+	elm_ctxpopup_item_append(verse_popup, COPY_VERSE, NULL, _copy_verse_item_cb, verse_item);
 	evas_object_smart_callback_add(verse_popup, "dismissed", eext_ctxpopup_back_cb, verse_popup);
 	evas_object_smart_callback_add(ad->win, "rotation,changed", move_more_ctxpopup, verse_popup);
 	eext_object_event_callback_add(verse_popup, EEXT_CALLBACK_BACK, eext_ctxpopup_back_cb, verse_popup);
@@ -490,10 +490,10 @@ _home_screen(appdata_s *ad)
 	elm_layout_signal_callback_add(ad->layout, "elm,holy_bible,prev,chapter", "elm", _prev_chapter, (void*)ad);
 	elm_layout_signal_callback_add(ad->layout, "elm,holy_bible,splash,over", "elm", _splash_over, (void*)ad);
 
-	elm_object_part_text_set(ad->layout, "elm.text.copyright", "Copyright © 2015 Godly T Alias");
-	elm_object_part_text_set(ad->layout, "elm.text.version", "GTA v0.4");
-	elm_object_part_text_set(ad->layout, "elm.text.apptitle", "HOLY BIBLE");
-	elm_object_part_text_set(ad->layout, "elm.text.loading", "Loading Database...");
+	elm_object_part_text_set(ad->layout, "elm.text.copyright", COPYRIGHT);
+	elm_object_part_text_set(ad->layout, "elm.text.version", VERSION);
+	elm_object_part_text_set(ad->layout, "elm.text.apptitle", TITLE);
+	elm_object_part_text_set(ad->layout, "elm.text.loading", LOADING_DATABASE);
 	Evas_Object *progressbar = elm_progressbar_add(ad->layout);
 	elm_object_style_set(progressbar, "pending");
 	elm_progressbar_horizontal_set(progressbar, EINA_TRUE);
@@ -535,7 +535,7 @@ _home_screen(appdata_s *ad)
     elm_layout_file_set(layout, ad->edj_path, "select_all_layout");
 	evas_object_size_hint_align_set(layout, EVAS_HINT_FILL, EVAS_HINT_FILL);
 	evas_object_size_hint_weight_set(layout, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
-	elm_layout_text_set(layout, "select_all", "Select all");
+	elm_layout_text_set(layout, "select_all", SELECT_ALL);
 	Evas_Object *check = elm_check_add(layout);
 	elm_layout_content_set(layout, "elm.swallow.check", check);
 	elm_layout_content_set(ad->layout, "elm.select.all", layout);
