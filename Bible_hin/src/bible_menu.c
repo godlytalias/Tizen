@@ -392,6 +392,7 @@ _change_read_mode(appdata_s *ad, Eina_Bool read_mode)
 		else
 			elm_layout_signal_emit(glayout, "elm,holy_bible,night_mode,off", "elm");
 	}
+	eina_list_free(verse_list);
 	return;
 }
 

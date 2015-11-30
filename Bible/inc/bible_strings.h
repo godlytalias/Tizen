@@ -25,7 +25,6 @@
 #define NOTES "Notes"
 #define SHARE "Share"
 #define COPY "Copy"
-#define SELECT_CHAPTER "Select Chapter"
 #define ABOUT "About"
 #define HELP "Help"
 #define SEARCH_KEYWORD_IS_TOO_LARGE "Search keyword is too large"

@@ -83,11 +83,22 @@ _prepare_verse_list(appdata_s *ad)
 					sprintf(buf, "%s%d", buf, last_verse);
 			}
 		strcat(buf, "\n\n");
-		EINA_LIST_FOREACH(sel_list, sel_list_iter, item)
+		if (sel_count == elm_genlist_items_count(ad->genlist))
 		{
-			verse_item = (bible_verse_item*)elm_object_item_data_get(item);
-			sprintf(buf,"%s%d. %s\n", buf, verse_item->versecount + 1, verse_item->verse);
+			item = elm_genlist_first_item_get(ad->genlist);
+			while (item)
+			{
+				verse_item = (bible_verse_item*)elm_object_item_data_get(item);
+				sprintf(buf,"%s%d. %s\n", buf, verse_item->versecount + 1, verse_item->verse);
+				item = elm_genlist_item_next_get(item);
+			}
 		}
+		else
+			EINA_LIST_FOREACH(sel_list, sel_list_iter, item)
+			{
+				verse_item = (bible_verse_item*)elm_object_item_data_get(item);
+				sprintf(buf,"%s%d. %s\n", buf, verse_item->versecount + 1, verse_item->verse);
+			}
 		return buf;
 	}
 }
@@ -137,12 +148,13 @@ _cancel_cb(void *data, Evas_Object *obj, void *event_info)
 		_change_read_mode(ad, EINA_TRUE);
 	else
 		_change_read_mode(ad, EINA_FALSE);
-	Eina_List *sel_list = elm_genlist_selected_items_get(ad->genlist);
+	Eina_List *sel_list = eina_list_clone(elm_genlist_selected_items_get(ad->genlist));
 	EINA_LIST_FOREACH(sel_list, sel_list_iter, item)
 	{
 		elm_genlist_item_selected_set(item, EINA_FALSE);
 		elm_genlist_item_update(item);
 	}
+	eina_list_free(sel_list);
 	Evas_Object *done_btn = elm_layout_content_get(ad->layout, "title_right_button");
 	evas_object_smart_callback_del(done_btn, "clicked", _share_verse_done_cb);
 	evas_object_smart_callback_del(done_btn, "clicked", _copy_verse_done_cb);
@@ -157,6 +169,7 @@ _share_verse_cb(appdata_s *ad)
 	evas_object_smart_callback_add(done_btn, "clicked", _share_verse_done_cb, ad);
 	ad->share_copy_mode = EINA_TRUE;
 	elm_layout_signal_emit(ad->layout, "elm,holy_bible,share_copy,on", "elm");
+	elm_genlist_realized_items_update(ad->genlist);
 }
 
 void
@@ -166,4 +179,5 @@ _copy_verse_cb(appdata_s *ad)
 	evas_object_smart_callback_add(done_btn, "clicked", _copy_verse_done_cb, ad);
 	ad->share_copy_mode = EINA_TRUE;
 	elm_layout_signal_emit(ad->layout, "elm,holy_bible,share_copy,on", "elm");
+	elm_genlist_realized_items_update(ad->genlist);
 }
