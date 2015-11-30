@@ -312,6 +312,7 @@ _get_bookmarks(appdata_s *ad)
 
 	sprintf(query, "SELECT bookcount, chaptercount, versecount, verse FROM bookmark");
     _app_database_query(query, _get_bookmarks_list, ad);
+
     res_count = elm_genlist_items_count(ad->bookmarks_notes_genlist);
     if (res_count > 0)
     	elm_layout_signal_emit(layout, "elm,holy_bible,bg,hide", "elm");
@@ -346,6 +347,7 @@ _get_notes(appdata_s *ad)
 
 	sprintf(query, "SELECT bookcount, chaptercount, versecount, note FROM notes");
     _app_database_query(query, _get_bookmarks_list, ad);
+
     res_count = elm_genlist_items_count(ad->bookmarks_notes_genlist);
     if (res_count > 0)
     	elm_layout_signal_emit(layout, "elm,holy_bible,bg,hide", "elm");
@@ -451,7 +453,7 @@ ctxpopup_item_select_cb(void *data, Evas_Object *obj, void *event_info)
 	if (!strcmp(title_label, "പകർത്തുക"))
 	{
 		_popup_del(obj, NULL, NULL);
-		_change_read_mode(ad, EINA_TRUE);
+		_change_read_mode(ad, EINA_FALSE);
 		_copy_verse_cb(ad);
        return;
 	}
@@ -906,7 +908,8 @@ create_ctxpopup_more_button_cb(void *data, Evas_Object *obj, void *event_info)
 	else
 		item = elm_ctxpopup_item_append(ctxpopup, "രാത്രി മോഡ്", NULL, ctxpopup_item_select_cb, ad);
 	if (ad->share_copy_mode) elm_object_item_disabled_set(item, EINA_TRUE);
-	elm_ctxpopup_item_append(ctxpopup, "അദ്ധ്യായം തിരഞ്ഞെടുക്കുക", NULL, ctxpopup_item_select_cb, ad);
+	item = elm_ctxpopup_item_append(ctxpopup, "അദ്ധ്യായം തിരഞ്ഞെടുക്കുക", NULL, ctxpopup_item_select_cb, ad);
+	if (ad->share_copy_mode) elm_object_item_disabled_set(item, EINA_TRUE);
 	elm_ctxpopup_item_append(ctxpopup, "സഹായം", NULL, ctxpopup_item_select_cb, ad);
 	elm_ctxpopup_item_append(ctxpopup, "വിവരണം", NULL, ctxpopup_item_select_cb, ad);
 

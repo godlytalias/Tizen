@@ -445,14 +445,16 @@ ctxpopup_item_select_cb(void *data, Evas_Object *obj, void *event_info)
 	if (!strcmp(title_label, "साझा करें"))
 	{
 		_popup_del(obj, NULL, NULL);
-	   _share_verse_cb(ad);
+		_change_read_mode(ad, EINA_FALSE);
+		_share_verse_cb(ad);
        return;
 	}
 
 	if (!strcmp(title_label, "कापी करें"))
 	{
 		_popup_del(obj, NULL, NULL);
-	   _copy_verse_cb(ad);
+		_change_read_mode(ad, EINA_FALSE);
+		_copy_verse_cb(ad);
        return;
 	}
 
@@ -687,7 +689,7 @@ ctxpopup_item_select_cb(void *data, Evas_Object *obj, void *event_info)
 						"<b>Whole Word:</b><br/>User will get only the words exactly matching the keyword entered if this option is enabled. "
 						"If it is not enabled search results will include verses with words partially matching the keyword entered also. For eg. on searching Love, if "
 						"this option is enabled search results will include verses which contain 'Loves' 'Loved' etc.. else only verses which contain a word "
-						"exactly matching 'Love' only will be included in the result.<br/>"
+						"exactly matching 'Love' only will be included in the result.<br/> "
 						"<b>Strict Search:</b><br/>This option is useful only when searching with more than one keyword. "
 						"If this option is enabled, only verses which contain all the entered keyword "
 						"will be included, otherwise even if one keyword entered is present in the verse, it will be included in the result. </font_size></align></color>");
@@ -905,7 +907,9 @@ create_ctxpopup_more_button_cb(void *data, Evas_Object *obj, void *event_info)
 		item = elm_ctxpopup_item_append(ctxpopup, "दिन मोड", NULL, ctxpopup_item_select_cb, ad);
 	else
 		item = elm_ctxpopup_item_append(ctxpopup, "रात मोड", NULL, ctxpopup_item_select_cb, ad);
-	elm_ctxpopup_item_append(ctxpopup, "अध्यायों चुनें", NULL, ctxpopup_item_select_cb, ad);
+	if (ad->share_copy_mode) elm_object_item_disabled_set(item, EINA_TRUE);
+	item = elm_ctxpopup_item_append(ctxpopup, "अध्यायों चुनें", NULL, ctxpopup_item_select_cb, ad);
+	if (ad->share_copy_mode) elm_object_item_disabled_set(item, EINA_TRUE);
 	elm_ctxpopup_item_append(ctxpopup, "मदद", NULL, ctxpopup_item_select_cb, ad);
 	elm_ctxpopup_item_append(ctxpopup, "हमारे बारे में", NULL, ctxpopup_item_select_cb, ad);
 

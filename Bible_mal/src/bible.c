@@ -215,9 +215,8 @@ _select_all_verses(void *data, Evas_Object *obj, const char *emission, const cha
 		item = elm_genlist_first_item_get(ad->genlist);
 		while(item)
 		{
-			if (elm_genlist_item_selected_get(item))
-				elm_genlist_item_selected_set(item, EINA_FALSE);
 			elm_genlist_item_selected_set(item, EINA_TRUE);
+			elm_genlist_item_update(item);
 			item = elm_genlist_item_next_get(item);
 		}
 	}
@@ -444,8 +443,8 @@ gl_longpressed_cb(void *data, Evas_Object *obj, void *event_info)
     	elm_ctxpopup_item_append(verse_popup, "കുറിപ്പ് ചേർക്കുക", NULL, _add_note_cb, verse_item);
     else
     	elm_ctxpopup_item_append(verse_popup, "കുറിപ്പ് കാണുക", NULL, _add_note_cb, verse_item);
-	elm_ctxpopup_item_append(verse_popup, "വാക്യം പങ്കിടുക", NULL, _share_verse_cb, verse_item);
-	elm_ctxpopup_item_append(verse_popup, "വാക്യം പകർത്തുക", NULL, _copy_verse_cb, verse_item);
+	elm_ctxpopup_item_append(verse_popup, "വാക്യം പങ്കിടുക", NULL, _share_verse_item_cb, verse_item);
+	elm_ctxpopup_item_append(verse_popup, "വാക്യം പകർത്തുക", NULL, _copy_verse_item_cb, verse_item);
 	evas_object_smart_callback_add(verse_popup, "dismissed", eext_ctxpopup_back_cb, verse_popup);
 	evas_object_smart_callback_add(ad->win, "rotation,changed", move_more_ctxpopup, verse_popup);
 	eext_object_event_callback_add(verse_popup, EEXT_CALLBACK_BACK, eext_ctxpopup_back_cb, verse_popup);
@@ -462,6 +461,18 @@ gl_selected_cb(void *data, Evas_Object *obj, void *event_info)
 	{
 		Elm_Object_Item *it = (Elm_Object_Item*)event_info;
 		elm_genlist_item_selected_set(it, EINA_FALSE);
+	}
+}
+
+static void
+gl_unselected_cb(void *data, Evas_Object *obj, void *event_info)
+{
+	appdata_s *ad = (appdata_s*)data;
+	if (ad->share_copy_mode)
+	{
+		Evas_Object *layout = elm_layout_content_get(ad->layout, "elm.select.all");
+		Evas_Object *check = elm_layout_content_get(layout, "elm.swallow.check");
+		elm_check_state_set(check, EINA_FALSE);
 	}
 }
 
@@ -533,6 +544,7 @@ _home_screen(appdata_s *ad)
 	elm_genlist_homogeneous_set(ad->genlist, EINA_FALSE);
 	elm_genlist_multi_select_set(ad->genlist, EINA_TRUE);
 	evas_object_smart_callback_add(ad->genlist, "selected", gl_selected_cb, ad);
+	evas_object_smart_callback_add(ad->genlist, "unselected", gl_unselected_cb, ad);
 	evas_object_smart_callback_add(ad->genlist, "longpressed", gl_longpressed_cb, ad);
 	evas_object_smart_callback_add(ad->genlist, "clicked,double", gl_longpressed_cb, ad);
     evas_object_event_callback_add(ad->genlist, EVAS_CALLBACK_MOUSE_DOWN, _content_mouse_down, ad);

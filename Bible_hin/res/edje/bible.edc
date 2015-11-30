@@ -83,6 +83,15 @@ collections {
          tag: "tab" "\t";
       }
       style {
+         name: "verse_count_style";
+         base: "font=Tizen:style=Regular align=center font_size=15 color=#000000 wrap=mixed";
+         tag: "br" "\n";
+         tag: "ps" "ps";
+         tag: "hilight" "+ font_weight=Bold";
+         tag: "b" "+ font_weight=Bold";
+         tag: "tab" "\t";
+      }
+      style {
          name: "verse_count_style_night_mode";
          base: "font=Tizen:style=Regular align=center font_size=15 color=#ffffff wrap=mixed";
          tag: "br" "\n";
@@ -632,7 +641,7 @@ collections {
             scale: 1;
             description { state: "default" 0.0;
                text.style: "main_verse_style";
-               min: 200 60;
+               min: 320 60;
                fixed: 1 1;
                rel1.to: "elm.padding.left_top";
                rel1.relative: 1.0 1.0;

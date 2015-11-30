@@ -196,9 +196,8 @@ _select_all_verses(void *data, Evas_Object *obj, const char *emission, const cha
 		item = elm_genlist_first_item_get(ad->genlist);
 		while(item)
 		{
-			if (elm_genlist_item_selected_get(item))
-				elm_genlist_item_selected_set(item, EINA_FALSE);
 			elm_genlist_item_selected_set(item, EINA_TRUE);
+			elm_genlist_item_update(item);
 			item = elm_genlist_item_next_get(item);
 		}
 	}
@@ -446,6 +445,18 @@ gl_selected_cb(void *data, Evas_Object *obj, void *event_info)
 	}
 }
 
+static void
+gl_unselected_cb(void *data, Evas_Object *obj, void *event_info)
+{
+	appdata_s *ad = (appdata_s*)data;
+	if (ad->share_copy_mode)
+	{
+		Evas_Object *layout = elm_layout_content_get(ad->layout, "elm.select.all");
+		Evas_Object *check = elm_layout_content_get(layout, "elm.swallow.check");
+		elm_check_state_set(check, EINA_FALSE);
+	}
+}
+
 void
 gl_del_cb(void *data, Evas_Object *obj)
 {
@@ -514,6 +525,7 @@ _home_screen(appdata_s *ad)
 	elm_genlist_homogeneous_set(ad->genlist, EINA_FALSE);
 	elm_genlist_multi_select_set(ad->genlist, EINA_TRUE);
 	evas_object_smart_callback_add(ad->genlist, "selected", gl_selected_cb, ad);
+	evas_object_smart_callback_add(ad->genlist, "unselected", gl_unselected_cb, ad);
 	evas_object_smart_callback_add(ad->genlist, "longpressed", gl_longpressed_cb, ad);
 	evas_object_smart_callback_add(ad->genlist, "clicked,double", gl_longpressed_cb, ad);
     evas_object_event_callback_add(ad->genlist, EVAS_CALLBACK_MOUSE_DOWN, _content_mouse_down, ad);

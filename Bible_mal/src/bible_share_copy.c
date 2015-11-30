@@ -83,11 +83,22 @@ _prepare_verse_list(appdata_s *ad)
 					sprintf(buf, "%s%d", buf, last_verse);
 			}
 		strcat(buf, "\n\n");
-		EINA_LIST_FOREACH(sel_list, sel_list_iter, item)
+		if (sel_count == elm_genlist_items_count(ad->genlist))
 		{
-			verse_item = (bible_verse_item*)elm_object_item_data_get(item);
-			sprintf(buf,"%s%d. %s\n", buf, verse_item->versecount + 1, verse_item->verse);
+			item = elm_genlist_first_item_get(ad->genlist);
+			while (item)
+			{
+				verse_item = (bible_verse_item*)elm_object_item_data_get(item);
+				sprintf(buf,"%s%d. %s\n", buf, verse_item->versecount + 1, verse_item->verse);
+				item = elm_genlist_item_next_get(ad->genlist);
+			}
 		}
+		else
+			EINA_LIST_FOREACH(sel_list, sel_list_iter, item)
+			{
+				verse_item = (bible_verse_item*)elm_object_item_data_get(item);
+				sprintf(buf,"%s%d. %s\n", buf, verse_item->versecount + 1, verse_item->verse);
+			}
 		return buf;
 	}
 }
