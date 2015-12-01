@@ -109,6 +109,7 @@ _share_verse_done_cb(void *data, Evas_Object *obj, void *event_info)
 	char *buf;
 	appdata_s *ad = (appdata_s*)data;
     buf = _prepare_verse_list(ad);
+	_cancel_cb(ad, NULL, NULL);
     if (!buf) return;
 	app_control_h handler;
 	app_control_create(&handler);
@@ -119,7 +120,6 @@ _share_verse_done_cb(void *data, Evas_Object *obj, void *event_info)
 	app_control_destroy(handler);
 	free(buf);
 	evas_object_smart_callback_del(obj, "clicked", _share_verse_done_cb);
-	_cancel_cb(ad, NULL, NULL);
 }
 
 static void
@@ -128,11 +128,11 @@ _copy_verse_done_cb(void *data, Evas_Object *obj, void *event_info)
 	char *buf;
 	appdata_s *ad = (appdata_s*)data;
     buf = _prepare_verse_list(ad);
+	_cancel_cb(ad, NULL, NULL);
     if (!buf) return;
 	elm_cnp_selection_set(obj, ELM_SEL_TYPE_CLIPBOARD, ELM_SEL_FORMAT_TEXT, buf, strlen(buf));
 	free(buf);
 	evas_object_smart_callback_del(obj, "clicked", _copy_verse_done_cb);
-	_cancel_cb(ad, NULL, NULL);
 }
 
 void
