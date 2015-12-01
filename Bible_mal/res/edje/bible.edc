@@ -122,9 +122,12 @@ collections {
    group { name: "main";
       images.image: "Bible.png" COMP;
       images.image: "left_arrow.png" COMP;
+      images.image: "left_arrow_white.png" COMP;
       images.image: "right_arrow.png" COMP;
+      images.image: "right_arrow_white.png" COMP;
       script {
          public click_mod = 0;
+         public night_mode = 0;
       }
       parts {
          part {name: "base";
@@ -404,10 +407,10 @@ collections {
               rel1.relative: 0.0 1.0;
               rel2.to: "base";
               rel2.relative: 0.0 1.0;
-              color: 255 255 255 50;
               min: 32 32;
               fixed: 1 1;
               align: 0.0 1.0;
+              color: 255 255 255 50;
               image.normal: "left_arrow.png";
               visible: 0;
            }
@@ -423,6 +426,18 @@ collections {
              inherit: "loaded" 0.0;
              color: 255 255 255 200;
           }
+          description { state: "loaded_night" 0.0;
+             inherit: "loaded" 0.0;
+             image.normal: "left_arrow_white.png";
+          }
+          description { state: "highlight_night" 0.0;
+             inherit: "loaded_night" 0.0;
+             color: 255 255 255 200;
+          }
+          description { state: "clicked_night" 0.0;
+             inherit: "loaded_night" 0.0;
+             color: 255 255 255 250;
+          }
         }
         part { name: "nxt_btn";
            scale: 1;
@@ -432,7 +447,6 @@ collections {
               rel1.relative: 1.0 1.0;
               rel2.to: "base";
               rel2.relative: 1.0 1.0;
-              color: 255 255 255 50;
               min: 32 32;
               fixed: 1 1;
               align: 1.0 1.0;
@@ -441,6 +455,7 @@ collections {
           }
           description { state: "loaded" 0.0;
              inherit: "default" 0.0;
+             color: 255 255 255 50;
              visible: 1;
           }
           description { state: "highlight" 0.0;
@@ -450,6 +465,18 @@ collections {
           description { state: "clicked" 0.0;
              inherit: "loaded" 0.0;
              color: 255 255 255 200;
+          }
+          description { state: "loaded_night" 0.0;
+             inherit: "loaded" 0.0;
+			 image.normal: "right_arrow_white.png";
+          }
+          description { state: "highlight_night" 0.0;
+             inherit: "loaded_night" 0.0;
+             color: 255 255 255 200;
+          }
+          description { state: "clicked_night" 0.0;
+             inherit: "loaded_night" 0.0;
+             color: 255 255 255 250;
           }
         }
      }
@@ -466,6 +493,24 @@ collections {
            action: STATE_SET "default" 0.0;
            target: "elm.select.all";
            transition: LINEAR 0.2;
+        }
+        program { name: "night_mode_on";
+           signal: "elm,holy_bible,night_mode,on";
+           source: "elm";
+           script {
+              set_state(PART:"nxt_btn", "loaded_night", 0.0);
+              set_state(PART:"prev_btn", "loaded_night", 0.0);
+              set_int(night_mode, 1);
+           }
+        }
+        program { name: "night_mode_off";
+           signal: "elm,holy_bible,night_mode,off";
+           source: "elm";
+           script {
+              set_state(PART:"nxt_btn", "loaded", 0.0);
+              set_state(PART:"prev_btn", "loaded", 0.0);
+              set_int(night_mode, 0);
+           }
         }
         program { name: "share_copy_mode_on";
            signal: "elm,holy_bible,share_copy,on";
@@ -506,7 +551,7 @@ collections {
            signal: "mouse,up,*";
            source: "change_book_event";
            script {
-              if (get_int(click_mod) < 5) {
+              if (get_int(click_mod) < 10) {
                  run_program(PROGRAM:"change_book_event_run");
               }
            }
@@ -536,46 +581,81 @@ collections {
            action: RUN_PLUGIN "touch_sound";
            after: "prev_chap_signal";
         }
+        program { name: "arrow_unhighlight_day";
+           transition: LINEAR 0.3;
+           action: STATE_SET "loaded" 0.0;
+           target: "nxt_btn";
+           target: "prev_btn";
+        }
+        program { name: "arrow_unhighlight_night";
+           transition: LINEAR 0.3;
+           action: STATE_SET "loaded_night" 0.0;
+           target: "nxt_btn";
+           target: "prev_btn";
+        }
         program { name: "prev_btn_pressed";
            signal: "mouse,down,*";
            source: "prev_btn";
-           action: STATE_SET "clicked" 0.0;
-           target: "prev_btn";
+		   script {
+		      if (get_int(night_mode) == 0)
+		         set_state(PART:"prev_btn", "clicked", 0.0);
+		      else
+		         set_state(PART:"prev_btn", "clicked_night", 0.0);
+		   }
         }
         program { name: "prev_btn_released";
            signal: "mouse,up,*";
            source: "prev_btn";
-           transition: LINEAR 0.3;
-           action: STATE_SET "loaded" 0.0;
-           target: "prev_btn";
+		   script {
+		      if (get_int(night_mode) == 0)
+		         run_program(PROGRAM:"arrow_unhighlight_day");
+		      else
+		         run_program(PROGRAM:"arrow_unhighlight_night");
+		   }
         }
         program { name: "nxt_btn_pressed";
            signal: "mouse,down,*";
            source: "nxt_btn";
-           action: STATE_SET "clicked" 0.0;
-           target: "nxt_btn";
+		   script {
+		      if (get_int(night_mode) == 0)
+		         set_state(PART:"nxt_btn", "clicked", 0.0);
+		      else
+		         set_state(PART:"nxt_btn", "clicked_night", 0.0);
+		   }
         }
         program { name: "nxt_btn_released";
            signal: "mouse,up,*";
            source: "nxt_btn";
-           transition: LINEAR 0.3;
-           action: STATE_SET "loaded" 0.0;
-           target: "nxt_btn";
+		   script {
+		      if (get_int(night_mode) == 0)
+		         run_program(PROGRAM:"arrow_unhighlight_day");
+		      else
+		         run_program(PROGRAM:"arrow_unhighlight_night");
+		   }
         }
-        program { name: "arrow_unhighlight";
-           action: STATE_SET "loaded" 0.0;
-           in: 0.5 0;
-           transition: LINEAR 0.3;
+        program { name: "arrow_highlight_day";
+           transition: LINEAR 0.2;
+           action: STATE_SET "highlight" 0.0;
            target: "nxt_btn";
            target: "prev_btn";
+           after: "arrow_unhighlight_day";
+        }
+        program { name: "arrow_highlight_night";
+           transition: LINEAR 0.2;
+           action: STATE_SET "highlight_night" 0.0;
+           target: "nxt_btn";
+           target: "prev_btn";
+           after: "arrow_unhighlight_night";
         }
         program { name: "arrow_highlight";
            signal: "elm,holy_bible,arrow,highlight";
            source: "elm";
-           action: STATE_SET "highlight" 0.0;
-           target: "nxt_btn";
-           target: "prev_btn";
-           after: "arrow_unhighlight";
+		   script {
+		      if (get_int(night_mode) == 0)
+		         run_program(PROGRAM:"arrow_highlight_day");
+		      else
+				 run_program(PROGRAM:"arrow_highlight_night");
+		   }
         }
         program { name: "splash_finish";
            action: SIGNAL_EMIT "elm,holy_bible,splash,over" "elm";
