@@ -11,7 +11,7 @@ _prepare_verse_list(appdata_s *ad)
     	Evas_Object *toast = elm_popup_add(ad->naviframe);
     	elm_object_style_set(toast, "toast");
     	elm_popup_allow_events_set(toast, EINA_TRUE);
-    	elm_object_text_set(toast, "कविता चयन नहीं किया है");
+    	elm_object_text_set(toast, NO_VERSE_SELECTED);
     	evas_object_show(toast);
     	elm_popup_timeout_set(toast, 2.0);
     	evas_object_smart_callback_add(toast, "timeout", _popup_del, toast);
@@ -109,6 +109,7 @@ _share_verse_done_cb(void *data, Evas_Object *obj, void *event_info)
 	char *buf;
 	appdata_s *ad = (appdata_s*)data;
     buf = _prepare_verse_list(ad);
+	_cancel_cb(ad, NULL, NULL);
     if (!buf) return;
 	app_control_h handler;
 	app_control_create(&handler);
@@ -119,7 +120,6 @@ _share_verse_done_cb(void *data, Evas_Object *obj, void *event_info)
 	app_control_destroy(handler);
 	free(buf);
 	evas_object_smart_callback_del(obj, "clicked", _share_verse_done_cb);
-	_cancel_cb(ad, NULL, NULL);
 }
 
 static void
@@ -128,11 +128,11 @@ _copy_verse_done_cb(void *data, Evas_Object *obj, void *event_info)
 	char *buf;
 	appdata_s *ad = (appdata_s*)data;
     buf = _prepare_verse_list(ad);
+	_cancel_cb(ad, NULL, NULL);
     if (!buf) return;
 	elm_cnp_selection_set(obj, ELM_SEL_TYPE_CLIPBOARD, ELM_SEL_FORMAT_TEXT, buf, strlen(buf));
 	free(buf);
 	evas_object_smart_callback_del(obj, "clicked", _copy_verse_done_cb);
-	_cancel_cb(ad, NULL, NULL);
 }
 
 void

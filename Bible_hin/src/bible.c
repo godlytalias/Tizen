@@ -140,6 +140,12 @@ _splash_over(void *data, Evas_Object *obj, const char *emission, const char *sou
 {
 	appdata_s *ad = (appdata_s*)data;
 	_first_launch_check(ad);
+	int readmode = 0;
+	preference_get_int("readmode", &readmode);
+	if (readmode)
+		elm_layout_signal_emit(ad->layout, "elm,holy_bible,night_mode,off", "elm");
+	else
+		elm_layout_signal_emit(ad->layout, "elm,holy_bible,night_mode,on", "elm");
 	if (elm_win_wm_rotation_supported_get(ad->win)) {
 		int rots[4] = { 0, 90, 180, 270 };
 		elm_win_wm_rotation_available_rotations_set(ad->win, (const int *)(&rots), 4);
