@@ -36,7 +36,7 @@
 #define NEW_TESTAMENT "പുതിയ<br/>നിയമം"
 #define OLD_TESTAMENT "പഴയ<br/>നിയമം"
 #define CUSTOM_SEARCH "സ്വതന്ത്ര<br/>തിരയൽ"
-#define FROM "മുതൽ"
+#define FROM "തുടക്കം"
 #define TO "വരെ"
 #define WHOLE_WORD "മുഴുവൻ<br/>വാക്ക്"
 #define STRICT_SEARCH "കർശന<br/>തിരച്ചിൽ"
