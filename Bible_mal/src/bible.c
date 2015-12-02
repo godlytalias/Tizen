@@ -565,6 +565,7 @@ _home_screen(appdata_s *ad)
 	elm_layout_content_set(layout, "elm.swallow.check", check);
 	elm_layout_content_set(ad->layout, "elm.select.all", layout);
 	evas_object_data_set(check, "appdata", ad);
+	evas_object_data_set(ad->genlist, "select_all_check", check);
 	elm_layout_signal_callback_add(ad->layout, "elm,holy_bible,share_copy,on", "elm", _reset_select_check, check);
 	elm_layout_signal_callback_add(layout, "elm,holy_bible,select_all", "elm", _select_all_verses, check);
 

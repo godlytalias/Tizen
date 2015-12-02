@@ -432,7 +432,7 @@ collections {
           }
           description { state: "highlight_night" 0.0;
              inherit: "loaded_night" 0.0;
-             color: 255 255 255 200;
+             color: 255 255 255 150;
           }
           description { state: "clicked_night" 0.0;
              inherit: "loaded_night" 0.0;
@@ -472,7 +472,7 @@ collections {
           }
           description { state: "highlight_night" 0.0;
              inherit: "loaded_night" 0.0;
-             color: 255 255 255 200;
+             color: 255 255 255 150;
           }
           description { state: "clicked_night" 0.0;
              inherit: "loaded_night" 0.0;

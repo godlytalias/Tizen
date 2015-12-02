@@ -37,7 +37,7 @@
 #define OLD_TESTAMENT "പഴയ<br/>നിയമം"
 #define CUSTOM_SEARCH "സ്വതന്ത്ര<br/>തിരയൽ"
 #define FROM "തുടക്കം"
-#define TO "വരെ"
+#define TO "അവസാനം"
 #define WHOLE_WORD "മുഴുവൻ<br/>വാക്ക്"
 #define STRICT_SEARCH "കർശന<br/>തിരച്ചിൽ"
 #define ENTER_THE_KEYWORD "വാക്ക് ടൈപ്പ് ചെയ്യുക"
