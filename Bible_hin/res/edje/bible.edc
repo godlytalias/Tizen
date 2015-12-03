@@ -432,7 +432,7 @@ collections {
           }
           description { state: "highlight_night" 0.0;
              inherit: "loaded_night" 0.0;
-             color: 255 255 255 200;
+             color: 255 255 255 150;
           }
           description { state: "clicked_night" 0.0;
              inherit: "loaded_night" 0.0;
@@ -472,7 +472,7 @@ collections {
           }
           description { state: "highlight_night" 0.0;
              inherit: "loaded_night" 0.0;
-             color: 255 255 255 200;
+             color: 255 255 255 150;
           }
           description { state: "clicked_night" 0.0;
              inherit: "loaded_night" 0.0;
@@ -531,8 +531,16 @@ collections {
               set_state(PART:"title_left_button", "default", 0.0);
               set_state(PART:"title_right_button", "default", 0.0);
               set_state(PART:"change_book_event", "loaded", 0.0);
-              set_state(PART:"nxt_btn", "loaded", 0.0);
-              set_state(PART:"prev_btn", "loaded", 0.0);
+              if (get_int(night_mode) == 0)
+              {
+                 set_state(PART:"nxt_btn", "loaded", 0.0);
+                 set_state(PART:"prev_btn", "loaded", 0.0);
+              }
+              else
+              {
+                 set_state(PART:"nxt_btn", "loaded_night", 0.0);
+                 set_state(PART:"prev_btn", "loaded_night", 0.0);
+              }
            }
            after: "select_all_hide";
         }
