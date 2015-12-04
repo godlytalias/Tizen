@@ -84,6 +84,8 @@ _search_result_selected(void *data, Evas_Object *obj, void *event_info)
 {
 	bible_verse_item *verse_item = (bible_verse_item*)data;
 	char title[128];
+	char style[256];
+	int fontsize = 25;
 	Elm_Object_Item *item = (Elm_Object_Item*)event_info;
 	Evas_Object *verse_popup = elm_popup_add(verse_item->appdata->search_layout);
 	elm_popup_align_set(verse_popup, ELM_NOTIFY_ALIGN_FILL, 1.0);
@@ -92,8 +94,10 @@ _search_result_selected(void *data, Evas_Object *obj, void *event_info)
 	Evas_Object *verse_entry = elm_entry_add(obj);
 	elm_entry_editable_set(verse_entry, EINA_FALSE);
 	evas_object_size_hint_weight_set(verse_entry, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
+	preference_get_int("fontsize", &fontsize);
+	sprintf(style, "DEFAULT='font=Tizen:style=Regular align=left font_size=%d color=#000000 wrap=mixed'hilight=' + font_weight=Bold'", fontsize + 5);
+	elm_entry_text_style_user_push(verse_entry, style);
 	elm_entry_entry_set(verse_entry, verse_item->verse);
-	elm_entry_text_style_user_push(verse_entry, "DEFAULT='font=Tizen:style=Regular align=left font_size=30 color=#000000 wrap=mixed'hilight=' + font_weight=Bold'");
 	evas_object_smart_callback_add(verse_entry,"selection,copy",_copy_verse,(void*)verse_item);
 	elm_object_content_set(verse_popup, verse_entry);
 	Evas_Object *ok = elm_button_add(verse_popup);

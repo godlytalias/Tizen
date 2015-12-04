@@ -180,6 +180,8 @@ static void
 note_gl_selected_cb(void *data, Evas_Object *obj, void *event_info)
 {
 	Elm_Object_Item *it = (Elm_Object_Item*)event_info;
+	int fontsize = 25;
+	char style[256];
 	elm_genlist_item_selected_set(it, EINA_FALSE);
     char popup_text[128];
     bible_verse_item *verse_item = (bible_verse_item*)elm_object_item_data_get(it);
@@ -188,7 +190,16 @@ note_gl_selected_cb(void *data, Evas_Object *obj, void *event_info)
     elm_popup_align_set(popup, ELM_NOTIFY_ALIGN_FILL, 1.0);
     sprintf(popup_text, "%s %d : %d", Books[verse_item->bookcount], verse_item->chaptercount, verse_item->versecount + 1);
     elm_object_part_text_set(popup, "title,text", popup_text);
-    elm_object_text_set(popup, verse_item->verse);
+    Evas_Object *layout = elm_layout_add(popup);
+    elm_layout_file_set(layout, ad->edj_path, "standard_layout");
+    Evas_Object *entry = elm_entry_add(popup);
+    elm_entry_editable_set(entry, EINA_FALSE);
+	preference_get_int("fontsize", &fontsize);
+	sprintf(style, "DEFAULT='font=Tizen:style=Regular align=left font_size=%d color=#000000 wrap=mixed'hilight=' + font_weight=Bold'", fontsize + 5);
+	elm_entry_text_style_user_push(entry, style);
+    elm_entry_entry_set(entry, verse_item->verse);
+    elm_layout_content_set(layout, "elm.swallow.content", entry);
+    elm_object_content_set(popup, layout);
     Evas_Object *button1 = elm_button_add(ad->win);
     elm_object_text_set(button1, CLOSE);
     evas_object_smart_callback_add(button1, "clicked", _popup_del, popup);
@@ -401,6 +412,37 @@ _change_read_mode(appdata_s *ad, Eina_Bool read_mode)
 }
 
 static void
+_font_size_changed(void *data, Evas_Object *obj, void *event_info)
+{
+    appdata_s *ad = (appdata_s*)data;
+    int value = (int)elm_slider_value_get(obj);
+    preference_set_int("fontsize", value);
+    Eina_List *list = elm_genlist_realized_items_get(ad->genlist);
+    Eina_List *temp_list;
+    Elm_Object_Item *item;
+    Evas_Object *layout;
+    Edje_Object *edj_obj;
+    EINA_LIST_FOREACH(list, temp_list, item)
+    {
+    	layout = elm_object_item_part_content_get(item, "elm.swallow.content");
+    	edj_obj = elm_layout_edje_get(layout);
+    	edje_object_text_class_set(edj_obj, "GTA1", "Tizen:style=Regular", value);
+    	edje_object_text_class_set(edj_obj, "GTA1B", "Tizen:style=Bold", value);
+    	edje_object_text_class_set(edj_obj, "GTA1L", "Tizen:style=Light", value);
+    }
+    eina_list_free(list);
+	edje_text_class_set("GTA1", "Tizen:style=Regular", value);
+	edje_text_class_set("GTA1B", "Tizen:style=Bold", value);
+	edje_text_class_set("GTA1L", "Tizen:style=Light", value);
+    item = elm_genlist_first_item_get(ad->genlist);
+    while(item)
+    {
+    	elm_genlist_item_update(item);
+    	item = elm_genlist_item_next_get(item);
+    }
+}
+
+static void
 ctxpopup_item_select_cb(void *data, Evas_Object *obj, void *event_info)
 {
 	const char *title_label = elm_object_item_text_get((Elm_Object_Item *) event_info);
@@ -473,11 +515,11 @@ ctxpopup_item_select_cb(void *data, Evas_Object *obj, void *event_info)
 	Evas_Object *popup = elm_popup_add(elm_object_top_widget_get(obj));
 	elm_popup_align_set(popup, ELM_NOTIFY_ALIGN_FILL, 1.0);
 	elm_object_part_text_set(popup, "title,text", title_label);
-	Evas_Object *content_box = elm_box_add(popup);
-	evas_object_size_hint_weight_set(content_box, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
-	evas_object_size_hint_align_set(content_box, EVAS_HINT_FILL, EVAS_HINT_FILL);
 	if (!strcmp(title_label, ABOUT))
 	{
+		Evas_Object *content_box = elm_box_add(popup);
+		evas_object_size_hint_weight_set(content_box, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
+		evas_object_size_hint_align_set(content_box, EVAS_HINT_FILL, EVAS_HINT_FILL);
 		Evas_Object *label = elm_label_add(popup);
 		evas_object_size_hint_weight_set(label, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
 		evas_object_size_hint_align_set(label, EVAS_HINT_FILL, EVAS_HINT_FILL);
@@ -562,9 +604,14 @@ ctxpopup_item_select_cb(void *data, Evas_Object *obj, void *event_info)
 		elm_object_text_set(label, text_content);
 		evas_object_show(label);
 		elm_box_pack_end(content_box, label);
+		elm_object_content_set(popup, content_box);
+		evas_object_show(content_box);
 	}
 	else if (!strcmp(title_label, HELP))
 	{
+		Evas_Object *content_box = elm_box_add(popup);
+		evas_object_size_hint_weight_set(content_box, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
+		evas_object_size_hint_align_set(content_box, EVAS_HINT_FILL, EVAS_HINT_FILL);
 		Evas_Object *label = elm_label_add(popup);
 		evas_object_size_hint_weight_set(label, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
 		evas_object_size_hint_align_set(label, EVAS_HINT_FILL, EVAS_HINT_FILL);
@@ -869,9 +916,25 @@ ctxpopup_item_select_cb(void *data, Evas_Object *obj, void *event_info)
 		elm_object_text_set(label, text_content);
 		evas_object_show(label);
 		elm_box_pack_end(content_box, label);
+		elm_object_content_set(popup, content_box);
+		evas_object_show(content_box);
 	}
-	elm_object_content_set(popup, content_box);
-	evas_object_show(content_box);
+	else if (!strcmp(title_label, FONT_SIZE))
+	{
+		Evas_Object *layout = elm_layout_add(popup);
+		int fontsize = 25;
+		elm_layout_file_set(layout, ad->edj_path, "standard_layout");
+		Evas_Object *slider = elm_slider_add(layout);
+		elm_slider_min_max_set(slider, 18, 36);
+		elm_slider_step_set(slider, 1.0);
+		elm_slider_indicator_show_set(slider, EINA_TRUE);
+		elm_slider_indicator_format_set(slider, "%1.0f");
+		preference_get_int("fontsize", &fontsize);
+		elm_slider_value_set(slider, (double)fontsize);
+		evas_object_smart_callback_add(slider, "changed", _font_size_changed, ad);
+		elm_layout_content_set(layout, "elm.swallow.content", slider);
+		elm_object_content_set(popup, layout);
+	}
 	Evas_Object *button = elm_button_add(popup);
 	elm_object_text_set(button, OK);
 	elm_object_part_content_set(popup, "button1", button);
@@ -908,6 +971,7 @@ create_ctxpopup_more_button_cb(void *data, Evas_Object *obj, void *event_info)
 		elm_ctxpopup_item_append(ctxpopup, SHARE, NULL, ctxpopup_item_select_cb, ad);
 		elm_ctxpopup_item_append(ctxpopup, COPY, NULL, ctxpopup_item_select_cb, ad);
 		elm_ctxpopup_item_append(ctxpopup, SELECT_CHAPTER, NULL, ctxpopup_item_select_cb, ad);
+		elm_ctxpopup_item_append(ctxpopup, FONT_SIZE, NULL, ctxpopup_item_select_cb, ad);
 	}
 	preference_get_int("readmode", &readmode);
 	if (readmode == 0)
