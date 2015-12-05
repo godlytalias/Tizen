@@ -58,7 +58,7 @@ void
 _load_appdata(appdata_s *ad)
 {
 	char query[256];
-	Eina_Bool existing = EINA_FALSE;
+	bool existing = false;
 
 	sprintf(query, "SELECT bookcount,chaptercount FROM appinitdata;");
 	_app_database_query(query, &_get_app_data, ad);

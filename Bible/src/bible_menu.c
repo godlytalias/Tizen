@@ -17,6 +17,36 @@ _popup_del(void *data, Evas_Object *obj, void *event_info)
 	data = NULL;
 }
 
+static void
+_report_bug_cb(void *data, Evas_Object *obj, void *event_info)
+{
+	_popup_del(data, obj, event_info);
+
+	app_control_h handler;
+	app_control_create(&handler);
+	app_control_set_launch_mode(handler, APP_CONTROL_LAUNCH_MODE_GROUP);
+	app_control_set_operation(handler, APP_CONTROL_OPERATION_COMPOSE);
+	app_control_add_extra_data(handler, APP_CONTROL_DATA_SUBJECT, "Bible: Application Bug Report");
+	app_control_set_uri(handler, "mailto:godlytalias@yahoo.co.in");
+	app_control_send_launch_request(handler, NULL, NULL);
+	app_control_destroy(handler);
+}
+
+static void
+_report_sug_cb(void *data, Evas_Object *obj, void *event_info)
+{
+	_popup_del(data, obj, event_info);
+
+	app_control_h handler;
+	app_control_create(&handler);
+	app_control_set_launch_mode(handler, APP_CONTROL_LAUNCH_MODE_GROUP);
+	app_control_set_operation(handler, APP_CONTROL_OPERATION_COMPOSE);
+	app_control_add_extra_data(handler, APP_CONTROL_DATA_SUBJECT, "Bible: Application Suggestions");
+	app_control_set_uri(handler, "mailto:godlytalias@yahoo.co.in");
+	app_control_send_launch_request(handler, NULL, NULL);
+	app_control_destroy(handler);
+}
+
 void
 move_more_ctxpopup(void *data, Evas_Object *obj EINA_UNUSED, void *event_info EINA_UNUSED)
 {
@@ -441,6 +471,16 @@ _font_size_changed(void *data, Evas_Object *obj, void *event_info)
 }
 
 static void
+_set_default_cb(void *data, Evas_Object *obj, void *event_info)
+{
+	Evas_Object *popup = (Evas_Object*)data;
+	Evas_Object *slider = (Evas_Object*)evas_object_data_get(popup, "slider");
+	elm_slider_value_set(slider, 25);
+	evas_object_smart_callback_call(slider, "changed", NULL);
+	evas_object_smart_callback_call(slider, "slider,drag,stop", NULL);
+}
+
+static void
 ctxpopup_item_select_cb(void *data, Evas_Object *obj, void *event_info)
 {
 	const char *title_label = elm_object_item_text_get((Elm_Object_Item *) event_info);
@@ -607,6 +647,12 @@ ctxpopup_item_select_cb(void *data, Evas_Object *obj, void *event_info)
 		elm_box_pack_end(content_box, label);
 		elm_layout_content_set(layout, "elm.swallow.content", content_box);
 		evas_object_show(content_box);
+
+		Evas_Object *button_sug = elm_button_add(popup);
+		elm_object_text_set(button_sug, SEND_SUGGESTIONS);
+		evas_object_smart_callback_add(button_sug, "clicked", _report_sug_cb, popup);
+		elm_object_part_content_set(popup, "button1", button_sug);
+		evas_object_show(button_sug);
 	}
 	else if (!strcmp(title_label, HELP))
 	{
@@ -919,6 +965,12 @@ ctxpopup_item_select_cb(void *data, Evas_Object *obj, void *event_info)
 		elm_box_pack_end(content_box, label);
 		elm_layout_content_set(layout, "elm.swallow.content", content_box);
 		evas_object_show(content_box);
+
+		Evas_Object *button_bug = elm_button_add(popup);
+		elm_object_text_set(button_bug, REPORT_BUG);
+		evas_object_smart_callback_add(button_bug, "clicked", _report_bug_cb, popup);
+		elm_object_part_content_set(popup, "button1", button_bug);
+		evas_object_show(button_bug);
 	}
 	else if (!strcmp(title_label, FONT_SIZE))
 	{
@@ -933,11 +985,18 @@ ctxpopup_item_select_cb(void *data, Evas_Object *obj, void *event_info)
 		evas_object_smart_callback_add(slider, "changed", _font_size_changed, ad);
 		evas_object_smart_callback_add(slider, "slider,drag,stop", _font_size_change_done, ad);
 		elm_layout_content_set(layout, "elm.swallow.content", slider);
+
+		Evas_Object *button_def = elm_button_add(popup);
+		elm_object_text_set(button_def, SET_DEFAULT);
+		evas_object_smart_callback_add(button_def, "clicked", _set_default_cb, popup);
+		evas_object_data_set(popup, "slider", slider);
+		elm_object_part_content_set(popup, "button1", button_def);
+		evas_object_show(button_def);
 	}
 	elm_object_content_set(popup, layout);
 	Evas_Object *button = elm_button_add(popup);
-	elm_object_text_set(button, OK);
-	elm_object_part_content_set(popup, "button1", button);
+	elm_object_text_set(button, CLOSE);
+	elm_object_part_content_set(popup, "button2", button);
 	evas_object_show(button);
 	evas_object_show(popup);
 	evas_object_smart_callback_add(button, "clicked", _popup_del, popup);

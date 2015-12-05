@@ -60,3 +60,6 @@
 #define VERSION "GTA v0.4"
 #define TITLE "HOLY BIBLE"
 #define LOADING_DATABASE "Loading Database..."
+#define REPORT_BUG "Report Bug"
+#define SEND_SUGGESTIONS "Send Suggestions"
+#define SET_DEFAULT "Set Default"
