@@ -412,34 +412,32 @@ _change_read_mode(appdata_s *ad, Eina_Bool read_mode)
 }
 
 static void
-_font_size_changed(void *data, Evas_Object *obj, void *event_info)
+_font_size_change_done(void *data, Evas_Object *obj, void *event_info)
 {
     appdata_s *ad = (appdata_s*)data;
+    Elm_Object_Item *item;
     int value = (int)elm_slider_value_get(obj);
     preference_set_int("fontsize", value);
-    Eina_List *list = elm_genlist_realized_items_get(ad->genlist);
-    Eina_List *temp_list;
-    Elm_Object_Item *item;
-    Evas_Object *layout;
-    Edje_Object *edj_obj;
-    EINA_LIST_FOREACH(list, temp_list, item)
-    {
-    	layout = elm_object_item_part_content_get(item, "elm.swallow.content");
-    	edj_obj = elm_layout_edje_get(layout);
-    	edje_object_text_class_set(edj_obj, "GTA1", "Tizen:style=Regular", value);
-    	edje_object_text_class_set(edj_obj, "GTA1B", "Tizen:style=Bold", value);
-    	edje_object_text_class_set(edj_obj, "GTA1L", "Tizen:style=Light", value);
-    }
-    eina_list_free(list);
-	edje_text_class_set("GTA1", "Tizen:style=Regular", value);
-	edje_text_class_set("GTA1B", "Tizen:style=Bold", value);
-	edje_text_class_set("GTA1L", "Tizen:style=Light", value);
+
     item = elm_genlist_first_item_get(ad->genlist);
     while(item)
     {
     	elm_genlist_item_update(item);
     	item = elm_genlist_item_next_get(item);
     }
+}
+
+static void
+_font_size_changed(void *data, Evas_Object *obj, void *event_info)
+{
+    appdata_s *ad = (appdata_s*)data;
+    int value = (int)elm_slider_value_get(obj);
+
+	edje_text_class_set("GTA1", "Tizen:style=Regular", value);
+	edje_text_class_set("GTA1B", "Tizen:style=Bold", value);
+	edje_text_class_set("GTA1L", "Tizen:style=Light", value);
+
+	elm_genlist_realized_items_update(ad->genlist);
 }
 
 static void
@@ -515,6 +513,9 @@ ctxpopup_item_select_cb(void *data, Evas_Object *obj, void *event_info)
 	Evas_Object *popup = elm_popup_add(elm_object_top_widget_get(obj));
 	elm_popup_align_set(popup, ELM_NOTIFY_ALIGN_FILL, 1.0);
 	elm_object_part_text_set(popup, "title,text", title_label);
+	Evas_Object *layout = elm_layout_add(popup);
+	elm_layout_file_set(layout, ad->edj_path, "standard_layout");
+
 	if (!strcmp(title_label, ABOUT))
 	{
 		Evas_Object *content_box = elm_box_add(popup);
@@ -604,7 +605,7 @@ ctxpopup_item_select_cb(void *data, Evas_Object *obj, void *event_info)
 		elm_object_text_set(label, text_content);
 		evas_object_show(label);
 		elm_box_pack_end(content_box, label);
-		elm_object_content_set(popup, content_box);
+		elm_layout_content_set(layout, "elm.swallow.content", content_box);
 		evas_object_show(content_box);
 	}
 	else if (!strcmp(title_label, HELP))
@@ -916,14 +917,12 @@ ctxpopup_item_select_cb(void *data, Evas_Object *obj, void *event_info)
 		elm_object_text_set(label, text_content);
 		evas_object_show(label);
 		elm_box_pack_end(content_box, label);
-		elm_object_content_set(popup, content_box);
+		elm_layout_content_set(layout, "elm.swallow.content", content_box);
 		evas_object_show(content_box);
 	}
 	else if (!strcmp(title_label, FONT_SIZE))
 	{
-		Evas_Object *layout = elm_layout_add(popup);
 		int fontsize = 25;
-		elm_layout_file_set(layout, ad->edj_path, "standard_layout");
 		Evas_Object *slider = elm_slider_add(layout);
 		elm_slider_min_max_set(slider, 18, 36);
 		elm_slider_step_set(slider, 1.0);
@@ -932,9 +931,10 @@ ctxpopup_item_select_cb(void *data, Evas_Object *obj, void *event_info)
 		preference_get_int("fontsize", &fontsize);
 		elm_slider_value_set(slider, (double)fontsize);
 		evas_object_smart_callback_add(slider, "changed", _font_size_changed, ad);
+		evas_object_smart_callback_add(slider, "slider,drag,stop", _font_size_change_done, ad);
 		elm_layout_content_set(layout, "elm.swallow.content", slider);
-		elm_object_content_set(popup, layout);
 	}
+	elm_object_content_set(popup, layout);
 	Evas_Object *button = elm_button_add(popup);
 	elm_object_text_set(button, OK);
 	elm_object_part_content_set(popup, "button1", button);
