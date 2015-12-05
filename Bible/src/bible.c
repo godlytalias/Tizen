@@ -417,6 +417,14 @@ gl_longpressed_cb(void *data, Evas_Object *obj, void *event_info)
 	if (!elm_object_focus_get(ad->genlist)) return;
 
 	Elm_Object_Item *it = (Elm_Object_Item*)event_info;
+	Evas_Object *layout;
+	int readmode = 0;
+	preference_get_int("readmode", &readmode);
+	if (readmode == 0)
+	{
+		layout = elm_object_item_part_content_get(it, "elm.swallow.content");
+		elm_layout_signal_emit(layout, "elm,holy_bible,selection,show", "elm");
+	}
 	bible_verse_item *verse_item = (bible_verse_item*)elm_object_item_data_get(it);
 	elm_genlist_item_selected_set(it, EINA_FALSE);
 	Evas_Object *verse_popup = elm_ctxpopup_add(ad->naviframe);
@@ -438,15 +446,23 @@ gl_longpressed_cb(void *data, Evas_Object *obj, void *event_info)
 	eext_object_event_callback_add(verse_popup, EEXT_CALLBACK_MORE, eext_ctxpopup_back_cb, verse_popup);
 	move_more_ctxpopup(verse_popup, NULL, NULL);
 	evas_object_show(verse_popup);
+	elm_layout_signal_emit(layout, "elm,holy_bible,selection,hide", "elm");
 }
 
 static void
 gl_selected_cb(void *data, Evas_Object *obj, void *event_info)
 {
 	appdata_s *ad = (appdata_s*)data;
+	Elm_Object_Item *it = (Elm_Object_Item*)event_info;
 	if (!ad->share_copy_mode)
 	{
-		Elm_Object_Item *it = (Elm_Object_Item*)event_info;
+		int readmode = 0;
+		preference_get_int("readmode", &readmode);
+		if (readmode == 0)
+		{
+			Evas_Object *layout = elm_object_item_part_content_get(it, "elm.swallow.content");
+			elm_layout_signal_emit(layout, "elm,holy_bible,selection,show", "elm");
+		}
 		elm_genlist_item_selected_set(it, EINA_FALSE);
 	}
 }
@@ -460,6 +476,17 @@ gl_unselected_cb(void *data, Evas_Object *obj, void *event_info)
 		Evas_Object *layout = elm_layout_content_get(ad->layout, "elm.select.all");
 		Evas_Object *check = elm_layout_content_get(layout, "elm.swallow.check");
 		elm_check_state_set(check, EINA_FALSE);
+	}
+	else
+	{
+		int readmode = 0;
+		Elm_Object_Item *it = (Elm_Object_Item*)event_info;
+		preference_get_int("readmode", &readmode);
+		if (readmode == 0)
+		{
+			Evas_Object *layout = elm_object_item_part_content_get(it, "elm.swallow.content");
+			elm_layout_signal_emit(layout, "elm,holy_bible,selection,hide", "elm");
+		}
 	}
 }
 

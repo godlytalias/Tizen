@@ -1198,6 +1198,21 @@ collections {
                color: 0 0 0 255;
             }
          }
+         part { name: "selection_marker";
+            type: RECT;
+            scale: 1;
+            description { state: "default" 0.0;
+               min: 480 0;
+               fixed: 1 0;
+               rel1.to: "base";
+               rel2.to: "base";
+               color: 255 0 0 0;
+            }
+            description { state: "visible" 0.0;
+               inherit: "default" 0.0;
+               color: 255 0 0 100;
+            }
+         }
          part{ name: "left_top_padding";
             scale: 1;
             type: SPACER;
@@ -1316,6 +1331,19 @@ collections {
          }
      }
      programs {
+        program { name: "selection_show";
+           signal: "elm,holy_bible,selection,show";
+           source: "elm";
+           action: STATE_SET "visible" 0.0;
+           target: "selection_marker";
+        }
+        program { name: "selection_hide";
+           signal: "elm,holy_bible,selection,hide";
+           source: "elm";
+           action: STATE_SET "default" 0.0;
+           transition: LINEAR 0.3;
+           target: "selection_marker";
+        }
         program { name: "bookmark_nightmode_activate";
         	script {
         		if (get_int(bookmark) == 1)
