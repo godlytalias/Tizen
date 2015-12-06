@@ -1356,7 +1356,6 @@ collections {
            signal: "elm,holy_bible,selection,show";
            source: "elm";
            action: STATE_SET "visible" 0.0;
-           transition: LINEAR 0.1;
            target: "selection_marker";
         }
         program { name: "selection_hide";

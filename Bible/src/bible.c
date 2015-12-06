@@ -221,7 +221,11 @@ gl_content_get_cb(void *data, Evas_Object *obj, const char *part)
     	elm_layout_file_set(layout, verse_item->appdata->edj_path, "verse_layout");
     	preference_get_int("readmode", &readmode);
     	if (readmode == 0)
+    	{
     		elm_layout_signal_emit(layout, "elm,holy_bible,night_mode,on", "elm");
+    		if (elm_genlist_item_selected_get(verse_item->it))
+    			elm_layout_signal_emit(layout, "elm,holy_bible,selection,show", "elm");
+    	}
     	else
     		elm_layout_signal_emit(layout, "elm,holy_bible,night_mode,off", "elm");
      	elm_object_part_text_set(layout,"elm.text.verse",verse_item->verse);
