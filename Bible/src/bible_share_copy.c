@@ -172,6 +172,13 @@ _share_verse_cb(appdata_s *ad)
 	Evas_Object *done_btn = elm_layout_content_get(ad->layout, "title_right_button");
 	evas_object_smart_callback_add(done_btn, "clicked", _share_verse_done_cb, ad);
 	ad->share_copy_mode = EINA_TRUE;
+	int readmode = 0;
+	preference_get_int("readmode", &readmode);
+	Evas_Object *select_layout = elm_layout_content_get(ad->layout, "elm.select.all");
+	if (readmode == 0)
+		elm_layout_signal_emit(select_layout, "elm,holy_bible,night_mode,on", "elm");
+	else
+		elm_layout_signal_emit(select_layout, "elm,holy_bible,night_mode,off", "elm");
 	elm_layout_signal_emit(ad->layout, "elm,holy_bible,share_copy,on", "elm");
 	elm_genlist_realized_items_update(ad->genlist);
 }
@@ -182,6 +189,13 @@ _copy_verse_cb(appdata_s *ad)
 	Evas_Object *done_btn = elm_layout_content_get(ad->layout, "title_right_button");
 	evas_object_smart_callback_add(done_btn, "clicked", _copy_verse_done_cb, ad);
 	ad->share_copy_mode = EINA_TRUE;
+	int readmode = 0;
+	preference_get_int("readmode", &readmode);
+	Evas_Object *select_layout = elm_layout_content_get(ad->layout, "elm.select.all");
+	if (readmode == 0)
+		elm_layout_signal_emit(select_layout, "elm,holy_bible,night_mode,on", "elm");
+	else
+		elm_layout_signal_emit(select_layout, "elm,holy_bible,night_mode,off", "elm");
 	elm_layout_signal_emit(ad->layout, "elm,holy_bible,share_copy,on", "elm");
 	elm_genlist_realized_items_update(ad->genlist);
 }

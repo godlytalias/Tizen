@@ -220,7 +220,7 @@ gl_content_get_cb(void *data, Evas_Object *obj, const char *part)
     	int readmode = 1;
     	elm_layout_file_set(layout, verse_item->appdata->edj_path, "verse_layout");
     	preference_get_int("readmode", &readmode);
-    	if (readmode == 0 && !verse_item->appdata->share_copy_mode)
+    	if (readmode == 0)
     		elm_layout_signal_emit(layout, "elm,holy_bible,night_mode,on", "elm");
     	else
     		elm_layout_signal_emit(layout, "elm,holy_bible,night_mode,off", "elm");
@@ -417,14 +417,6 @@ gl_longpressed_cb(void *data, Evas_Object *obj, void *event_info)
 	if (!elm_object_focus_get(ad->genlist)) return;
 
 	Elm_Object_Item *it = (Elm_Object_Item*)event_info;
-	Evas_Object *layout;
-	int readmode = 0;
-	preference_get_int("readmode", &readmode);
-	if (readmode == 0)
-	{
-		layout = elm_object_item_part_content_get(it, "elm.swallow.content");
-		elm_layout_signal_emit(layout, "elm,holy_bible,selection,show", "elm");
-	}
 	bible_verse_item *verse_item = (bible_verse_item*)elm_object_item_data_get(it);
 	elm_genlist_item_selected_set(it, EINA_FALSE);
 	Evas_Object *verse_popup = elm_ctxpopup_add(ad->naviframe);
@@ -446,7 +438,6 @@ gl_longpressed_cb(void *data, Evas_Object *obj, void *event_info)
 	eext_object_event_callback_add(verse_popup, EEXT_CALLBACK_MORE, eext_ctxpopup_back_cb, verse_popup);
 	move_more_ctxpopup(verse_popup, NULL, NULL);
 	evas_object_show(verse_popup);
-	elm_layout_signal_emit(layout, "elm,holy_bible,selection,hide", "elm");
 }
 
 static void
@@ -454,17 +445,9 @@ gl_selected_cb(void *data, Evas_Object *obj, void *event_info)
 {
 	appdata_s *ad = (appdata_s*)data;
 	Elm_Object_Item *it = (Elm_Object_Item*)event_info;
+
 	if (!ad->share_copy_mode)
-	{
-		int readmode = 0;
-		preference_get_int("readmode", &readmode);
-		if (readmode == 0)
-		{
-			Evas_Object *layout = elm_object_item_part_content_get(it, "elm.swallow.content");
-			elm_layout_signal_emit(layout, "elm,holy_bible,selection,show", "elm");
-		}
 		elm_genlist_item_selected_set(it, EINA_FALSE);
-	}
 }
 
 static void
@@ -477,16 +460,32 @@ gl_unselected_cb(void *data, Evas_Object *obj, void *event_info)
 		Evas_Object *check = elm_layout_content_get(layout, "elm.swallow.check");
 		elm_check_state_set(check, EINA_FALSE);
 	}
-	else
+}
+
+static void
+gl_highlighted_cb(void *data, Evas_Object *obj, void *event_info)
+{
+	Elm_Object_Item *it = (Elm_Object_Item*)event_info;
+
+	int readmode = 0;
+	preference_get_int("readmode", &readmode);
+	if (readmode == 0)
 	{
-		int readmode = 0;
-		Elm_Object_Item *it = (Elm_Object_Item*)event_info;
-		preference_get_int("readmode", &readmode);
-		if (readmode == 0)
-		{
-			Evas_Object *layout = elm_object_item_part_content_get(it, "elm.swallow.content");
-			elm_layout_signal_emit(layout, "elm,holy_bible,selection,hide", "elm");
-		}
+		Evas_Object *layout = elm_object_item_part_content_get(it, "elm.swallow.content");
+		elm_layout_signal_emit(layout, "elm,holy_bible,selection,show", "elm");
+	}
+}
+
+static void
+gl_unhighlighted_cb(void *data, Evas_Object *obj, void *event_info)
+{
+	int readmode = 0;
+	Elm_Object_Item *it = (Elm_Object_Item*)event_info;
+	preference_get_int("readmode", &readmode);
+	if (readmode == 0)
+	{
+		Evas_Object *layout = elm_object_item_part_content_get(it, "elm.swallow.content");
+		elm_layout_signal_emit(layout, "elm,holy_bible,selection,hide", "elm");
 	}
 }
 
@@ -559,6 +558,8 @@ _home_screen(appdata_s *ad)
 	elm_genlist_multi_select_set(ad->genlist, EINA_TRUE);
 	evas_object_smart_callback_add(ad->genlist, "selected", gl_selected_cb, ad);
 	evas_object_smart_callback_add(ad->genlist, "unselected", gl_unselected_cb, ad);
+	evas_object_smart_callback_add(ad->genlist, "highlighted", gl_highlighted_cb, ad);
+	evas_object_smart_callback_add(ad->genlist, "unhighlighted", gl_unhighlighted_cb, ad);
 	evas_object_smart_callback_add(ad->genlist, "longpressed", gl_longpressed_cb, ad);
 	evas_object_smart_callback_add(ad->genlist, "clicked,double", gl_longpressed_cb, ad);
     evas_object_event_callback_add(ad->genlist, EVAS_CALLBACK_MOUSE_DOWN, _content_mouse_down, ad);

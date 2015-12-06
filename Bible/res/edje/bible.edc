@@ -698,13 +698,17 @@ collections {
             description { state: "default" 0.0;
                color: 255 255 255 255;
                min: 480 80;
+               fixed: 1 1;
+            }
+            description { state: "night_mode" 0.0;
+               inherit: "default" 0.0;
+               color: 0 0 0 255;
             }
          }
          part { name: "elm.padding.left_top";
-            type: RECT;
+            type: SPACER;
             scale: 1;
             description { state: "default" 0.0;
-               color: 0 0 0 0;
                min: 32 10;
                fixed: 1 1;
                rel1.to: "base";
@@ -713,10 +717,9 @@ collections {
             }
          }
          part { name: "elm.padding.right_bottom";
-            type: RECT;
+            type: SPACER;
             scale: 1;
             description { state: "default" 0.0;
-               color: 0 0 0 0;
                min: 32 10;
                fixed: 1 1;
                rel1.to: "base";
@@ -737,6 +740,10 @@ collections {
                rel2.to_y: "elm.padding.right_bottom";
                rel2.relative: 1.0 0.0;
                align: 0.0 0.5;
+            }
+            description { state: "night_mode" 0.0;
+               inherit: "default" 0.0;
+               text.style: "main_verse_style_night_mode";
             }
          }
          part { name: "elm.swallow.check";
@@ -769,6 +776,20 @@ collections {
             source: "select_all_event";
             action: SIGNAL_EMIT "elm,holy_bible,select_all" "elm";
          }
+        program { name: "night_mode_on";
+           signal: "elm,holy_bible,night_mode,on";
+           source: "elm";
+		   action: STATE_SET "night_mode" 0.0;
+		   target: "base";
+		   target: "select_all";
+        }
+        program { name: "night_mode_off";
+           signal: "elm,holy_bible,night_mode,off";
+           source: "elm";
+		   action: STATE_SET "default" 0.0;
+		   target: "base";
+		   target: "select_all";
+        }
       }
    }
 
@@ -1206,11 +1227,11 @@ collections {
                fixed: 1 0;
                rel1.to: "base";
                rel2.to: "base";
-               color: 255 0 0 0;
+               color: 200 0 0 0;
             }
             description { state: "visible" 0.0;
                inherit: "default" 0.0;
-               color: 255 0 0 100;
+               color: 200 0 0 100;
             }
          }
          part{ name: "left_top_padding";
@@ -1335,6 +1356,7 @@ collections {
            signal: "elm,holy_bible,selection,show";
            source: "elm";
            action: STATE_SET "visible" 0.0;
+           transition: LINEAR 0.1;
            target: "selection_marker";
         }
         program { name: "selection_hide";
