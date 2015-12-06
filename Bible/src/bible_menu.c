@@ -22,6 +22,12 @@ _report_bug_cb(void *data, Evas_Object *obj, void *event_info)
 {
 	_popup_del(data, obj, event_info);
 
+	char *app_name = (char*)malloc(sizeof(char) * 32);
+	char *app_version = (char*)malloc(sizeof(char) * 32);
+	char app_details[128];
+	app_get_name(&app_name);
+	app_get_version(&app_version);
+	sprintf(app_details, "Application Details: %s %s", app_name, app_version);
 	app_control_h handler;
 	app_control_create(&handler);
 	app_control_set_launch_mode(handler, APP_CONTROL_LAUNCH_MODE_GROUP);
@@ -30,6 +36,8 @@ _report_bug_cb(void *data, Evas_Object *obj, void *event_info)
 	app_control_set_uri(handler, "mailto:godlytalias@yahoo.co.in");
 	app_control_send_launch_request(handler, NULL, NULL);
 	app_control_destroy(handler);
+	free(app_name);
+	free(app_version);
 }
 
 static void
@@ -37,14 +45,23 @@ _report_sug_cb(void *data, Evas_Object *obj, void *event_info)
 {
 	_popup_del(data, obj, event_info);
 
+	char *app_name = (char*)malloc(sizeof(char) * 32);
+	char *app_version = (char*)malloc(sizeof(char) * 32);
+	char app_details[128];
+	app_get_name(&app_name);
+	app_get_version(&app_version);
+	sprintf(app_details, "Application Details: %s %s", app_name, app_version);
 	app_control_h handler;
 	app_control_create(&handler);
 	app_control_set_launch_mode(handler, APP_CONTROL_LAUNCH_MODE_GROUP);
 	app_control_set_operation(handler, APP_CONTROL_OPERATION_COMPOSE);
 	app_control_add_extra_data(handler, APP_CONTROL_DATA_SUBJECT, "Bible: Application Suggestions");
+	app_control_add_extra_data(handler, APP_CONTROL_DATA_TEXT, app_details);
 	app_control_set_uri(handler, "mailto:godlytalias@yahoo.co.in");
 	app_control_send_launch_request(handler, NULL, NULL);
 	app_control_destroy(handler);
+	free(app_name);
+	free(app_version);
 }
 
 void
