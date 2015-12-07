@@ -58,12 +58,30 @@ void
 _load_appdata(appdata_s *ad)
 {
 	char query[256];
+	bool existing = false;
+
 	sprintf(query, "SELECT bookcount,chaptercount FROM appinitdata;");
 	_app_database_query(query, &_get_app_data, ad);
 	sprintf(query, "create table if not exists bookmark(bookcount INT, chaptercount INT, versecount INT, verse VARCHAR(1024));");
 	_app_database_query(query, &_check, ad);
 	sprintf(query, "create table if not exists notes(bookcount INT, chaptercount INT, versecount INT, note VARCHAR(8192));");
 	_app_database_query(query, &_check, ad);
+	preference_is_existing("fontsize", &existing);
+	if (!existing)
+	{
+		preference_set_int("fontsize", 25);
+		edje_text_class_set("GTA1", "Tizen:style=Regular", 25);
+		edje_text_class_set("GTA1B", "Tizen:style=Bold", 25);
+		edje_text_class_set("GTA1L", "Tizen:style=Light", 25);
+	}
+	else
+	{
+		int val = 25;
+		preference_get_int("fontsize", &val);
+		edje_text_class_set("GTA1", "Tizen:style=Regular", val);
+		edje_text_class_set("GTA1B", "Tizen:style=Bold", val);
+		edje_text_class_set("GTA1L", "Tizen:style=Light", val);
+	}
 }
 
 void
