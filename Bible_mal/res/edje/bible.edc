@@ -30,7 +30,7 @@ collections {
       }
       style {
          name: "main_verse_style";
-         base: "font=Tizen:style=Regular align=left font_size=23 color=#000000 wrap=mixed";
+         base: "font=Tizen:style=Regular align=left text_class=GTA1 font_size=23 color=#000000 wrap=mixed";
          tag: "br" "\n";
          tag: "ps" "ps";
          tag: "hilight" "+ font_weight=Bold";
@@ -39,7 +39,7 @@ collections {
       }
       style {
          name: "main_verse_style_night_mode";
-         base: "font=Tizen:style=Regular align=left font_size=23 color=#ffffff wrap=mixed";
+         base: "font=Tizen:style=Regular align=left text_class=GTA1 font_size=23 color=#ffffff wrap=mixed";
          tag: "br" "\n";
          tag: "ps" "ps";
          tag: "hilight" "+ font_weight=Bold";
@@ -48,7 +48,7 @@ collections {
       }
       style {
          name: "bookmark_style";
-         base: "font=Tizen:style=Regular align=left font_size=23 color=#500000 wrap=mixed";
+         base: "font=Tizen:style=Regular align=left text_class=GTA1 font_size=23 color=#500000 wrap=mixed";
          tag: "br" "\n";
          tag: "ps" "ps";
          tag: "hilight" "+ font_weight=Bold";
@@ -57,7 +57,7 @@ collections {
       }
       style {
          name: "bookmark_style_night_mode";
-         base: "font=Tizen:style=Regular align=left font_size=23 color=#ffffff wrap=mixed";
+         base: "font=Tizen:style=Regular align=left text_class=GTA1 font_size=23 color=#ffffff wrap=mixed";
          tag: "br" "\n";
          tag: "ps" "ps";
          tag: "hilight" "+ font_weight=Bold";
@@ -66,7 +66,16 @@ collections {
       }
       style {
          name: "note_style";
-         base: "font=Tizen:style=Light align=left font_size=25 color=#000000 wrap=mixed ellipsis=1.0";
+         base: "font=Tizen:style=Light align=left text_class=GTA1L font_size=23 color=#000000 wrap=mixed ellipsis=1.0";
+         tag: "br" "\n";
+         tag: "ps" "ps";
+         tag: "hilight" "+ font_weight=Bold";
+         tag: "b" "+ font_weight=Bold";
+         tag: "tab" "\t";
+      }
+      style {
+         name: "note_style_night_mode";
+         base: "font=Tizen:style=Light align=left text_class=GTA1L font_size=23 color=#ffffff wrap=mixed ellipsis=1.0";
          tag: "br" "\n";
          tag: "ps" "ps";
          tag: "hilight" "+ font_weight=Bold";
@@ -75,7 +84,7 @@ collections {
       }
       style {
          name: "verse_style";
-         base: "font=Tizen:style=Regular align=left font_size=23 color=#000000 wrap=mixed ellipsis=1.0";
+         base: "font=Tizen:style=Regular align=left text_class=GTA1 font_size=23 color=#000000 wrap=mixed ellipsis=1.0";
          tag: "br" "\n";
          tag: "ps" "ps";
          tag: "hilight" "+ font_weight=Bold";
@@ -698,13 +707,17 @@ collections {
             description { state: "default" 0.0;
                color: 255 255 255 255;
                min: 480 80;
+               fixed: 1 1;
+            }
+            description { state: "night_mode" 0.0;
+               inherit: "default" 0.0;
+               color: 0 0 0 255;
             }
          }
          part { name: "elm.padding.left_top";
-            type: RECT;
+            type: SPACER;
             scale: 1;
             description { state: "default" 0.0;
-               color: 0 0 0 0;
                min: 32 10;
                fixed: 1 1;
                rel1.to: "base";
@@ -713,10 +726,9 @@ collections {
             }
          }
          part { name: "elm.padding.right_bottom";
-            type: RECT;
+            type: SPACER;
             scale: 1;
             description { state: "default" 0.0;
-               color: 0 0 0 0;
                min: 32 10;
                fixed: 1 1;
                rel1.to: "base";
@@ -728,8 +740,8 @@ collections {
             type: TEXTBLOCK;
             scale: 1;
             description { state: "default" 0.0;
-               text.style: "main_verse_style";
-               min: 320 60;
+               text.style: "note_style";
+               min: 340 60;
                fixed: 1 1;
                rel1.to: "elm.padding.left_top";
                rel1.relative: 1.0 1.0;
@@ -737,6 +749,10 @@ collections {
                rel2.to_y: "elm.padding.right_bottom";
                rel2.relative: 1.0 0.0;
                align: 0.0 0.5;
+            }
+            description { state: "night_mode" 0.0;
+               inherit: "default" 0.0;
+               text.style: "note_style_night_mode";
             }
          }
          part { name: "elm.swallow.check";
@@ -769,6 +785,20 @@ collections {
             source: "select_all_event";
             action: SIGNAL_EMIT "elm,holy_bible,select_all" "elm";
          }
+        program { name: "night_mode_on";
+           signal: "elm,holy_bible,night_mode,on";
+           source: "elm";
+		   action: STATE_SET "night_mode" 0.0;
+		   target: "base";
+		   target: "select_all";
+        }
+        program { name: "night_mode_off";
+           signal: "elm,holy_bible,night_mode,off";
+           source: "elm";
+		   action: STATE_SET "default" 0.0;
+		   target: "base";
+		   target: "select_all";
+        }
       }
    }
 
@@ -1198,6 +1228,21 @@ collections {
                color: 0 0 0 255;
             }
          }
+         part { name: "selection_marker";
+            type: RECT;
+            scale: 1;
+            description { state: "default" 0.0;
+               min: 480 0;
+               fixed: 1 0;
+               rel1.to: "base";
+               rel2.to: "base";
+               color: 200 0 0 0;
+            }
+            description { state: "visible" 0.0;
+               inherit: "default" 0.0;
+               color: 200 0 0 100;
+            }
+         }
          part{ name: "left_top_padding";
             scale: 1;
             type: SPACER;
@@ -1316,6 +1361,19 @@ collections {
          }
      }
      programs {
+        program { name: "selection_show";
+           signal: "elm,holy_bible,selection,show";
+           source: "elm";
+           action: STATE_SET "visible" 0.0;
+           target: "selection_marker";
+        }
+        program { name: "selection_hide";
+           signal: "elm,holy_bible,selection,hide";
+           source: "elm";
+           action: STATE_SET "default" 0.0;
+           transition: LINEAR 0.3;
+           target: "selection_marker";
+        }
         program { name: "bookmark_nightmode_activate";
         	script {
         		if (get_int(bookmark) == 1)
@@ -1607,6 +1665,55 @@ collections {
             target: "content_bg";
             target: "elm.swallow.content";
             target: "no_content_text";
+         }
+      }
+   }
+   
+   group { name: "standard_layout";
+      parts {
+         part { name: "base";
+            type: SPACER;
+            scale: 1;
+            description { state: "default" 0.0;               
+    	        min: 480 48;
+   	            fixed: 1 0;
+   	        }
+   	     }
+   	     part { name: "elm.padding.left.top";
+   	        type: SPACER;
+   	        scale: 1;
+   	        description { state: "default" 0.0;
+   	           min: 24 24;
+   	           fixed: 1 1;
+   	           rel1.to: "base";
+   	           rel2.to: "base";
+   	           rel2.relative: 0.0 0.0;
+   	           align: 0.0 0.0;
+   	        }
+         }
+   	     part { name: "elm.padding.right.bottom";
+   	        type: SPACER;
+   	        scale: 1;
+   	        description { state: "default" 0.0;
+   	           min: 24 24;
+   	           fixed: 1 1;
+   	           rel1.to: "base";
+   	           rel1.relative: 1.0 1.0;
+   	           rel2.to: "base";
+   	           align: 1.0 1.0;
+   	        }
+         }
+         part { name: "elm.swallow.content";
+            type: SWALLOW;
+            scale: 1;
+            description { state: "default" 0.0;
+               min: 432 0;
+               fixed: 1 0;
+               rel1.to: "elm.padding.left.top";
+               rel1.relative: 1.0 1.0;
+               rel2.to: "elm.padding.right.bottom";
+               rel2.relative: 0.0 0.0;
+            }
          }
       }
    }
