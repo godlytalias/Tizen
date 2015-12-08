@@ -103,7 +103,7 @@ _database_query(char *query, int func(void*,int,char**,char**), void *data)
 
 	   char *db_path = malloc(200);
 	   char *res_path = app_get_resource_path();
-	   sprintf(db_path, "%sholybible_eng.db", res_path);
+	   sprintf(db_path, "%s%s", res_path, DB_NAME);
 	   sqlite3_open(db_path, &(db));
 	   free(res_path);
 	   free(db_path);
@@ -126,7 +126,7 @@ _get_verse_count_query(void *data, int book, int chapter)
 {
 	char query[128];
 
-	sprintf(query, "select count(Versecount) from eng_bible where Book='%s' and Chapter=%d;", Books[book], chapter);
+	sprintf(query, "select count(Versecount) from %s where Book='%s' and Chapter=%d;", BIBLE_TABLE_NAME, Books[book], chapter);
 	_database_query(query, &_get_verse_count, data);
 }
 
@@ -143,7 +143,7 @@ _get_chapter_count_query(void *data, int book)
 {
 	char query[128];
 
-	sprintf(query, "select count(distinct Chapter) from eng_bible where Book='%s';", Books[book]);
+	sprintf(query, "select count(distinct Chapter) from %s where Book='%s';", BIBLE_TABLE_NAME, Books[book]);
 	_database_query(query, &_get_chapter_count, data);
 }
 
@@ -233,7 +233,7 @@ _query_chapter(void *data, int book, int chapter)
     ad->count = 0;
     ad->cur_book = book;
     ad->cur_chapter = chapter;
-    sprintf(query, "select e_verse from eng_bible where Book='%s' and Chapter=%d", Books[book], chapter);
+    sprintf(query, "select %s from %s where Book='%s' and Chapter=%d", BIBLE_VERSE_COLUMN, BIBLE_TABLE_NAME, Books[book], chapter);
 
 	_database_query(query, &_get_verse_list, data);
 	_check_bookmarks(ad);

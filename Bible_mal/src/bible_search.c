@@ -168,7 +168,7 @@ _get_search_results(void *data, int argc, char **argv, char **azColName)
 			   verse_item->versecount = atoi(argv[i]);
 			   verse_item->versecount--;
 		   }
-		   if (!strcmp(azColName[i], "m_verse"))
+		   if (!strcmp(azColName[i], BIBLE_VERSE_COLUMN))
 			   verse_item->verse = strdup(argv[i]);
 	   }
 	   verse_item->appdata = ad;
@@ -256,9 +256,9 @@ _search_keyword(void *data,
 	if (keyword) {
 		ch = strtok(keyword, " ");
 		if (elm_check_state_get(ad->check_whole))
-		   sprintf(keyword_query, "( m_verse LIKE '%% %s %%'", ch);
+		   sprintf(keyword_query, "( %s LIKE '%% %s %%'", BIBLE_VERSE_COLUMN, ch);
 		else
-		   sprintf(keyword_query, "( m_verse LIKE '%%%s%%'", ch);
+		   sprintf(keyword_query, "( %s LIKE '%%%s%%'", BIBLE_VERSE_COLUMN, ch);
 	}
 	ch = strtok(NULL, " ");
 	if (elm_check_state_get(ad->check_strict))
@@ -268,9 +268,9 @@ _search_keyword(void *data,
 	while (ch)
 	{
 		if (elm_check_state_get(ad->check_whole))
-		   sprintf(keyword_query, "%s %s m_verse LIKE '%% %s %%'", keyword_query, condition_key, ch);
+		   sprintf(keyword_query, "%s %s %s LIKE '%% %s %%'", keyword_query, condition_key, BIBLE_VERSE_COLUMN, ch);
 		else
-		   sprintf(keyword_query, "%s %s m_verse LIKE '%%%s%%'", keyword_query, condition_key, ch);
+		   sprintf(keyword_query, "%s %s %s LIKE '%%%s%%'", keyword_query, condition_key, BIBLE_VERSE_COLUMN, ch);
 		ch = strtok(NULL, " ");
 	}
 	strcat(keyword_query, " )");
@@ -316,7 +316,7 @@ _search_keyword(void *data,
 		}
 		sprintf(keyword_query, "%s AND Book in (%s)", keyword_query, book_list);
 	}
-	sprintf(search_query, "SELECT Book, Chapter, Versecount, m_verse FROM bible WHERE %s;", keyword_query);
+	sprintf(search_query, "SELECT Book, Chapter, Versecount, %s FROM %s WHERE %s;", BIBLE_VERSE_COLUMN, BIBLE_TABLE_NAME, keyword_query);
 	_bible_search_query(search_query, ad);
 }
 
