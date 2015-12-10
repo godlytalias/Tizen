@@ -448,6 +448,7 @@ gl_longpressed_cb(void *data, Evas_Object *obj, void *event_info)
 	Evas_Object *verse_popup = elm_ctxpopup_add(ad->naviframe);
 	elm_ctxpopup_auto_hide_disabled_set(verse_popup, EINA_TRUE);
     elm_object_style_set(verse_popup, "more/default");
+    evas_object_data_set(verse_popup, "verse_popup", verse_popup);
     if (!verse_item->bookmark)
     	elm_ctxpopup_item_append(verse_popup, BOOKMARK_VERSE, NULL, _bookmark_verse_cb, verse_item);
     else
@@ -458,7 +459,7 @@ gl_longpressed_cb(void *data, Evas_Object *obj, void *event_info)
     	elm_ctxpopup_item_append(verse_popup, VIEW_NOTES, NULL, _add_note_cb, verse_item);
 	elm_ctxpopup_item_append(verse_popup, SHARE_VERSE, NULL, _share_verse_item_cb, verse_item);
 	elm_ctxpopup_item_append(verse_popup, COPY_VERSE, NULL, _copy_verse_item_cb, verse_item);
-	evas_object_smart_callback_add(verse_popup, "dismissed", eext_ctxpopup_back_cb, verse_popup);
+	evas_object_smart_callback_add(verse_popup, "dismissed", _popup_del, verse_popup);
 	evas_object_smart_callback_add(ad->win, "rotation,changed", move_more_ctxpopup, verse_popup);
 	eext_object_event_callback_add(verse_popup, EEXT_CALLBACK_BACK, eext_ctxpopup_back_cb, verse_popup);
 	eext_object_event_callback_add(verse_popup, EEXT_CALLBACK_MORE, eext_ctxpopup_back_cb, verse_popup);

@@ -230,6 +230,12 @@ _query_chapter(void *data, int book, int chapter)
 	if (ad->genlist)
 		elm_genlist_clear(ad->genlist);
 
+	Evas_Object *verse_popup = (Evas_Object*)evas_object_data_get(ad->genlist, "verse_popup");
+	if (verse_popup)
+	{
+		elm_ctxpopup_dismiss(verse_popup);
+	}
+
     ad->count = 0;
     ad->cur_book = book;
     ad->cur_chapter = chapter;
