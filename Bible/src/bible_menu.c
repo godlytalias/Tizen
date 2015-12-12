@@ -129,7 +129,7 @@ gl_content_get_cb(void *data, Evas_Object *obj, const char *part)
 	if(strcmp(part, "elm.swallow.content") == 0)
 	{
 		Evas_Object *layout = elm_layout_add(obj);
-		char verse_ref[64];
+		char verse_ref[128];
 		elm_layout_file_set(layout, verse_item->appdata->edj_path, "bookmark_verse_layout");
 		elm_object_part_text_set(layout,"elm.text.verse",verse_item->verse);
 		sprintf(verse_ref, "%s %d : %d", Books[verse_item->bookcount], verse_item->chaptercount, verse_item->versecount + 1);
