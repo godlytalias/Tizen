@@ -102,7 +102,7 @@ _database_query(char *query, int func(void*,int,char**,char**), void *data)
 	char *err_msg;
 
 	   char *db_path = malloc(200);
-	   char *res_path = app_get_resource_path();
+	   char *res_path = app_get_shared_resource_path();
 	   sprintf(db_path, "%s%s", res_path, DB_NAME);
 	   sqlite3_open(db_path, &(db));
 	   free(res_path);

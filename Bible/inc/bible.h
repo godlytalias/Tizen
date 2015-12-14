@@ -20,9 +20,9 @@
 
 #define EDJ_FILE "edje/bible.edj"
 #define GRP_MAIN "main"
-#define DB_NAME "holybible_eng.db"
-#define BIBLE_TABLE_NAME "eng_bible"
-#define BIBLE_VERSE_COLUMN "e_verse"
+#define DB_NAME "holybible.db"
+#define BIBLE_TABLE_NAME "bible"
+#define BIBLE_VERSE_COLUMN "verse"
 
 #endif /* __bible_H__ */
 
