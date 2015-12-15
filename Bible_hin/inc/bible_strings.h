@@ -60,6 +60,6 @@
 #define VERSION "GTA v0.4"
 #define TITLE "पवित्र बाइबिल"
 #define LOADING_DATABASE "डेटाबेस लोड हो रहा है..."
-#define REPORT_BUG "रिपोर्ट बग"
-#define SEND_SUGGESTIONS "सुझाव भेजें"
+#define RATE_APP "रेट करें"
+#define BUGS_SUGGESTIONS "बग / सुझाव"
 #define SET_DEFAULT "डिफॉल्ट सेट करें"

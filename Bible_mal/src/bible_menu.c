@@ -18,30 +18,27 @@ _popup_del(void *data, Evas_Object *obj, void *event_info)
 }
 
 static void
-_report_bug_cb(void *data, Evas_Object *obj, void *event_info)
+_rate_app_cb(void *data, Evas_Object *obj, void *event_info)
 {
 	_popup_del(data, obj, event_info);
 
-	char *app_name = (char*)malloc(sizeof(char) * 32);
-	char *app_version = (char*)malloc(sizeof(char) * 32);
-	char app_details[128];
-	app_get_name(&app_name);
-	app_get_version(&app_version);
-	sprintf(app_details, "Bug Report: %s %s", app_name, app_version);
+	char *app_id = (char*)malloc(sizeof(char) * 32);
+	char app_url[128];
+	app_get_id(&app_id);
+	sprintf(app_url, "tizenstore://ProductDetail/%s", app_id);
 	app_control_h handler;
 	app_control_create(&handler);
+	app_control_set_app_id(handler, "org.tizen.tizenstore");
 	app_control_set_launch_mode(handler, APP_CONTROL_LAUNCH_MODE_GROUP);
-	app_control_set_operation(handler, APP_CONTROL_OPERATION_COMPOSE);
-	app_control_add_extra_data(handler, APP_CONTROL_DATA_SUBJECT, app_details);
-	app_control_set_uri(handler, "mailto:godlytalias@yahoo.co.in");
+	app_control_set_operation(handler, APP_CONTROL_OPERATION_VIEW);
+	app_control_set_uri(handler, app_url);
 	app_control_send_launch_request(handler, NULL, NULL);
 	app_control_destroy(handler);
-	free(app_name);
-	free(app_version);
+	free(app_id);
 }
 
 static void
-_report_sug_cb(void *data, Evas_Object *obj, void *event_info)
+_report_cb(void *data, Evas_Object *obj, void *event_info)
 {
 	_popup_del(data, obj, event_info);
 
@@ -50,7 +47,7 @@ _report_sug_cb(void *data, Evas_Object *obj, void *event_info)
 	char app_details[128];
 	app_get_name(&app_name);
 	app_get_version(&app_version);
-	sprintf(app_details, "Suggestions: %s %s", app_name, app_version);
+	sprintf(app_details, "Bugs / Suggestions: %s %s", app_name, app_version);
 	app_control_h handler;
 	app_control_create(&handler);
 	app_control_set_launch_mode(handler, APP_CONTROL_LAUNCH_MODE_GROUP);
@@ -664,11 +661,11 @@ ctxpopup_item_select_cb(void *data, Evas_Object *obj, void *event_info)
 		elm_layout_content_set(layout, "elm.swallow.content", content_box);
 		evas_object_show(content_box);
 
-		Evas_Object *button_sug = elm_button_add(popup);
-		elm_object_text_set(button_sug, SEND_SUGGESTIONS);
-		evas_object_smart_callback_add(button_sug, "clicked", _report_sug_cb, popup);
-		elm_object_part_content_set(popup, "button1", button_sug);
-		evas_object_show(button_sug);
+		Evas_Object *button_rate = elm_button_add(popup);
+		elm_object_text_set(button_rate, RATE_APP);
+		evas_object_smart_callback_add(button_rate, "clicked", _rate_app_cb, popup);
+		elm_object_part_content_set(popup, "button1", button_rate);
+		evas_object_show(button_rate);
 	}
 	else if (!strcmp(title_label, HELP))
 	{
@@ -1015,8 +1012,8 @@ ctxpopup_item_select_cb(void *data, Evas_Object *obj, void *event_info)
 		evas_object_show(content_box);
 
 		Evas_Object *button_bug = elm_button_add(popup);
-		elm_object_text_set(button_bug, REPORT_BUG);
-		evas_object_smart_callback_add(button_bug, "clicked", _report_bug_cb, popup);
+		elm_object_text_set(button_bug, BUGS_SUGGESTIONS);
+		evas_object_smart_callback_add(button_bug, "clicked", _report_cb, popup);
 		elm_object_part_content_set(popup, "button1", button_bug);
 		evas_object_show(button_bug);
 	}

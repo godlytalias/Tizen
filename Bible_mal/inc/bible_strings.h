@@ -60,6 +60,6 @@
 #define VERSION "GTA v0.4"
 #define TITLE "സത്യവേദപുസ്തകം"
 #define LOADING_DATABASE "ഡാറ്റാബേസ് ലോഡ് ചെയ്യുന്നു..."
-#define REPORT_BUG "പിശക് അറിയിക്കുക"
-#define SEND_SUGGESTIONS "നിർദ്ദേശങ്ങൾ"
+#define RATE_APP "വിലയിരുത്തുക"
+#define BUGS_SUGGESTIONS "പിശക്  / നിർദ്ദേശങ്ങൾ"
 #define SET_DEFAULT "സാധാരണ വലുപ്പം"
