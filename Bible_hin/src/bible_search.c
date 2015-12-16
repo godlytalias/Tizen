@@ -161,7 +161,7 @@ _get_search_results(void *data, int argc, char **argv, char **azColName)
 	   for (i = 0; i < argc; i++)
 	   {
 		   if (!strcmp(azColName[i], "Book"))
-			   verse_item->bookcount = _get_bookcount(argv[i]);
+			   verse_item->bookcount = atoi(argv[i]);
 		   if (!strcmp(azColName[i], "Chapter"))
 			   verse_item->chaptercount = atoi(argv[i]);
 		   if (!strcmp(azColName[i], "Versecount")) {
