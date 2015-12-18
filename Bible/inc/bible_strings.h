@@ -9,7 +9,6 @@
 #define YES "Yes"
 #define OK "OK"
 #define GO_TO "Go to"
-#define GO "Go"
 #define SAVE "Save"
 #define DELETE "Delete"
 #define EDIT "Edit"

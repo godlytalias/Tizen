@@ -738,7 +738,7 @@ _search_word(void *data,
 	evas_object_show(ad->search_entry);
 	elm_object_part_content_set(ad->search_layout, "elm.swallow.entry", ad->search_entry);
 	Evas_Object *go_btn = elm_button_add(ad->search_layout);
-	elm_object_text_set(go_btn, GO);
+	elm_object_text_set(go_btn, SEARCH);
 	evas_object_smart_callback_add(go_btn, "clicked", _search_keyword, (void*)ad);
 	evas_object_smart_callback_add(ad->search_entry, "activated", _search_keyword, (void*)ad);
 	evas_object_show(go_btn);

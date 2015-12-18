@@ -9,7 +9,6 @@
 #define YES "हाँ"
 #define OK "ठीक"
 #define GO_TO "से जाओ"
-#define GO "ठीक है"
 #define SAVE "सहेजें"
 #define DELETE "हटाऐँ"
 #define EDIT "संपादित"

@@ -9,7 +9,6 @@
 #define YES "വേണം"
 #define OK "ശരി"
 #define GO_TO "ലേക്ക് പോകുക"
-#define GO "ശരി"
 #define SAVE "സേവ്"
 #define DELETE "ഡിലീറ്റ്"
 #define EDIT "എഡിറ്റ്"
