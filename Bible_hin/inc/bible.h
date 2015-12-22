@@ -7,6 +7,8 @@
 #include <system_settings.h>
 #include <efl_extension.h>
 #include <dlog.h>
+#include <package_info.h>
+#include <package_manager.h>
 #include "bible_strings.h"
 
 #ifdef  LOG_TAG
@@ -45,8 +47,21 @@ typedef struct appdata{
 	int cur_chapter, cur_book;
 	int nxt_chapter, nxt_book;
 	char edj_path[PATH_MAX];
+	char *parallel_db_path;
 } appdata_s;
 
+#define GTA_APP_COUNT 4
+#define PARALLEL_READING_SUPPORT_VERSION 0.4
+
+const static char *app_list[] = {
+								"English", "Hindi", "Malayalam", "Telugu"
+								};
+const static char *app_id[] = {
+								"org.tizen.gta_holy_bible",
+								"org.tizen.gtaholybiblehindi",
+								"org.tizen.gtaholybiblemal",
+								"org.tizen.gtaholybibletelugu"
+							  };
 
 const static char *Books[] = {
 		"उत्पत्ति","निर्गमन","लैव्यवस्था","गिनती","व्यवस्थाविवरण","यहोशू ",
@@ -69,7 +84,7 @@ struct _bible_verse_item
    int bookcount, chaptercount, versecount;
    Eina_Bool bookmark, note;
    Elm_Object_Item *it;
-   char *verse;
+   char *verse, *verse_s;
 };
 
 void _query_chapter(void*, int, int);

@@ -87,6 +87,125 @@ move_more_ctxpopup(void *data, Evas_Object *obj EINA_UNUSED, void *event_info EI
 	}
 }
 
+static void
+_install_apps_cb(void *data, Evas_Object *obj, void *event_info)
+{
+	Evas_Object *pl_genlist = (Evas_Object*)data;
+	app_control_h app_control;
+	app_control_create(&app_control);
+	app_control_set_operation(app_control, APP_CONTROL_OPERATION_VIEW);
+	app_control_set_uri(app_control, "tizenstore://SellerDetail/df2ezocp72");
+	app_control_set_launch_mode(app_control, APP_CONTROL_LAUNCH_MODE_GROUP);
+	app_control_send_launch_request(app_control, NULL, NULL);
+	app_control_destroy(app_control);
+}
+
+static void
+_toggle_parallel_reading(void *data, Evas_Object *obj, void *event_info)
+{
+   Evas_Object *pl_genlist = (Evas_Object*)data;
+   appdata_s *ad = (appdata_s*)evas_object_data_get(pl_genlist, "appdata");
+   if (strcmp(elm_object_text_get(obj), ON) == 0)
+   {
+	   preference_set_boolean("parallel", true);
+	   elm_object_disabled_set(pl_genlist, EINA_FALSE);
+	   elm_object_text_set(obj, OFF);
+   }
+   else
+   {
+	   preference_set_boolean("parallel", false);
+	   preference_remove("parallel_app_id");
+	   Elm_Object_Item *item = elm_genlist_selected_item_get(pl_genlist);
+	   if (item) elm_genlist_item_selected_set(item, EINA_FALSE);
+	   elm_object_disabled_set(pl_genlist, EINA_TRUE);
+	   ad->parallel_db_path = NULL;
+	   elm_object_text_set(obj, ON);
+   }
+   _query_chapter(ad, ad->cur_book, ad->cur_chapter);
+}
+
+static Evas_Object*
+_parallel_content_get_cb(void *data, Evas_Object *obj, const char *part)
+{
+	if (strcmp(part, "elm.swallow.end") == 0)
+	{
+		Evas_Object *check = elm_check_add(obj);
+		evas_object_freeze_events_set(check, EINA_TRUE);
+		evas_object_repeat_events_set(check, EINA_TRUE);
+		evas_object_size_hint_weight_set(check, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
+		evas_object_size_hint_align_set(check, EVAS_HINT_FILL, EVAS_HINT_FILL);
+		evas_object_show(check);
+		return check;
+	}
+	else return NULL;
+}
+
+static void
+_parallel_del_cb(void *data, Evas_Object *obj)
+{
+   int *id = (int*)data;
+   free(id);
+}
+
+static void
+_parallel_gl_selected_cb(void *data, Evas_Object *obj, void *event_info)
+{
+	package_info_h pkg_info;
+	Elm_Object_Item *item = (Elm_Object_Item*)event_info;
+	char *db_path = NULL;
+	char *temp_path = NULL;
+	int *id = (int*)elm_object_item_data_get(item);
+	appdata_s *ad = (appdata_s*)evas_object_data_get(obj, "appdata");
+	Evas_Object *check = elm_object_item_part_content_get(item, "elm.swallow.end");
+	elm_check_state_set(check, EINA_TRUE);
+	if (ad->parallel_db_path)
+	{
+	   temp_path = (char*)malloc(sizeof(char)*PATH_MAX);
+	   strcpy(temp_path, ad->parallel_db_path);
+	}
+	preference_set_boolean("parallel", true);
+	preference_set_string("parallel_app_id", app_id[*id]);
+	if (ad->parallel_db_path) free(ad->parallel_db_path);
+	ad->parallel_db_path = NULL;
+	if (package_manager_get_package_info(app_id[*id], &pkg_info) != PACKAGE_MANAGER_ERROR_NONE)
+	{
+		if (db_path) free(db_path);
+		if (temp_path) free(temp_path);
+		return;
+	}
+	package_info_get_root_path(pkg_info, &db_path);
+	ad->parallel_db_path = (char*)malloc(sizeof(char) * (strlen(db_path) + 32));
+	strcpy(ad->parallel_db_path, db_path);
+	strcat(ad->parallel_db_path, "/shared/res/holybible.db");
+	if (db_path) free(db_path);
+	package_info_destroy(pkg_info);
+	if (temp_path && (strcmp(temp_path, ad->parallel_db_path) == 0))
+	{
+		free(temp_path);
+		return;
+	}
+	if (temp_path) free(temp_path);
+	_query_chapter(ad, ad->cur_book, ad->cur_chapter);
+}
+
+static void
+_parallel_gl_unselected_cb(void *data, Evas_Object *obj, void *event_info)
+{
+	Elm_Object_Item *item = (Elm_Object_Item*)event_info;
+	Evas_Object *check = elm_object_item_part_content_get(item, "elm.swallow.end");
+	elm_check_state_set(check, EINA_FALSE);
+}
+
+static char*
+_parallel_text_get_cb(void *data, Evas_Object *obj, const char *part)
+{
+	int id = *((int*)data);
+	const char *text = app_list[id];
+	if (strcmp(part, "elm.text") == 0)
+	   return strdup(text);
+	else return NULL;
+}
+
 static int
 _get_bookmarks_list(void *data, int argc, char **argv, char **azColName)
 {
@@ -483,12 +602,20 @@ _font_size_changed(void *data, Evas_Object *obj, void *event_info)
 	elm_genlist_realized_items_update(ad->genlist);
 }
 
+static Eina_Bool
+_item_sel_idler(void *data)
+{
+	Elm_Object_Item *item = (Elm_Object_Item*)data;
+	elm_genlist_item_selected_set(item, EINA_TRUE);
+	return ECORE_CALLBACK_DONE;
+}
+
 static void
 _set_default_cb(void *data, Evas_Object *obj, void *event_info)
 {
 	Evas_Object *popup = (Evas_Object*)data;
 	Evas_Object *slider = (Evas_Object*)evas_object_data_get(popup, "slider");
-	elm_slider_value_set(slider, 25);
+	elm_slider_value_set(slider, 23);
 	evas_object_smart_callback_call(slider, "changed", NULL);
 	evas_object_smart_callback_call(slider, "slider,drag,stop", NULL);
 }
@@ -498,7 +625,7 @@ ctxpopup_item_select_cb(void *data, Evas_Object *obj, void *event_info)
 {
 	const char *title_label = elm_object_item_text_get((Elm_Object_Item *) event_info);
 	char text_content[2048];
-	Elm_Object_Item *nf_it;
+	Elm_Object_Item *nf_it, *sel_item = NULL;
 	appdata_s *ad = (appdata_s*)data;
 
 	if (!strcmp(title_label, SEARCH))
@@ -566,11 +693,11 @@ ctxpopup_item_select_cb(void *data, Evas_Object *obj, void *event_info)
 	Evas_Object *popup = elm_popup_add(elm_object_top_widget_get(obj));
 	elm_popup_align_set(popup, ELM_NOTIFY_ALIGN_FILL, 1.0);
 	elm_object_part_text_set(popup, "title,text", title_label);
-	Evas_Object *layout = elm_layout_add(popup);
-	elm_layout_file_set(layout, ad->edj_path, "standard_layout");
 
 	if (!strcmp(title_label, ABOUT))
 	{
+		Evas_Object *layout = elm_layout_add(popup);
+		elm_layout_file_set(layout, ad->edj_path, "standard_layout");
 		Evas_Object *content_box = elm_box_add(popup);
 		evas_object_size_hint_weight_set(content_box, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
 		evas_object_size_hint_align_set(content_box, EVAS_HINT_FILL, EVAS_HINT_FILL);
@@ -666,9 +793,12 @@ ctxpopup_item_select_cb(void *data, Evas_Object *obj, void *event_info)
 		evas_object_smart_callback_add(button_rate, "clicked", _rate_app_cb, popup);
 		elm_object_part_content_set(popup, "button1", button_rate);
 		evas_object_show(button_rate);
+		elm_object_content_set(popup, layout);
 	}
 	else if (!strcmp(title_label, HELP))
 	{
+		Evas_Object *layout = elm_layout_add(popup);
+		elm_layout_file_set(layout, ad->edj_path, "standard_layout");
 		Evas_Object *content_box = elm_box_add(popup);
 		evas_object_size_hint_weight_set(content_box, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
 		evas_object_size_hint_align_set(content_box, EVAS_HINT_FILL, EVAS_HINT_FILL);
@@ -1016,9 +1146,12 @@ ctxpopup_item_select_cb(void *data, Evas_Object *obj, void *event_info)
 		evas_object_smart_callback_add(button_bug, "clicked", _report_cb, popup);
 		elm_object_part_content_set(popup, "button1", button_bug);
 		evas_object_show(button_bug);
+		elm_object_content_set(popup, layout);
 	}
 	else if (!strcmp(title_label, FONT_SIZE))
 	{
+		Evas_Object *layout = elm_layout_add(popup);
+		elm_layout_file_set(layout, ad->edj_path, "standard_layout");
 		int fontsize = 25;
 		Evas_Object *slider = elm_slider_add(layout);
 		elm_slider_min_max_set(slider, 18, 36);
@@ -1037,8 +1170,92 @@ ctxpopup_item_select_cb(void *data, Evas_Object *obj, void *event_info)
 		evas_object_data_set(popup, "slider", slider);
 		elm_object_part_content_set(popup, "button1", button_def);
 		evas_object_show(button_def);
+		elm_object_content_set(popup, layout);
 	}
-	elm_object_content_set(popup, layout);
+	else if (!strcmp(title_label, PARALLEL_READING))
+	{
+		bool parallel = false;
+		int i;
+		char *cur_app_id = NULL;
+		Elm_Object_Item *item;
+		char *cur_para_app_id = NULL;
+		preference_get_boolean("parallel", &parallel);
+		preference_get_string("parallel_app_id", &cur_para_app_id);
+		package_info_h pkg_info;
+
+		Evas_Object *pl_genlist = elm_genlist_add(popup);
+		elm_genlist_highlight_mode_set(pl_genlist, EINA_FALSE);
+		elm_genlist_select_mode_set(pl_genlist, ELM_OBJECT_SELECT_MODE_ALWAYS);
+		evas_object_size_hint_weight_set(pl_genlist, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
+		evas_object_size_hint_align_set(pl_genlist, EVAS_HINT_FILL, EVAS_HINT_FILL);
+		evas_object_smart_callback_add(pl_genlist, "selected", _parallel_gl_selected_cb, NULL);
+		evas_object_smart_callback_add(pl_genlist, "unselected", _parallel_gl_unselected_cb, NULL);
+		evas_object_data_set(pl_genlist, "appdata", ad);
+		Elm_Genlist_Item_Class *pl_itc = elm_genlist_item_class_new();
+		pl_itc->item_style = "default";
+		pl_itc->func.text_get = _parallel_text_get_cb;
+		pl_itc->func.content_get = _parallel_content_get_cb;
+		pl_itc->func.del = _parallel_del_cb;
+		app_get_id(&cur_app_id);
+		for (i=0; i < GTA_APP_COUNT; i++)
+		{
+			if (strcmp(cur_app_id, app_list[i]) != 0)
+			{
+				if (strcmp(cur_app_id, app_id[i]) == 0)
+					continue;
+				if (package_manager_get_package_info(app_id[i], &pkg_info) != PACKAGE_MANAGER_ERROR_NONE)
+					continue;
+				char *version = NULL;
+				char version_copy[8];
+				if (package_info_get_version(pkg_info, &version) == PACKAGE_MANAGER_ERROR_NONE)
+				{
+					strncpy(version_copy, version, 3);
+					if (atof(version_copy) < PARALLEL_READING_SUPPORT_VERSION)
+					{
+						package_info_destroy(pkg_info);
+						continue;
+					}
+				}
+				else
+				{
+					package_info_destroy(pkg_info);
+					continue;
+				}
+				package_info_destroy(pkg_info);
+				int *id = (int*)malloc(sizeof(int));
+				*id = i;
+				item = elm_genlist_item_append(pl_genlist, pl_itc, id, NULL, ELM_GENLIST_ITEM_NONE, NULL, NULL);
+				elm_object_item_data_set(item, id);
+				if (cur_para_app_id && (strcmp(cur_para_app_id, app_id[i]) == 0))
+					sel_item = item;
+			}
+		}
+		elm_genlist_item_class_free(pl_itc);
+		free(cur_app_id);
+
+		Evas_Object *button_def = elm_button_add(popup);
+		if (cur_para_app_id) free(cur_para_app_id);
+		elm_object_part_content_set(popup, "button1", button_def);
+		evas_object_show(button_def);
+		if (elm_genlist_items_count(pl_genlist) > 0)
+		{
+			if (parallel)
+				elm_object_text_set(button_def, OFF);
+			else
+			{
+				elm_object_disabled_set(pl_genlist, EINA_TRUE);
+				elm_object_text_set(button_def, ON);
+			}
+			elm_object_content_set(popup, pl_genlist);
+			evas_object_smart_callback_add(button_def, "clicked", _toggle_parallel_reading, pl_genlist);
+		}
+		else
+		{
+			elm_object_text_set(button_def, GO_TO_STORE);
+			elm_object_text_set(popup, GTA_APP_INSTALL_WARNING);
+			evas_object_smart_callback_add(button_def, "clicked", _install_apps_cb, pl_genlist);
+		}
+	}
 	Evas_Object *button = elm_button_add(popup);
 	elm_object_text_set(button, CLOSE);
 	elm_object_part_content_set(popup, "button2", button);
@@ -1046,6 +1263,7 @@ ctxpopup_item_select_cb(void *data, Evas_Object *obj, void *event_info)
 	evas_object_show(popup);
 	evas_object_smart_callback_add(button, "clicked", _popup_del, popup);
 	eext_object_event_callback_add(popup, EEXT_CALLBACK_BACK, eext_popup_back_cb, NULL);
+	ecore_idler_add(_item_sel_idler, sel_item);
 	elm_ctxpopup_dismiss(obj);
 }
 
@@ -1074,6 +1292,7 @@ create_ctxpopup_more_button_cb(void *data, Evas_Object *obj, void *event_info)
 		elm_ctxpopup_item_append(ctxpopup, NOTES, NULL, ctxpopup_item_select_cb, ad);
 		elm_ctxpopup_item_append(ctxpopup, BOOKMARKS, NULL, ctxpopup_item_select_cb, ad);
 		elm_ctxpopup_item_append(ctxpopup, SELECT_CHAPTER, NULL, ctxpopup_item_select_cb, ad);
+		elm_ctxpopup_item_append(ctxpopup, PARALLEL_READING, NULL, ctxpopup_item_select_cb, ad);
 		preference_get_int("readmode", &readmode);
 		if (readmode == 0)
 			elm_ctxpopup_item_append(ctxpopup, DAY_MODE, NULL, ctxpopup_item_select_cb, ad);

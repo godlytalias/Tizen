@@ -59,6 +59,7 @@ _load_appdata(appdata_s *ad)
 {
 	char query[256];
 	bool existing = false;
+	ad->parallel_db_path = NULL;
 
 	sprintf(query, "SELECT bookcount,chaptercount FROM appinitdata;");
 	_app_database_query(query, &_get_app_data, ad);
@@ -81,6 +82,51 @@ _load_appdata(appdata_s *ad)
 		edje_text_class_set("GTA1", "Tizen:style=Regular", val);
 		edje_text_class_set("GTA1B", "Tizen:style=Bold", val);
 		edje_text_class_set("GTA1L", "Tizen:style=Light", val);
+	}
+	preference_is_existing("parallel", &existing);
+	if (!existing)
+		preference_set_boolean("parallel", existing);
+	else
+	{
+		bool parallel = false;
+		preference_get_boolean("parallel", &parallel);
+		if (parallel)
+		{
+			char *para_app_id = NULL;
+			char *db_path = NULL;
+			package_info_h pkg_info;
+			if (preference_get_string("parallel_app_id", &para_app_id) == PREFERENCE_ERROR_NONE)
+			{
+				if (package_manager_get_package_info(para_app_id, &pkg_info) == PACKAGE_MANAGER_ERROR_NONE)
+				{
+					if (package_info_get_root_path(pkg_info, &db_path) != PACKAGE_MANAGER_ERROR_NONE)
+					{
+						preference_set_boolean("parallel", !parallel);
+						preference_remove("parallel_app_id");
+						ad->parallel_db_path = NULL;
+					}
+					else
+					{
+						ad->parallel_db_path = (char*)malloc(sizeof(char) * strlen(db_path) + 32);
+						strcpy(ad->parallel_db_path, db_path);
+						strcat(ad->parallel_db_path, "/shared/res/holybible.db");
+					}
+					package_info_destroy(pkg_info);
+					if (db_path) free(db_path);
+				}
+				else
+				{
+					preference_set_boolean("parallel", false);
+					preference_remove("parallel_app_id");
+				}
+			}
+			else
+			{
+				preference_set_boolean("parallel", false);
+				preference_remove("parallel_app_id");
+			}
+			if (para_app_id) free(para_app_id);
+		}
 	}
 }
 
@@ -204,10 +250,15 @@ _get_verse_list(void *data, int argc, char **argv, char **azColName)
 {
    appdata_s *ad = (appdata_s*) data;
    Elm_Object_Item *it;
+   if (argv == NULL) return 0;
 
    bible_verse_item *verse_item = malloc(sizeof(bible_verse_item));
    verse_item->versecount = ad->count;
    verse_item->verse = strdup(argv[0]);
+   if (argc > 1)
+	   verse_item->verse_s = strdup(argv[1]);
+   else
+	   verse_item->verse_s = NULL;
    verse_item->bookcount = ad->cur_book;
    verse_item->chaptercount = ad->cur_chapter;
    verse_item->appdata = ad;
@@ -225,7 +276,8 @@ void
 _query_chapter(void *data, int book, int chapter)
 {
 	appdata_s *ad = (appdata_s*)data;
-	char query[128];
+	bool parallel = false;
+	char query[512];
 
 	if (ad->genlist)
 		elm_genlist_clear(ad->genlist);
@@ -239,9 +291,21 @@ _query_chapter(void *data, int book, int chapter)
     ad->count = 0;
     ad->cur_book = book;
     ad->cur_chapter = chapter;
-    sprintf(query, "select %s from %s where Book=%d and Chapter=%d", BIBLE_VERSE_COLUMN, BIBLE_TABLE_NAME, book, chapter);
-
-	_database_query(query, &_get_verse_list, data);
+    preference_get_boolean("parallel", &parallel);
+    if (!parallel)
+    	sprintf(query, "select %s from %s where Book=%d and Chapter=%d", BIBLE_VERSE_COLUMN, BIBLE_TABLE_NAME, book, chapter);
+    else
+    {
+    	if (ad->parallel_db_path)
+    		sprintf (query, "attach database '%s' as db1;select verse,verse_s from "
+    				"(select verse,Book,Chapter,Versecount from %s where Book=%d and Chapter=%d) t1 inner join "
+    				"(select verse as verse_s,Book,Chapter,Versecount from db1.%s where Book=%d and Chapter=%d) t2 on "
+    				"(t1.Book=t2.Book and t1.Chapter=t2.Chapter and t1.Versecount=t2.Versecount);",
+    				ad->parallel_db_path, BIBLE_TABLE_NAME, book, chapter, BIBLE_TABLE_NAME, book, chapter);
+    	else
+        	sprintf(query, "select %s from %s where Book=%d and Chapter=%d", BIBLE_VERSE_COLUMN, BIBLE_TABLE_NAME, book, chapter);
+    }
+    _database_query(query, &_get_verse_list, data);
 	_check_bookmarks(ad);
 	_check_notes(ad);
 

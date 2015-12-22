@@ -237,7 +237,12 @@ gl_content_get_cb(void *data, Evas_Object *obj, const char *part)
     	Evas_Object *layout = elm_layout_add(obj);
     	char verse_count[5];
     	int readmode = 1;
-    	elm_layout_file_set(layout, verse_item->appdata->edj_path, "verse_layout");
+    	bool parallel = false;
+    	preference_get_boolean("parallel", &parallel);
+    	if (parallel && verse_item->appdata->parallel_db_path)
+    		elm_layout_file_set(layout, verse_item->appdata->edj_path, "parallel_verse_layout");
+    	else
+    		elm_layout_file_set(layout, verse_item->appdata->edj_path, "verse_layout");
     	preference_get_int("readmode", &readmode);
     	if (readmode == 0)
     	{
@@ -248,6 +253,8 @@ gl_content_get_cb(void *data, Evas_Object *obj, const char *part)
     	else
     		elm_layout_signal_emit(layout, "elm,holy_bible,night_mode,off", "elm");
      	elm_object_part_text_set(layout,"elm.text.verse",verse_item->verse);
+     	if (parallel && verse_item->appdata->parallel_db_path)
+     		elm_object_part_text_set(layout,"elm.text.verse_s",verse_item->verse_s);
     	sprintf(verse_count, "%d", verse_item->versecount+1);
     	elm_object_part_text_set(layout, "elm.text.verse_count", verse_count);
     	if (verse_item->bookmark) elm_layout_signal_emit(layout, "elm,holy_bible,bookmark,show", "elm");
@@ -521,6 +528,7 @@ gl_del_cb(void *data, Evas_Object *obj)
 {
    bible_verse_item *verse_item = (bible_verse_item*)data;
    free(verse_item->verse);
+   free(verse_item->verse_s);
    free(verse_item);
    verse_item = NULL;
 }
@@ -766,6 +774,8 @@ static void
 app_terminate(void *data)
 {
 	/* Release all resources. */
+	appdata_s *ad = (appdata_s*)data;
+	if (ad->parallel_db_path) free(ad->parallel_db_path);
 	_save_appdata(data);
 }
 

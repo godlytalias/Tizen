@@ -9,6 +9,7 @@
 #define YES "Yes"
 #define OK "OK"
 #define GO_TO "Go to"
+#define GO "Go"
 #define SAVE "Save"
 #define DELETE "Delete"
 #define EDIT "Edit"
@@ -62,3 +63,9 @@
 #define RATE_APP "Rate Application"
 #define BUGS_SUGGESTIONS "Bugs / Suggestions"
 #define SET_DEFAULT "Set Default"
+#define PARALLEL_READING "Parallel Reading"
+#define GO_TO_STORE "Go to Store"
+#define ON "On"
+#define OFF "Off"
+#define GTA_APP_INSTALL_WARNING "No other GTA Bible applications above v0.5 is detected. Please install / update application from Tizen Store"
+

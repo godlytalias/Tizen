@@ -62,3 +62,9 @@
 #define RATE_APP "रेट करें"
 #define BUGS_SUGGESTIONS "बग / सुझाव"
 #define SET_DEFAULT "डिफॉल्ट सेट करें"
+#define PARALLEL_READING "समानांतर पढ़ना"
+#define GO_TO_STORE "स्टोर में जाओ"
+#define ON "सक्षम करें"
+#define OFF "अक्षम करें"
+#define GTA_APP_INSTALL_WARNING "किसी भी जीटीए बाइबिल एप्लिकेशन नहीं मिल सका।स्टोर से डाउनलोड करें ।"
+
