@@ -90,7 +90,6 @@ move_more_ctxpopup(void *data, Evas_Object *obj EINA_UNUSED, void *event_info EI
 static void
 _install_apps_cb(void *data, Evas_Object *obj, void *event_info)
 {
-	Evas_Object *pl_genlist = (Evas_Object*)data;
 	app_control_h app_control;
 	app_control_create(&app_control);
 	app_control_set_operation(app_control, APP_CONTROL_OPERATION_VIEW);
