@@ -51,7 +51,7 @@ typedef struct appdata{
 } appdata_s;
 
 #define GTA_APP_COUNT 4
-#define PARALLEL_READING_SUPPORT_VERSION 0.4
+#define PARALLEL_READING_SUPPORT_VERSION 0.5
 
 const static char *app_list[] = {
 								"English", "Hindi", "Malayalam", "Telugu"
