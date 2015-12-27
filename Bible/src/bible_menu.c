@@ -2,13 +2,6 @@
 #include <sqlite3.h>
 #include "bible.h"
 
-static void
-ctxpopup_dismissed_cb(void *data, Evas_Object *obj, void *event_info)
-{
-	evas_object_del(data);
-	data = NULL;
-}
-
 void
 _popup_del(void *data, Evas_Object *obj, void *event_info)
 {
@@ -630,7 +623,7 @@ ctxpopup_item_select_cb(void *data, Evas_Object *obj, void *event_info)
 	if (!strcmp(title_label, SEARCH))
 	{
 		_search_word(ad, NULL, NULL);
-		_popup_del(obj, NULL, NULL);
+		evas_object_hide(obj);
 		return;
 	}
 
@@ -638,7 +631,7 @@ ctxpopup_item_select_cb(void *data, Evas_Object *obj, void *event_info)
 	{
 		_change_read_mode(ad, EINA_FALSE);
 		preference_set_int("readmode", 1);
-		_popup_del(obj, NULL, NULL);
+		evas_object_hide(obj);
 		return;
 	}
 
@@ -646,7 +639,7 @@ ctxpopup_item_select_cb(void *data, Evas_Object *obj, void *event_info)
 	{
 		_change_read_mode(ad, EINA_TRUE);
 		preference_set_int("readmode", 0);
-		_popup_del(obj, NULL, NULL);
+		evas_object_hide(obj);
 		return;
 	}
 
@@ -654,7 +647,7 @@ ctxpopup_item_select_cb(void *data, Evas_Object *obj, void *event_info)
 	{
 		nf_it = elm_naviframe_item_push(ad->naviframe, BOOKMARKS, NULL, NULL, _get_bookmarks(ad), NULL);
 		elm_naviframe_item_pop_cb_set(nf_it, naviframe_pop_cb, ad);
-		_popup_del(obj, NULL, NULL);
+		evas_object_hide(obj);
 		return;
 	}
 
@@ -662,13 +655,13 @@ ctxpopup_item_select_cb(void *data, Evas_Object *obj, void *event_info)
 	{
 		nf_it = elm_naviframe_item_push(ad->naviframe, NOTES, NULL, NULL, _get_notes(ad), NULL);
 		elm_naviframe_item_pop_cb_set(nf_it, naviframe_pop_cb, ad);
-		_popup_del(obj, NULL, NULL);
+		evas_object_hide(obj);
 		return;
 	}
 
 	if (!strcmp(title_label, SHARE))
 	{
-		_popup_del(obj, NULL, NULL);
+		evas_object_hide(obj);
 		_change_read_mode(ad, EINA_FALSE);
 		_share_verse_cb(ad);
 		return;
@@ -676,7 +669,7 @@ ctxpopup_item_select_cb(void *data, Evas_Object *obj, void *event_info)
 
 	if (!strcmp(title_label, COPY))
 	{
-		_popup_del(obj, NULL, NULL);
+		evas_object_hide(obj);
 		_change_read_mode(ad, EINA_FALSE);
 		_copy_verse_cb(ad);
 		return;
@@ -685,7 +678,7 @@ ctxpopup_item_select_cb(void *data, Evas_Object *obj, void *event_info)
 	if (!strcmp(title_label, SELECT_CHAPTER))
 	{
 		_change_book(data, ad->layout, NULL, NULL);
-		_popup_del(obj, NULL, NULL);
+		evas_object_hide(obj);
 		return;
 	}
 
@@ -1263,22 +1256,46 @@ ctxpopup_item_select_cb(void *data, Evas_Object *obj, void *event_info)
 	evas_object_smart_callback_add(button, "clicked", _popup_del, popup);
 	eext_object_event_callback_add(popup, EEXT_CALLBACK_BACK, eext_popup_back_cb, NULL);
 	ecore_idler_add(_item_sel_idler, sel_item);
-	elm_ctxpopup_dismiss(obj);
+	evas_object_hide(obj);
 }
 
 void
-create_ctxpopup_more_button_cb(void *data, Evas_Object *obj, void *event_info)
+show_ctxpopup_more_button_cb(void *data, Evas_Object *obj, void *event_info)
+{
+	appdata_s *ad = (appdata_s*)data;
+	move_more_ctxpopup(ad->menu_ctxpopup, ad->menu_ctxpopup, NULL);
+	if (ad->menu_ctxpopup)
+		evas_object_show(ad->menu_ctxpopup);
+	else
+	{
+		create_ctxpopup_more_menu(ad);
+		evas_object_show(ad->menu_ctxpopup);
+	}
+}
+
+void
+hide_ctxpopup_more_button_cb(void *data, Evas_Object *obj, void *event_info)
+{
+	appdata_s *ad = (appdata_s*)data;
+	if (ad->menu_ctxpopup)
+		evas_object_hide(ad->menu_ctxpopup);
+}
+
+void
+create_ctxpopup_more_menu(void *data)
 {
 	Evas_Object *win;
 	appdata_s *ad = (appdata_s*)data;
 	int readmode = 1;
 
+	if (ad->menu_ctxpopup) return;
+
 	Evas_Object *ctxpopup = elm_ctxpopup_add(ad->naviframe);
+	ad->menu_ctxpopup = ctxpopup;
 	elm_ctxpopup_auto_hide_disabled_set(ctxpopup, EINA_TRUE);
 	elm_object_style_set(ctxpopup, "more/default");
-	eext_object_event_callback_add(ctxpopup, EEXT_CALLBACK_BACK, eext_ctxpopup_back_cb, NULL);
-	eext_object_event_callback_add(ctxpopup, EEXT_CALLBACK_MORE, eext_ctxpopup_back_cb, NULL);
-	evas_object_smart_callback_add(ctxpopup, "dismissed", ctxpopup_dismissed_cb, ctxpopup);
+	eext_object_event_callback_add(ctxpopup, EEXT_CALLBACK_BACK, hide_ctxpopup_more_button_cb, ad);
+	eext_object_event_callback_add(ctxpopup, EEXT_CALLBACK_MORE, hide_ctxpopup_more_button_cb, ad);
 
 	win = elm_object_top_widget_get(ad->naviframe);
 	evas_object_smart_callback_add(win, "rotation,changed", move_more_ctxpopup, ctxpopup);
@@ -1303,6 +1320,4 @@ create_ctxpopup_more_button_cb(void *data, Evas_Object *obj, void *event_info)
 	elm_ctxpopup_item_append(ctxpopup, ABOUT, NULL, ctxpopup_item_select_cb, ad);
 
 	elm_ctxpopup_direction_priority_set(ctxpopup, ELM_CTXPOPUP_DIRECTION_UP, ELM_CTXPOPUP_DIRECTION_UNKNOWN, ELM_CTXPOPUP_DIRECTION_UNKNOWN, ELM_CTXPOPUP_DIRECTION_UNKNOWN);
-	move_more_ctxpopup(ctxpopup, ctxpopup, NULL);
-	evas_object_show(ctxpopup);
 }

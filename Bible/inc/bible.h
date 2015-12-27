@@ -38,6 +38,7 @@ typedef struct appdata{
 	Evas_Object *list1, *list2, *search_entry, *note_entry;
 	Evas_Object *check_entire, *check_ot, *check_nt, *check_custom, *check_strict, *check_whole;
 	Evas_Object *from_dropdown, *to_dropdown;
+	Evas_Object *menu_ctxpopup;
 	Elm_Genlist_Item_Class *itc, *search_itc, *bookmarks_itc;
 	Evas_Coord mouse_x, mouse_y;
 	Eina_Bool share_copy_mode:1;
@@ -91,7 +92,9 @@ void _app_database_query(char*, int func(void*,int,char**,char**), void*);
 void _database_query(char*, int func(void*,int,char**,char**), void*);
 void _change_book(void *, Evas_Object*, const char*, const char*);
 void _search_word(void *, Evas_Object*,void*);
-void create_ctxpopup_more_button_cb(void*, Evas_Object*, void*);
+void create_ctxpopup_more_menu(void*);
+void show_ctxpopup_more_button_cb(void*, Evas_Object*, void*);
+void hide_ctxpopup_more_button_cb(void*, Evas_Object*, void*);
 int _get_bookcount(char*);
 void _loading_progress(Evas_Object *);
 Evas_Object* _loading_progress_show(Evas_Object *);

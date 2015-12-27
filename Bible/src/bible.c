@@ -706,10 +706,11 @@ create_base_gui(appdata_s *ad)
 
 	menu_btn = elm_button_add(ad->naviframe);
 	elm_object_style_set(menu_btn, "naviframe/more/default");
-	evas_object_smart_callback_add(menu_btn, "clicked", create_ctxpopup_more_button_cb, ad);
+	evas_object_smart_callback_add(menu_btn, "clicked", show_ctxpopup_more_button_cb, ad);
 	elm_object_item_part_content_set(nf_item, "toolbar_more_btn", menu_btn);
 	evas_object_show(menu_btn);
 	eext_object_event_callback_add(ad->naviframe, EEXT_CALLBACK_BACK, eext_naviframe_back_cb, NULL);
+	create_ctxpopup_more_menu(ad);
 
 	evas_object_show(ad->win);
 
@@ -726,6 +727,7 @@ app_create(void *data)
 	ad->cur_book = 0;
 	ad->cur_chapter = 1;
 	ad->count = 0;
+	ad->menu_ctxpopup = NULL;
 
 	create_base_gui(ad);
 
@@ -757,6 +759,7 @@ app_terminate(void *data)
 	appdata_s *ad = (appdata_s*)data;
 	if (ad->parallel_db_path) free(ad->parallel_db_path);
 	_save_appdata(data);
+	if (ad->menu_ctxpopup) evas_object_del(ad->menu_ctxpopup);
 }
 
 static void
