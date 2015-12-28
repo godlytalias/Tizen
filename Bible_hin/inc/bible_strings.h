@@ -56,7 +56,7 @@
 #define SHARE_VERSE "कविता साझा करें"
 #define COPY_VERSE "कविता कापी करें"
 #define COPYRIGHT "Copyright © 2015 Godly T Alias"
-#define VERSION "GTA v0.4"
+#define VERSION "GTA v0.5"
 #define TITLE "पवित्र बाइबिल"
 #define LOADING_DATABASE "डेटाबेस लोड हो रहा है..."
 #define RATE_APP "रेट करें"

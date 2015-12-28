@@ -29,6 +29,7 @@
 #endif /* __bible_H__ */
 
 typedef struct _bible_verse_item bible_verse_item;
+typedef struct app_struct_list app_struct;
 
 typedef struct appdata{
 	Evas_Object* win;
@@ -38,9 +39,11 @@ typedef struct appdata{
 	Evas_Object *list1, *list2, *search_entry, *note_entry;
 	Evas_Object *check_entire, *check_ot, *check_nt, *check_custom, *check_strict, *check_whole;
 	Evas_Object *from_dropdown, *to_dropdown;
+	Evas_Object *menu_ctxpopup;
 	Elm_Genlist_Item_Class *itc, *search_itc, *bookmarks_itc;
 	Evas_Coord mouse_x, mouse_y;
 	Eina_Bool share_copy_mode:1;
+	Elm_Object_Item *readmode_item;
 	uint mouse_down_time;
 	int search_from, search_to;
 	int count, versecount, chaptercount;
@@ -48,20 +51,16 @@ typedef struct appdata{
 	int nxt_chapter, nxt_book;
 	char edj_path[PATH_MAX];
 	char *parallel_db_path;
+	struct app_struct_list *app_list_head, *app_list_tail;
 } appdata_s;
 
-#define GTA_APP_COUNT 4
 #define PARALLEL_READING_SUPPORT_VERSION 0.5
 
-const static char *app_list[] = {
-								"English", "Hindi", "Malayalam", "Telugu"
-								};
-const static char *app_id[] = {
-								"org.tizen.gta_holy_bible",
-								"org.tizen.gtaholybiblehindi",
-								"org.tizen.gtaholybiblemal",
-								"org.tizen.gtaholybibletelugu"
-							  };
+typedef struct app_struct_list {
+	char *app_name;
+	char *app_id;
+	struct app_struct_list *app_next;
+}app_struct;
 
 const static char *Books[] = {
 		"उत्पत्ति","निर्गमन","लैव्यवस्था","गिनती","व्यवस्थाविवरण","यहोशू ",
@@ -94,7 +93,9 @@ void _app_database_query(char*, int func(void*,int,char**,char**), void*);
 void _database_query(char*, int func(void*,int,char**,char**), void*);
 void _change_book(void *, Evas_Object*, const char*, const char*);
 void _search_word(void *, Evas_Object*,void*);
-void create_ctxpopup_more_button_cb(void*, Evas_Object*, void*);
+void create_ctxpopup_more_menu(void*);
+void show_ctxpopup_more_button_cb(void*, Evas_Object*, void*);
+void hide_ctxpopup_more_button_cb(void*, Evas_Object*, void*);
 int _get_bookcount(char*);
 void _loading_progress(Evas_Object *);
 Evas_Object* _loading_progress_show(Evas_Object *);

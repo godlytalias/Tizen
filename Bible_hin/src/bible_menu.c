@@ -2,13 +2,6 @@
 #include <sqlite3.h>
 #include "bible.h"
 
-static void
-ctxpopup_dismissed_cb(void *data, Evas_Object *obj, void *event_info)
-{
-	evas_object_del(data);
-	data = NULL;
-}
-
 void
 _popup_del(void *data, Evas_Object *obj, void *event_info)
 {
@@ -93,6 +86,7 @@ _install_apps_cb(void *data, Evas_Object *obj, void *event_info)
 	app_control_h app_control;
 	app_control_create(&app_control);
 	app_control_set_operation(app_control, APP_CONTROL_OPERATION_VIEW);
+	app_control_set_app_id(app_control, "org.tizen.tizenstore");
 	app_control_set_uri(app_control, "tizenstore://SellerDetail/df2ezocp72");
 	app_control_set_launch_mode(app_control, APP_CONTROL_LAUNCH_MODE_GROUP);
 	app_control_send_launch_request(app_control, NULL, NULL);
@@ -120,7 +114,6 @@ _toggle_parallel_reading(void *data, Evas_Object *obj, void *event_info)
 	   ad->parallel_db_path = NULL;
 	   elm_object_text_set(obj, ON);
    }
-   _query_chapter(ad, ad->cur_book, ad->cur_chapter);
 }
 
 static Evas_Object*
@@ -140,20 +133,13 @@ _parallel_content_get_cb(void *data, Evas_Object *obj, const char *part)
 }
 
 static void
-_parallel_del_cb(void *data, Evas_Object *obj)
-{
-   int *id = (int*)data;
-   free(id);
-}
-
-static void
 _parallel_gl_selected_cb(void *data, Evas_Object *obj, void *event_info)
 {
 	package_info_h pkg_info;
 	Elm_Object_Item *item = (Elm_Object_Item*)event_info;
 	char *db_path = NULL;
 	char *temp_path = NULL;
-	int *id = (int*)elm_object_item_data_get(item);
+	app_struct *app_det = (app_struct*)elm_object_item_data_get(item);
 	appdata_s *ad = (appdata_s*)evas_object_data_get(obj, "appdata");
 	Evas_Object *check = elm_object_item_part_content_get(item, "elm.swallow.end");
 	elm_check_state_set(check, EINA_TRUE);
@@ -163,10 +149,10 @@ _parallel_gl_selected_cb(void *data, Evas_Object *obj, void *event_info)
 	   strcpy(temp_path, ad->parallel_db_path);
 	}
 	preference_set_boolean("parallel", true);
-	preference_set_string("parallel_app_id", app_id[*id]);
+	preference_set_string("parallel_app_id", app_det->app_id);
 	if (ad->parallel_db_path) free(ad->parallel_db_path);
 	ad->parallel_db_path = NULL;
-	if (package_manager_get_package_info(app_id[*id], &pkg_info) != PACKAGE_MANAGER_ERROR_NONE)
+	if (package_manager_get_package_info(app_det->app_id, &pkg_info) != PACKAGE_MANAGER_ERROR_NONE)
 	{
 		if (db_path) free(db_path);
 		if (temp_path) free(temp_path);
@@ -198,8 +184,8 @@ _parallel_gl_unselected_cb(void *data, Evas_Object *obj, void *event_info)
 static char*
 _parallel_text_get_cb(void *data, Evas_Object *obj, const char *part)
 {
-	int id = *((int*)data);
-	const char *text = app_list[id];
+	app_struct *app_det = (app_struct*)data;
+	const char *text = app_det->app_name;
 	if (strcmp(part, "elm.text") == 0)
 	   return strdup(text);
 	else return NULL;
@@ -601,12 +587,12 @@ _font_size_changed(void *data, Evas_Object *obj, void *event_info)
 	elm_genlist_realized_items_update(ad->genlist);
 }
 
-static Eina_Bool
-_item_sel_idler(void *data)
+static void
+_item_selection(void *data, Evas_Object *obj, void *event_info)
 {
 	Elm_Object_Item *item = (Elm_Object_Item*)data;
 	elm_genlist_item_selected_set(item, EINA_TRUE);
-	return ECORE_CALLBACK_DONE;
+	return;
 }
 
 static void
@@ -617,6 +603,62 @@ _set_default_cb(void *data, Evas_Object *obj, void *event_info)
 	elm_slider_value_set(slider, 23);
 	evas_object_smart_callback_call(slider, "changed", NULL);
 	evas_object_smart_callback_call(slider, "slider,drag,stop", NULL);
+}
+
+static bool
+_check_package(package_info_h pkg_info, void *data)
+{
+	char *package;
+	char *app_id;
+	appdata_s *ad = (appdata_s*)data;
+	app_struct *app_det;
+	app_get_id(&app_id);
+	package_info_get_package(pkg_info, &package);
+	if ((strncmp(package, "org.tizen.gtaholybible", 22) == 0) ||
+		(strcmp(package, "org.tizen.gta_holy_bible") == 0))
+	{
+		package_manager_compare_result_type_e comp_result;
+		package_manager_compare_app_cert_info(app_id, package, &comp_result);
+		if ((strcmp(package, app_id) != 0) &&
+			(comp_result == PACKAGE_MANAGER_COMPARE_MATCH))
+		{
+			app_det = (app_struct*)malloc(sizeof(app_struct));
+			app_det->app_id = (char*)malloc(sizeof(char) * (strlen(package) + 1));
+			strcpy(app_det->app_id, package);
+			app_det->app_name = (char*)malloc(sizeof(char) * 32);
+			if (strcmp(package, "org.tizen.gta_holy_bible") == 0)
+				strcpy(app_det->app_name, "English");
+			else
+			{
+				if (strncmp(package + 22, "mal", 3) == 0)
+					strcpy(app_det->app_name, "Malayalam");
+				else
+				{
+					strcpy(app_det->app_name, package + 22);
+					app_det->app_name[0] = toupper(app_det->app_name[0]);
+				}
+			}
+			app_det->app_next = NULL;
+			if (!ad->app_list_head)
+				ad->app_list_head = app_det;
+			if (ad->app_list_tail)
+			{
+				ad->app_list_tail->app_next = app_det;
+			}
+			ad->app_list_tail = app_det;
+		}
+	}
+	free(package);
+	free(app_id);
+	return true;
+}
+
+static void
+_populate_parallel_app_list(appdata_s *ad)
+{
+	package_manager_h pkg_manager;
+	package_manager_create(&pkg_manager);
+	package_manager_foreach_package_info(_check_package, ad);
 }
 
 static void
@@ -630,7 +672,7 @@ ctxpopup_item_select_cb(void *data, Evas_Object *obj, void *event_info)
 	if (!strcmp(title_label, SEARCH))
 	{
 		_search_word(ad, NULL, NULL);
-		_popup_del(obj, NULL, NULL);
+		evas_object_hide(obj);
 		return;
 	}
 
@@ -638,7 +680,7 @@ ctxpopup_item_select_cb(void *data, Evas_Object *obj, void *event_info)
 	{
 		_change_read_mode(ad, EINA_FALSE);
 		preference_set_int("readmode", 1);
-		_popup_del(obj, NULL, NULL);
+		evas_object_hide(obj);
 		return;
 	}
 
@@ -646,7 +688,7 @@ ctxpopup_item_select_cb(void *data, Evas_Object *obj, void *event_info)
 	{
 		_change_read_mode(ad, EINA_TRUE);
 		preference_set_int("readmode", 0);
-		_popup_del(obj, NULL, NULL);
+		evas_object_hide(obj);
 		return;
 	}
 
@@ -654,7 +696,7 @@ ctxpopup_item_select_cb(void *data, Evas_Object *obj, void *event_info)
 	{
 		nf_it = elm_naviframe_item_push(ad->naviframe, BOOKMARKS, NULL, NULL, _get_bookmarks(ad), NULL);
 		elm_naviframe_item_pop_cb_set(nf_it, naviframe_pop_cb, ad);
-		_popup_del(obj, NULL, NULL);
+		evas_object_hide(obj);
 		return;
 	}
 
@@ -662,13 +704,13 @@ ctxpopup_item_select_cb(void *data, Evas_Object *obj, void *event_info)
 	{
 		nf_it = elm_naviframe_item_push(ad->naviframe, NOTES, NULL, NULL, _get_notes(ad), NULL);
 		elm_naviframe_item_pop_cb_set(nf_it, naviframe_pop_cb, ad);
-		_popup_del(obj, NULL, NULL);
+		evas_object_hide(obj);
 		return;
 	}
 
 	if (!strcmp(title_label, SHARE))
 	{
-		_popup_del(obj, NULL, NULL);
+		evas_object_hide(obj);
 		_change_read_mode(ad, EINA_FALSE);
 		_share_verse_cb(ad);
 		return;
@@ -676,7 +718,7 @@ ctxpopup_item_select_cb(void *data, Evas_Object *obj, void *event_info)
 
 	if (!strcmp(title_label, COPY))
 	{
-		_popup_del(obj, NULL, NULL);
+		evas_object_hide(obj);
 		_change_read_mode(ad, EINA_FALSE);
 		_copy_verse_cb(ad);
 		return;
@@ -685,7 +727,7 @@ ctxpopup_item_select_cb(void *data, Evas_Object *obj, void *event_info)
 	if (!strcmp(title_label, SELECT_CHAPTER))
 	{
 		_change_book(data, ad->layout, NULL, NULL);
-		_popup_del(obj, NULL, NULL);
+		evas_object_hide(obj);
 		return;
 	}
 
@@ -1174,7 +1216,7 @@ ctxpopup_item_select_cb(void *data, Evas_Object *obj, void *event_info)
 	else if (!strcmp(title_label, PARALLEL_READING))
 	{
 		bool parallel = false;
-		int i;
+		app_struct *app_det;
 		char *cur_app_id = NULL;
 		Elm_Object_Item *item;
 		char *cur_para_app_id = NULL;
@@ -1182,6 +1224,8 @@ ctxpopup_item_select_cb(void *data, Evas_Object *obj, void *event_info)
 		preference_get_string("parallel_app_id", &cur_para_app_id);
 		package_info_h pkg_info;
 
+		if (!ad->app_list_head)
+			_populate_parallel_app_list(ad);
 		Evas_Object *pl_genlist = elm_genlist_add(popup);
 		elm_genlist_highlight_mode_set(pl_genlist, EINA_FALSE);
 		elm_genlist_select_mode_set(pl_genlist, ELM_OBJECT_SELECT_MODE_ALWAYS);
@@ -1194,15 +1238,14 @@ ctxpopup_item_select_cb(void *data, Evas_Object *obj, void *event_info)
 		pl_itc->item_style = "default";
 		pl_itc->func.text_get = _parallel_text_get_cb;
 		pl_itc->func.content_get = _parallel_content_get_cb;
-		pl_itc->func.del = _parallel_del_cb;
+		pl_itc->func.del = NULL;
 		app_get_id(&cur_app_id);
-		for (i=0; i < GTA_APP_COUNT; i++)
+		if (ad->app_list_head)
 		{
-			if (strcmp(cur_app_id, app_list[i]) != 0)
+			app_det = ad->app_list_head;
+			while (app_det)
 			{
-				if (strcmp(cur_app_id, app_id[i]) == 0)
-					continue;
-				if (package_manager_get_package_info(app_id[i], &pkg_info) != PACKAGE_MANAGER_ERROR_NONE)
+				if (package_manager_get_package_info(app_det->app_id, &pkg_info) != PACKAGE_MANAGER_ERROR_NONE)
 					continue;
 				char *version = NULL;
 				char version_copy[8];
@@ -1221,12 +1264,11 @@ ctxpopup_item_select_cb(void *data, Evas_Object *obj, void *event_info)
 					continue;
 				}
 				package_info_destroy(pkg_info);
-				int *id = (int*)malloc(sizeof(int));
-				*id = i;
-				item = elm_genlist_item_append(pl_genlist, pl_itc, id, NULL, ELM_GENLIST_ITEM_NONE, NULL, NULL);
-				elm_object_item_data_set(item, id);
-				if (cur_para_app_id && (strcmp(cur_para_app_id, app_id[i]) == 0))
+				item = elm_genlist_item_append(pl_genlist, pl_itc, app_det, NULL, ELM_GENLIST_ITEM_NONE, NULL, NULL);
+				elm_object_item_data_set(item, app_det);
+				if (cur_para_app_id && (strcmp(cur_para_app_id, app_det->app_id) == 0))
 					sel_item = item;
+				app_det = app_det->app_next;
 			}
 		}
 		elm_genlist_item_class_free(pl_itc);
@@ -1262,47 +1304,94 @@ ctxpopup_item_select_cb(void *data, Evas_Object *obj, void *event_info)
 	evas_object_show(popup);
 	evas_object_smart_callback_add(button, "clicked", _popup_del, popup);
 	eext_object_event_callback_add(popup, EEXT_CALLBACK_BACK, eext_popup_back_cb, NULL);
-	ecore_idler_add(_item_sel_idler, sel_item);
-	elm_ctxpopup_dismiss(obj);
+	evas_object_smart_callback_add(popup, "show,finished", _item_selection, sel_item);
+	evas_object_hide(obj);
 }
 
 void
-create_ctxpopup_more_button_cb(void *data, Evas_Object *obj, void *event_info)
+show_ctxpopup_more_button_cb(void *data, Evas_Object *obj, void *event_info)
+{
+	appdata_s *ad = (appdata_s*)data;
+	int readmode = 1;
+
+	if (ad->share_copy_mode)
+	{
+		Evas_Object *win, *ctxpopup;
+		ctxpopup = elm_ctxpopup_add(ad->naviframe);
+		elm_ctxpopup_auto_hide_disabled_set(ctxpopup, EINA_TRUE);
+		elm_object_style_set(ctxpopup, "more/default");
+		evas_object_smart_callback_add(ctxpopup, "dismissed", _popup_del, ctxpopup);
+		eext_object_event_callback_add(ctxpopup, EEXT_CALLBACK_BACK, eext_ctxpopup_back_cb, NULL);
+		eext_object_event_callback_add(ctxpopup, EEXT_CALLBACK_MORE, eext_ctxpopup_back_cb, NULL);
+
+		win = elm_object_top_widget_get(ad->naviframe);
+		evas_object_smart_callback_add(win, "rotation,changed", move_more_ctxpopup, ctxpopup);
+		move_more_ctxpopup(ctxpopup, ctxpopup, NULL);
+
+		elm_ctxpopup_item_append(ctxpopup, HELP, NULL, ctxpopup_item_select_cb, ad);
+		elm_ctxpopup_item_append(ctxpopup, ABOUT, NULL, ctxpopup_item_select_cb, ad);
+
+		elm_ctxpopup_direction_priority_set(ctxpopup, ELM_CTXPOPUP_DIRECTION_UP, ELM_CTXPOPUP_DIRECTION_UNKNOWN, ELM_CTXPOPUP_DIRECTION_UNKNOWN, ELM_CTXPOPUP_DIRECTION_UNKNOWN);
+		evas_object_show(ctxpopup);
+		return;
+	}
+	move_more_ctxpopup(ad->menu_ctxpopup, ad->menu_ctxpopup, NULL);
+	preference_get_int("readmode", &readmode);
+	if (readmode == 0)
+		elm_object_item_text_set(ad->readmode_item, DAY_MODE);
+	else
+		elm_object_item_text_set(ad->readmode_item, NIGHT_MODE);
+	if (ad->menu_ctxpopup)
+		evas_object_show(ad->menu_ctxpopup);
+	else
+	{
+		create_ctxpopup_more_menu(ad);
+		evas_object_show(ad->menu_ctxpopup);
+	}
+}
+
+void
+hide_ctxpopup_more_button_cb(void *data, Evas_Object *obj, void *event_info)
+{
+	appdata_s *ad = (appdata_s*)data;
+	if (ad->menu_ctxpopup)
+		evas_object_hide(ad->menu_ctxpopup);
+}
+
+void
+create_ctxpopup_more_menu(void *data)
 {
 	Evas_Object *win;
 	appdata_s *ad = (appdata_s*)data;
 	int readmode = 1;
 
+	if (ad->menu_ctxpopup) return;
+
 	Evas_Object *ctxpopup = elm_ctxpopup_add(ad->naviframe);
+	ad->menu_ctxpopup = ctxpopup;
 	elm_ctxpopup_auto_hide_disabled_set(ctxpopup, EINA_TRUE);
 	elm_object_style_set(ctxpopup, "more/default");
 	eext_object_event_callback_add(ctxpopup, EEXT_CALLBACK_BACK, eext_ctxpopup_back_cb, NULL);
 	eext_object_event_callback_add(ctxpopup, EEXT_CALLBACK_MORE, eext_ctxpopup_back_cb, NULL);
-	evas_object_smart_callback_add(ctxpopup, "dismissed", ctxpopup_dismissed_cb, ctxpopup);
 
 	win = elm_object_top_widget_get(ad->naviframe);
 	evas_object_smart_callback_add(win, "rotation,changed", move_more_ctxpopup, ctxpopup);
 
-	if (!ad->share_copy_mode)
-	{
-		elm_ctxpopup_item_append(ctxpopup, SEARCH, NULL, ctxpopup_item_select_cb, ad);
-		elm_ctxpopup_item_append(ctxpopup, SHARE, NULL, ctxpopup_item_select_cb, ad);
-		elm_ctxpopup_item_append(ctxpopup, COPY, NULL, ctxpopup_item_select_cb, ad);
-		elm_ctxpopup_item_append(ctxpopup, NOTES, NULL, ctxpopup_item_select_cb, ad);
-		elm_ctxpopup_item_append(ctxpopup, BOOKMARKS, NULL, ctxpopup_item_select_cb, ad);
-		elm_ctxpopup_item_append(ctxpopup, SELECT_CHAPTER, NULL, ctxpopup_item_select_cb, ad);
-		elm_ctxpopup_item_append(ctxpopup, PARALLEL_READING, NULL, ctxpopup_item_select_cb, ad);
-		preference_get_int("readmode", &readmode);
-		if (readmode == 0)
-			elm_ctxpopup_item_append(ctxpopup, DAY_MODE, NULL, ctxpopup_item_select_cb, ad);
-		else
-			elm_ctxpopup_item_append(ctxpopup, NIGHT_MODE, NULL, ctxpopup_item_select_cb, ad);
-		elm_ctxpopup_item_append(ctxpopup, FONT_SIZE, NULL, ctxpopup_item_select_cb, ad);
-	}
+	elm_ctxpopup_item_append(ctxpopup, SEARCH, NULL, ctxpopup_item_select_cb, ad);
+	elm_ctxpopup_item_append(ctxpopup, SHARE, NULL, ctxpopup_item_select_cb, ad);
+	elm_ctxpopup_item_append(ctxpopup, COPY, NULL, ctxpopup_item_select_cb, ad);
+	elm_ctxpopup_item_append(ctxpopup, NOTES, NULL, ctxpopup_item_select_cb, ad);
+	elm_ctxpopup_item_append(ctxpopup, BOOKMARKS, NULL, ctxpopup_item_select_cb, ad);
+	elm_ctxpopup_item_append(ctxpopup, SELECT_CHAPTER, NULL, ctxpopup_item_select_cb, ad);
+	elm_ctxpopup_item_append(ctxpopup, PARALLEL_READING, NULL, ctxpopup_item_select_cb, ad);
+	preference_get_int("readmode", &readmode);
+	if (readmode == 0)
+		ad->readmode_item = elm_ctxpopup_item_append(ctxpopup, DAY_MODE, NULL, ctxpopup_item_select_cb, ad);
+	else
+		ad->readmode_item = elm_ctxpopup_item_append(ctxpopup, NIGHT_MODE, NULL, ctxpopup_item_select_cb, ad);
+	elm_ctxpopup_item_append(ctxpopup, FONT_SIZE, NULL, ctxpopup_item_select_cb, ad);
 	elm_ctxpopup_item_append(ctxpopup, HELP, NULL, ctxpopup_item_select_cb, ad);
 	elm_ctxpopup_item_append(ctxpopup, ABOUT, NULL, ctxpopup_item_select_cb, ad);
 
 	elm_ctxpopup_direction_priority_set(ctxpopup, ELM_CTXPOPUP_DIRECTION_UP, ELM_CTXPOPUP_DIRECTION_UNKNOWN, ELM_CTXPOPUP_DIRECTION_UNKNOWN, ELM_CTXPOPUP_DIRECTION_UNKNOWN);
-	move_more_ctxpopup(ctxpopup, ctxpopup, NULL);
-	evas_object_show(ctxpopup);
 }
