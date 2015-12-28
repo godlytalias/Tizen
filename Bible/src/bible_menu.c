@@ -594,12 +594,12 @@ _font_size_changed(void *data, Evas_Object *obj, void *event_info)
 	elm_genlist_realized_items_update(ad->genlist);
 }
 
-static Eina_Bool
-_item_sel_idler(void *data)
+static void
+_item_selection(void *data, Evas_Object *obj, void *event_info)
 {
 	Elm_Object_Item *item = (Elm_Object_Item*)data;
 	elm_genlist_item_selected_set(item, EINA_TRUE);
-	return ECORE_CALLBACK_DONE;
+	return;
 }
 
 static void
@@ -1255,7 +1255,7 @@ ctxpopup_item_select_cb(void *data, Evas_Object *obj, void *event_info)
 	evas_object_show(popup);
 	evas_object_smart_callback_add(button, "clicked", _popup_del, popup);
 	eext_object_event_callback_add(popup, EEXT_CALLBACK_BACK, eext_popup_back_cb, NULL);
-	ecore_idler_add(_item_sel_idler, sel_item);
+	evas_object_smart_callback_add(popup, "show,finished", _item_selection, sel_item);
 	evas_object_hide(obj);
 }
 
