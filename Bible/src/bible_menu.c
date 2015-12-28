@@ -1263,7 +1263,35 @@ void
 show_ctxpopup_more_button_cb(void *data, Evas_Object *obj, void *event_info)
 {
 	appdata_s *ad = (appdata_s*)data;
+	int readmode = 1;
+
+	if (ad->share_copy_mode)
+	{
+		Evas_Object *win, *ctxpopup;
+		ctxpopup = elm_ctxpopup_add(ad->naviframe);
+		elm_ctxpopup_auto_hide_disabled_set(ctxpopup, EINA_TRUE);
+		elm_object_style_set(ctxpopup, "more/default");
+		evas_object_smart_callback_add(ctxpopup, "dismissed", _popup_del, ctxpopup);
+		eext_object_event_callback_add(ctxpopup, EEXT_CALLBACK_BACK, eext_ctxpopup_back_cb, NULL);
+		eext_object_event_callback_add(ctxpopup, EEXT_CALLBACK_MORE, eext_ctxpopup_back_cb, NULL);
+
+		win = elm_object_top_widget_get(ad->naviframe);
+		evas_object_smart_callback_add(win, "rotation,changed", move_more_ctxpopup, ctxpopup);
+		move_more_ctxpopup(ctxpopup, ctxpopup, NULL);
+
+		elm_ctxpopup_item_append(ctxpopup, HELP, NULL, ctxpopup_item_select_cb, ad);
+		elm_ctxpopup_item_append(ctxpopup, ABOUT, NULL, ctxpopup_item_select_cb, ad);
+
+		elm_ctxpopup_direction_priority_set(ctxpopup, ELM_CTXPOPUP_DIRECTION_UP, ELM_CTXPOPUP_DIRECTION_UNKNOWN, ELM_CTXPOPUP_DIRECTION_UNKNOWN, ELM_CTXPOPUP_DIRECTION_UNKNOWN);
+		evas_object_show(ctxpopup);
+		return;
+	}
 	move_more_ctxpopup(ad->menu_ctxpopup, ad->menu_ctxpopup, NULL);
+	preference_get_int("readmode", &readmode);
+	if (readmode == 0)
+		elm_object_item_text_set(ad->readmode_item, DAY_MODE);
+	else
+		elm_object_item_text_set(ad->readmode_item, NIGHT_MODE);
 	if (ad->menu_ctxpopup)
 		evas_object_show(ad->menu_ctxpopup);
 	else
@@ -1281,14 +1309,6 @@ hide_ctxpopup_more_button_cb(void *data, Evas_Object *obj, void *event_info)
 		evas_object_hide(ad->menu_ctxpopup);
 }
 
-static void
-dismiss_ctxpopup_more_button_cb(void *data, Evas_Object *obj, void *event_info)
-{
-	appdata_s *ad = (appdata_s*)data;
-	if (ad->menu_ctxpopup)
-		elm_ctxpopup_dismiss(ad->menu_ctxpopup);
-}
-
 void
 create_ctxpopup_more_menu(void *data)
 {
@@ -1302,28 +1322,25 @@ create_ctxpopup_more_menu(void *data)
 	ad->menu_ctxpopup = ctxpopup;
 	elm_ctxpopup_auto_hide_disabled_set(ctxpopup, EINA_TRUE);
 	elm_object_style_set(ctxpopup, "more/default");
-	eext_object_event_callback_add(ctxpopup, EEXT_CALLBACK_BACK, dismiss_ctxpopup_more_button_cb, ad);
-	eext_object_event_callback_add(ctxpopup, EEXT_CALLBACK_MORE, dismiss_ctxpopup_more_button_cb, ad);
+	eext_object_event_callback_add(ctxpopup, EEXT_CALLBACK_BACK, eext_ctxpopup_back_cb, NULL);
+	eext_object_event_callback_add(ctxpopup, EEXT_CALLBACK_MORE, eext_ctxpopup_back_cb, NULL);
 
 	win = elm_object_top_widget_get(ad->naviframe);
 	evas_object_smart_callback_add(win, "rotation,changed", move_more_ctxpopup, ctxpopup);
 
-	if (!ad->share_copy_mode)
-	{
-		elm_ctxpopup_item_append(ctxpopup, SEARCH, NULL, ctxpopup_item_select_cb, ad);
-		elm_ctxpopup_item_append(ctxpopup, SHARE, NULL, ctxpopup_item_select_cb, ad);
-		elm_ctxpopup_item_append(ctxpopup, COPY, NULL, ctxpopup_item_select_cb, ad);
-		elm_ctxpopup_item_append(ctxpopup, NOTES, NULL, ctxpopup_item_select_cb, ad);
-		elm_ctxpopup_item_append(ctxpopup, BOOKMARKS, NULL, ctxpopup_item_select_cb, ad);
-		elm_ctxpopup_item_append(ctxpopup, SELECT_CHAPTER, NULL, ctxpopup_item_select_cb, ad);
-		elm_ctxpopup_item_append(ctxpopup, PARALLEL_READING, NULL, ctxpopup_item_select_cb, ad);
-		preference_get_int("readmode", &readmode);
-		if (readmode == 0)
-			elm_ctxpopup_item_append(ctxpopup, DAY_MODE, NULL, ctxpopup_item_select_cb, ad);
-		else
-			elm_ctxpopup_item_append(ctxpopup, NIGHT_MODE, NULL, ctxpopup_item_select_cb, ad);
-		elm_ctxpopup_item_append(ctxpopup, FONT_SIZE, NULL, ctxpopup_item_select_cb, ad);
-	}
+	elm_ctxpopup_item_append(ctxpopup, SEARCH, NULL, ctxpopup_item_select_cb, ad);
+	elm_ctxpopup_item_append(ctxpopup, SHARE, NULL, ctxpopup_item_select_cb, ad);
+	elm_ctxpopup_item_append(ctxpopup, COPY, NULL, ctxpopup_item_select_cb, ad);
+	elm_ctxpopup_item_append(ctxpopup, NOTES, NULL, ctxpopup_item_select_cb, ad);
+	elm_ctxpopup_item_append(ctxpopup, BOOKMARKS, NULL, ctxpopup_item_select_cb, ad);
+	elm_ctxpopup_item_append(ctxpopup, SELECT_CHAPTER, NULL, ctxpopup_item_select_cb, ad);
+	elm_ctxpopup_item_append(ctxpopup, PARALLEL_READING, NULL, ctxpopup_item_select_cb, ad);
+	preference_get_int("readmode", &readmode);
+	if (readmode == 0)
+		ad->readmode_item = elm_ctxpopup_item_append(ctxpopup, DAY_MODE, NULL, ctxpopup_item_select_cb, ad);
+	else
+		ad->readmode_item = elm_ctxpopup_item_append(ctxpopup, NIGHT_MODE, NULL, ctxpopup_item_select_cb, ad);
+	elm_ctxpopup_item_append(ctxpopup, FONT_SIZE, NULL, ctxpopup_item_select_cb, ad);
 	elm_ctxpopup_item_append(ctxpopup, HELP, NULL, ctxpopup_item_select_cb, ad);
 	elm_ctxpopup_item_append(ctxpopup, ABOUT, NULL, ctxpopup_item_select_cb, ad);
 

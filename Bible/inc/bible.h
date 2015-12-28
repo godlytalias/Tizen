@@ -42,6 +42,7 @@ typedef struct appdata{
 	Elm_Genlist_Item_Class *itc, *search_itc, *bookmarks_itc;
 	Evas_Coord mouse_x, mouse_y;
 	Eina_Bool share_copy_mode:1;
+	Elm_Object_Item *readmode_item;
 	uint mouse_down_time;
 	int search_from, search_to;
 	int count, versecount, chaptercount;
