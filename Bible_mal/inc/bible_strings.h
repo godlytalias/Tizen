@@ -57,7 +57,7 @@
 #define SHARE_VERSE "വാക്യം പങ്കിടുക"
 #define COPY_VERSE "വാക്യം പകർത്തുക"
 #define COPYRIGHT "Copyright © 2015 Godly T Alias"
-#define VERSION "GTA v0.4"
+#define VERSION "GTA v0.5"
 #define TITLE "സത്യവേദപുസ്തകം"
 #define LOADING_DATABASE "ഡാറ്റാബേസ് ലോഡ് ചെയ്യുന്നു..."
 #define RATE_APP "വിലയിരുത്തുക"
