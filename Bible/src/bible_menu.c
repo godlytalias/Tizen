@@ -86,6 +86,7 @@ _install_apps_cb(void *data, Evas_Object *obj, void *event_info)
 	app_control_h app_control;
 	app_control_create(&app_control);
 	app_control_set_operation(app_control, APP_CONTROL_OPERATION_VIEW);
+	app_control_set_app_id(app_control, "org.tizen.tizenstore");
 	app_control_set_uri(app_control, "tizenstore://SellerDetail/df2ezocp72");
 	app_control_set_launch_mode(app_control, APP_CONTROL_LAUNCH_MODE_GROUP);
 	app_control_send_launch_request(app_control, NULL, NULL);
