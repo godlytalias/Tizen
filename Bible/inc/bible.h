@@ -29,6 +29,7 @@
 #endif /* __bible_H__ */
 
 typedef struct _bible_verse_item bible_verse_item;
+typedef struct app_struct_list app_struct;
 
 typedef struct appdata{
 	Evas_Object* win;
@@ -50,20 +51,16 @@ typedef struct appdata{
 	int nxt_chapter, nxt_book;
 	char edj_path[PATH_MAX];
 	char *parallel_db_path;
+	struct app_struct_list *app_list_head, *app_list_tail;
 } appdata_s;
 
-#define GTA_APP_COUNT 4
 #define PARALLEL_READING_SUPPORT_VERSION 0.5
 
-const static char *app_list[] = {
-								"English", "Hindi", "Malayalam", "Telugu"
-								};
-const static char *app_id[] = {
-								"org.tizen.gta_holy_bible",
-								"org.tizen.gtaholybiblehindi",
-								"org.tizen.gtaholybiblemal",
-								"org.tizen.gtaholybibletelugu"
-							  };
+typedef struct app_struct_list {
+	char *app_name;
+	char *app_id;
+	struct app_struct_list *app_next;
+}app_struct;
 
 const static char *Books[] = {
 						"Genesis", "Exodus", "Leviticus", "Numbers", "Deuteronomy", "Joshua",

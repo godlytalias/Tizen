@@ -728,6 +728,8 @@ app_create(void *data)
 	ad->cur_chapter = 1;
 	ad->count = 0;
 	ad->menu_ctxpopup = NULL;
+	ad->app_list_head = NULL;
+	ad->app_list_tail = NULL;
 
 	create_base_gui(ad);
 
@@ -759,6 +761,19 @@ app_terminate(void *data)
 	appdata_s *ad = (appdata_s*)data;
 	if (ad->parallel_db_path) free(ad->parallel_db_path);
 	_save_appdata(data);
+	if (ad->app_list_head)
+	{
+		app_struct *temp;
+		temp = ad->app_list_head;
+		while(temp)
+		{
+			free(temp->app_id);
+			free(temp->app_name);
+			temp = temp->app_next;
+			free(ad->app_list_head);
+			ad->app_list_head = temp;
+		}
+	}
 	if (ad->menu_ctxpopup) evas_object_del(ad->menu_ctxpopup);
 }
 

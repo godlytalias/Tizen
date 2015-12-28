@@ -133,20 +133,13 @@ _parallel_content_get_cb(void *data, Evas_Object *obj, const char *part)
 }
 
 static void
-_parallel_del_cb(void *data, Evas_Object *obj)
-{
-   int *id = (int*)data;
-   free(id);
-}
-
-static void
 _parallel_gl_selected_cb(void *data, Evas_Object *obj, void *event_info)
 {
 	package_info_h pkg_info;
 	Elm_Object_Item *item = (Elm_Object_Item*)event_info;
 	char *db_path = NULL;
 	char *temp_path = NULL;
-	int *id = (int*)elm_object_item_data_get(item);
+	app_struct *app_det = (app_struct*)elm_object_item_data_get(item);
 	appdata_s *ad = (appdata_s*)evas_object_data_get(obj, "appdata");
 	Evas_Object *check = elm_object_item_part_content_get(item, "elm.swallow.end");
 	elm_check_state_set(check, EINA_TRUE);
@@ -156,10 +149,10 @@ _parallel_gl_selected_cb(void *data, Evas_Object *obj, void *event_info)
 	   strcpy(temp_path, ad->parallel_db_path);
 	}
 	preference_set_boolean("parallel", true);
-	preference_set_string("parallel_app_id", app_id[*id]);
+	preference_set_string("parallel_app_id", app_det->app_id);
 	if (ad->parallel_db_path) free(ad->parallel_db_path);
 	ad->parallel_db_path = NULL;
-	if (package_manager_get_package_info(app_id[*id], &pkg_info) != PACKAGE_MANAGER_ERROR_NONE)
+	if (package_manager_get_package_info(app_det->app_id, &pkg_info) != PACKAGE_MANAGER_ERROR_NONE)
 	{
 		if (db_path) free(db_path);
 		if (temp_path) free(temp_path);
@@ -191,8 +184,8 @@ _parallel_gl_unselected_cb(void *data, Evas_Object *obj, void *event_info)
 static char*
 _parallel_text_get_cb(void *data, Evas_Object *obj, const char *part)
 {
-	int id = *((int*)data);
-	const char *text = app_list[id];
+	app_struct *app_det = (app_struct*)data;
+	const char *text = app_det->app_name;
 	if (strcmp(part, "elm.text") == 0)
 	   return strdup(text);
 	else return NULL;
@@ -610,6 +603,62 @@ _set_default_cb(void *data, Evas_Object *obj, void *event_info)
 	elm_slider_value_set(slider, 25);
 	evas_object_smart_callback_call(slider, "changed", NULL);
 	evas_object_smart_callback_call(slider, "slider,drag,stop", NULL);
+}
+
+static bool
+_check_package(package_info_h pkg_info, void *data)
+{
+	char *package;
+	char *app_id;
+	appdata_s *ad = (appdata_s*)data;
+	app_struct *app_det;
+	app_get_id(&app_id);
+	package_info_get_package(pkg_info, &package);
+	if ((strncmp(package, "org.tizen.gtaholybible", 22) == 0) ||
+		(strcmp(package, "org.tizen.gta_holy_bible") == 0))
+	{
+		package_manager_compare_result_type_e comp_result;
+		package_manager_compare_app_cert_info(app_id, package, &comp_result);
+		if ((strcmp(package, app_id) != 0) &&
+			(comp_result == PACKAGE_MANAGER_COMPARE_MATCH))
+		{
+			app_det = (app_struct*)malloc(sizeof(app_struct));
+			app_det->app_id = (char*)malloc(sizeof(char) * (strlen(package) + 1));
+			strcpy(app_det->app_id, package);
+			app_det->app_name = (char*)malloc(sizeof(char) * 32);
+			if (strcmp(package, "org.tizen.gta_holy_bible") == 0)
+				strcpy(app_det->app_name, "English");
+			else
+			{
+				if (strncmp(package + 22, "mal", 3) == 0)
+					strcpy(app_det->app_name, "Malayalam");
+				else
+				{
+					strcpy(app_det->app_name, package + 22);
+					app_det->app_name[0] = toupper(app_det->app_name[0]);
+				}
+			}
+			app_det->app_next = NULL;
+			if (!ad->app_list_head)
+				ad->app_list_head = app_det;
+			if (ad->app_list_tail)
+			{
+				ad->app_list_tail->app_next = app_det;
+			}
+			ad->app_list_tail = app_det;
+		}
+	}
+	free(package);
+	free(app_id);
+	return true;
+}
+
+static void
+_populate_parallel_app_list(appdata_s *ad)
+{
+	package_manager_h pkg_manager;
+	package_manager_create(&pkg_manager);
+	package_manager_foreach_package_info(_check_package, ad);
 }
 
 static void
@@ -1167,7 +1216,7 @@ ctxpopup_item_select_cb(void *data, Evas_Object *obj, void *event_info)
 	else if (!strcmp(title_label, PARALLEL_READING))
 	{
 		bool parallel = false;
-		int i;
+		app_struct *app_det;
 		char *cur_app_id = NULL;
 		Elm_Object_Item *item;
 		char *cur_para_app_id = NULL;
@@ -1175,6 +1224,8 @@ ctxpopup_item_select_cb(void *data, Evas_Object *obj, void *event_info)
 		preference_get_string("parallel_app_id", &cur_para_app_id);
 		package_info_h pkg_info;
 
+		if (!ad->app_list_head)
+			_populate_parallel_app_list(ad);
 		Evas_Object *pl_genlist = elm_genlist_add(popup);
 		elm_genlist_highlight_mode_set(pl_genlist, EINA_FALSE);
 		elm_genlist_select_mode_set(pl_genlist, ELM_OBJECT_SELECT_MODE_ALWAYS);
@@ -1187,15 +1238,14 @@ ctxpopup_item_select_cb(void *data, Evas_Object *obj, void *event_info)
 		pl_itc->item_style = "default";
 		pl_itc->func.text_get = _parallel_text_get_cb;
 		pl_itc->func.content_get = _parallel_content_get_cb;
-		pl_itc->func.del = _parallel_del_cb;
+		pl_itc->func.del = NULL;
 		app_get_id(&cur_app_id);
-		for (i=0; i < GTA_APP_COUNT; i++)
+		if (ad->app_list_head)
 		{
-			if (strcmp(cur_app_id, app_list[i]) != 0)
+			app_det = ad->app_list_head;
+			while (app_det)
 			{
-				if (strcmp(cur_app_id, app_id[i]) == 0)
-					continue;
-				if (package_manager_get_package_info(app_id[i], &pkg_info) != PACKAGE_MANAGER_ERROR_NONE)
+				if (package_manager_get_package_info(app_det->app_id, &pkg_info) != PACKAGE_MANAGER_ERROR_NONE)
 					continue;
 				char *version = NULL;
 				char version_copy[8];
@@ -1214,12 +1264,11 @@ ctxpopup_item_select_cb(void *data, Evas_Object *obj, void *event_info)
 					continue;
 				}
 				package_info_destroy(pkg_info);
-				int *id = (int*)malloc(sizeof(int));
-				*id = i;
-				item = elm_genlist_item_append(pl_genlist, pl_itc, id, NULL, ELM_GENLIST_ITEM_NONE, NULL, NULL);
-				elm_object_item_data_set(item, id);
-				if (cur_para_app_id && (strcmp(cur_para_app_id, app_id[i]) == 0))
+				item = elm_genlist_item_append(pl_genlist, pl_itc, app_det, NULL, ELM_GENLIST_ITEM_NONE, NULL, NULL);
+				elm_object_item_data_set(item, app_det);
+				if (cur_para_app_id && (strcmp(cur_para_app_id, app_det->app_id) == 0))
 					sel_item = item;
+				app_det = app_det->app_next;
 			}
 		}
 		elm_genlist_item_class_free(pl_itc);
