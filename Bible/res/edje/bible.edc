@@ -1220,7 +1220,6 @@ collections {
             type: RECT;
             description { state: "default" 0.0;
                min: 480 64;
-               fixed: 1 0;
                color: 0 0 0 0;
             }
             description { state: "night_mode" 0.0;
@@ -1233,7 +1232,6 @@ collections {
             scale: 1;
             description { state: "default" 0.0;
                min: 480 0;
-               fixed: 1 0;
                rel1.to: "base";
                rel2.to: "base";
                color: 200 0 0 0;
@@ -1272,7 +1270,6 @@ collections {
             type: TEXTBLOCK;
             description { state: "default" 0.0;
                min: 416 0;
-               fixed: 1 0;
                text.style: "main_verse_style";
                rel1.to: "left_top_padding";
                rel1.relative: 1.0 1.0;
@@ -1453,7 +1450,6 @@ collections {
             type: TEXTBLOCK;
             description { state: "default" 0.0;
                min: 200 0;
-               fixed: 1 0;
                text.style: "main_verse_style";
                rel1.to: "left_top_padding";
                rel1.relative: 1.0 1.0;
@@ -1496,7 +1492,6 @@ collections {
             type: TEXTBLOCK;
             description { state: "default" 0.0;
                min: 200 0;
-               fixed: 1 0;
                text.style: "main_verse_style";
                rel1.to_x: "elm.verse.padding";
                rel1.to_y: "left_top_padding";
