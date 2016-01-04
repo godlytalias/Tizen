@@ -113,6 +113,7 @@ _toggle_parallel_reading(void *data, Evas_Object *obj, void *event_info)
 	   elm_object_disabled_set(pl_genlist, EINA_TRUE);
 	   ad->parallel_db_path = NULL;
 	   elm_object_text_set(obj, ON);
+	   _query_chapter(ad, ad->cur_book, ad->cur_chapter);
    }
 }
 
