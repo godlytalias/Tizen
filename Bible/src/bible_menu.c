@@ -672,7 +672,7 @@ ctxpopup_item_select_cb(void *data, Evas_Object *obj, void *event_info)
 	if (!strcmp(title_label, SEARCH))
 	{
 		_search_word(ad, NULL, NULL);
-		evas_object_hide(obj);
+		elm_ctxpopup_dismiss(obj);
 		return;
 	}
 
@@ -680,7 +680,7 @@ ctxpopup_item_select_cb(void *data, Evas_Object *obj, void *event_info)
 	{
 		_change_read_mode(ad, EINA_FALSE);
 		preference_set_int("readmode", 1);
-		evas_object_hide(obj);
+		elm_ctxpopup_dismiss(obj);
 		return;
 	}
 
@@ -688,7 +688,7 @@ ctxpopup_item_select_cb(void *data, Evas_Object *obj, void *event_info)
 	{
 		_change_read_mode(ad, EINA_TRUE);
 		preference_set_int("readmode", 0);
-		evas_object_hide(obj);
+		elm_ctxpopup_dismiss(obj);
 		return;
 	}
 
@@ -696,7 +696,7 @@ ctxpopup_item_select_cb(void *data, Evas_Object *obj, void *event_info)
 	{
 		nf_it = elm_naviframe_item_push(ad->naviframe, BOOKMARKS, NULL, NULL, _get_bookmarks(ad), NULL);
 		elm_naviframe_item_pop_cb_set(nf_it, naviframe_pop_cb, ad);
-		evas_object_hide(obj);
+		elm_ctxpopup_dismiss(obj);
 		return;
 	}
 
@@ -704,13 +704,13 @@ ctxpopup_item_select_cb(void *data, Evas_Object *obj, void *event_info)
 	{
 		nf_it = elm_naviframe_item_push(ad->naviframe, NOTES, NULL, NULL, _get_notes(ad), NULL);
 		elm_naviframe_item_pop_cb_set(nf_it, naviframe_pop_cb, ad);
-		evas_object_hide(obj);
+		elm_ctxpopup_dismiss(obj);
 		return;
 	}
 
 	if (!strcmp(title_label, SHARE))
 	{
-		evas_object_hide(obj);
+		elm_ctxpopup_dismiss(obj);
 		_change_read_mode(ad, EINA_FALSE);
 		_share_verse_cb(ad);
 		return;
@@ -718,7 +718,7 @@ ctxpopup_item_select_cb(void *data, Evas_Object *obj, void *event_info)
 
 	if (!strcmp(title_label, COPY))
 	{
-		evas_object_hide(obj);
+		elm_ctxpopup_dismiss(obj);
 		_change_read_mode(ad, EINA_FALSE);
 		_copy_verse_cb(ad);
 		return;
@@ -727,7 +727,7 @@ ctxpopup_item_select_cb(void *data, Evas_Object *obj, void *event_info)
 	if (!strcmp(title_label, SELECT_CHAPTER))
 	{
 		_change_book(data, ad->layout, NULL, NULL);
-		evas_object_hide(obj);
+		elm_ctxpopup_dismiss(obj);
 		return;
 	}
 
@@ -1305,7 +1305,7 @@ ctxpopup_item_select_cb(void *data, Evas_Object *obj, void *event_info)
 	evas_object_smart_callback_add(button, "clicked", _popup_del, popup);
 	eext_object_event_callback_add(popup, EEXT_CALLBACK_BACK, eext_popup_back_cb, NULL);
 	evas_object_smart_callback_add(popup, "show,finished", _item_selection, sel_item);
-	evas_object_hide(obj);
+	elm_ctxpopup_dismiss(obj);
 }
 
 void
@@ -1355,7 +1355,7 @@ hide_ctxpopup_more_button_cb(void *data, Evas_Object *obj, void *event_info)
 {
 	appdata_s *ad = (appdata_s*)data;
 	if (ad->menu_ctxpopup)
-		evas_object_hide(ad->menu_ctxpopup);
+		elm_ctxpopup_dismiss(ad->menu_ctxpopup);
 }
 
 void
