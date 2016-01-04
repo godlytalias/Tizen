@@ -103,6 +103,8 @@ _toggle_parallel_reading(void *data, Evas_Object *obj, void *event_info)
 	   preference_set_boolean("parallel", true);
 	   elm_object_disabled_set(pl_genlist, EINA_FALSE);
 	   elm_object_text_set(obj, OFF);
+	   if (elm_genlist_items_count(pl_genlist) == 1)
+		   elm_genlist_item_selected_set(elm_genlist_first_item_get(pl_genlist), EINA_TRUE);
    }
    else
    {
@@ -1305,7 +1307,8 @@ ctxpopup_item_select_cb(void *data, Evas_Object *obj, void *event_info)
 	evas_object_show(popup);
 	evas_object_smart_callback_add(button, "clicked", _popup_del, popup);
 	eext_object_event_callback_add(popup, EEXT_CALLBACK_BACK, eext_popup_back_cb, NULL);
-	evas_object_smart_callback_add(popup, "show,finished", _item_selection, sel_item);
+	if (sel_item)
+	  evas_object_smart_callback_add(popup, "show,finished", _item_selection, sel_item);
 	elm_ctxpopup_dismiss(obj);
 }
 
