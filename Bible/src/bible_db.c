@@ -306,6 +306,13 @@ _query_chapter(void *data, int book, int chapter)
         	sprintf(query, "select %s from %s where Book=%d and Chapter=%d", BIBLE_VERSE_COLUMN, BIBLE_TABLE_NAME, book, chapter);
     }
     _database_query(query, &_get_verse_list, data);
+    if (elm_genlist_items_count(ad->genlist) == 0)
+    {
+    	preference_set_boolean("parallel", false);
+		preference_remove("parallel_app_id");
+    	_query_chapter(ad, ad->cur_book, ad->cur_chapter);
+    	return;
+    }
 	_check_bookmarks(ad);
 	_check_notes(ad);
 
