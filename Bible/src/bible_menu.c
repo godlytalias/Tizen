@@ -1235,6 +1235,7 @@ ctxpopup_item_select_cb(void *data, Evas_Object *obj, void *event_info)
 		preference_get_string("parallel_app_id", &cur_para_app_id);
 		package_info_h pkg_info;
 
+		Evas_Object *loading_popup = _loading_progress_show(ad->naviframe);
 		if (!ad->app_list_head)
 			_populate_parallel_app_list(ad);
 		Evas_Object *pl_genlist = elm_genlist_add(popup);
@@ -1312,6 +1313,7 @@ ctxpopup_item_select_cb(void *data, Evas_Object *obj, void *event_info)
 			elm_object_text_set(popup, GTA_APP_INSTALL_WARNING);
 			evas_object_smart_callback_add(button_def, "clicked", _install_apps_cb, pl_genlist);
 		}
+		_loading_progress_hide(loading_popup);
 	}
 	Evas_Object *button = elm_button_add(popup);
 	elm_object_text_set(button, CLOSE);
