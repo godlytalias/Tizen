@@ -306,10 +306,17 @@ _query_chapter(void *data, int book, int chapter)
         	sprintf(query, "select %s from %s where Book=%d and Chapter=%d", BIBLE_VERSE_COLUMN, BIBLE_TABLE_NAME, book, chapter);
     }
     _database_query(query, &_get_verse_list, data);
-    if (elm_genlist_items_count(ad->genlist) == 0)
+    if (parallel && elm_genlist_items_count(ad->genlist) == 0)
     {
     	preference_set_boolean("parallel", false);
 		preference_remove("parallel_app_id");
+    	Evas_Object *toast = elm_popup_add(ad->naviframe);
+    	elm_object_style_set(toast, "toast");
+    	elm_popup_timeout_set(toast, 3.0);
+    	elm_popup_allow_events_set(toast, EINA_TRUE);
+    	evas_object_smart_callback_add(toast, "timeout", _popup_del, toast);
+    	elm_object_text_set(toast, PARALLEL_READING_FAILED);
+    	evas_object_show(toast);
     	_query_chapter(ad, ad->cur_book, ad->cur_chapter);
     	return;
     }

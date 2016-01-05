@@ -159,6 +159,13 @@ _parallel_gl_selected_cb(void *data, Evas_Object *obj, void *event_info)
 	{
 		if (db_path) free(db_path);
 		if (temp_path) free(temp_path);
+    	Evas_Object *toast = elm_popup_add(ad->naviframe);
+    	elm_object_style_set(toast, "toast");
+    	elm_popup_timeout_set(toast, 3.0);
+    	elm_popup_allow_events_set(toast, EINA_TRUE);
+    	evas_object_smart_callback_add(toast, "timeout", _popup_del, toast);
+    	elm_object_text_set(toast, PARALLEL_READING_FAILED);
+    	evas_object_show(toast);
 		return;
 	}
 	package_info_get_root_path(pkg_info, &db_path);
@@ -672,6 +679,7 @@ ctxpopup_item_select_cb(void *data, Evas_Object *obj, void *event_info)
 	Elm_Object_Item *nf_it, *sel_item = NULL;
 	appdata_s *ad = (appdata_s*)data;
 
+	evas_object_freeze_events_set(obj, EINA_TRUE);
 	if (!strcmp(title_label, SEARCH))
 	{
 		_search_word(ad, NULL, NULL);
@@ -1249,7 +1257,10 @@ ctxpopup_item_select_cb(void *data, Evas_Object *obj, void *event_info)
 			while (app_det)
 			{
 				if (package_manager_get_package_info(app_det->app_id, &pkg_info) != PACKAGE_MANAGER_ERROR_NONE)
+				{
+					app_det = app_det->app_next;
 					continue;
+				}
 				char *version = NULL;
 				char version_copy[8];
 				if (package_info_get_version(pkg_info, &version) == PACKAGE_MANAGER_ERROR_NONE)
@@ -1258,12 +1269,14 @@ ctxpopup_item_select_cb(void *data, Evas_Object *obj, void *event_info)
 					if (atof(version_copy) < PARALLEL_READING_SUPPORT_VERSION)
 					{
 						package_info_destroy(pkg_info);
+						app_det = app_det->app_next;
 						continue;
 					}
 				}
 				else
 				{
 					package_info_destroy(pkg_info);
+					app_det = app_det->app_next;
 					continue;
 				}
 				package_info_destroy(pkg_info);
@@ -1346,7 +1359,10 @@ show_ctxpopup_more_button_cb(void *data, Evas_Object *obj, void *event_info)
 	else
 		elm_object_item_text_set(ad->readmode_item, NIGHT_MODE);
 	if (ad->menu_ctxpopup)
+	{
+		evas_object_freeze_events_set(ad->menu_ctxpopup, EINA_FALSE);
 		evas_object_show(ad->menu_ctxpopup);
+	}
 	else
 	{
 		create_ctxpopup_more_menu(ad);
