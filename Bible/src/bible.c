@@ -538,7 +538,7 @@ _load_chapter(void *data)
 	appdata_s *ad = (appdata_s*)data;
 	_query_chapter(data, ad->cur_book, ad->cur_chapter);
 	_get_chapter_count_query(data, ad->cur_book);
-	ecore_timer_add(0.02, _progress_show, ad);
+	ecore_timer_add(0.03, _progress_show, ad);
 	return ECORE_CALLBACK_CANCEL;
 }
 
