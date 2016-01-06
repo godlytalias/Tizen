@@ -1364,14 +1364,19 @@ show_ctxpopup_more_button_cb(void *data, Evas_Object *obj, void *event_info)
 	{
 		evas_object_freeze_events_set(ad->menu_ctxpopup, EINA_FALSE);
 		evas_object_show(ad->menu_ctxpopup);
-		Elm_Object_Item *temp = elm_ctxpopup_item_append(ad->menu_ctxpopup, NULL, NULL, NULL, NULL);
-		elm_object_item_del(temp);
 	}
 	else
 	{
 		create_ctxpopup_more_menu(ad);
 		evas_object_show(ad->menu_ctxpopup);
 	}
+}
+
+static void
+_menu_popup_focus_cb(void *data, Evas_Object *obj, void *event_info)
+{
+	Elm_Object_Item *temp = elm_ctxpopup_item_append(obj, NULL, NULL, NULL, NULL);
+	elm_object_item_del(temp);
 }
 
 void
@@ -1397,6 +1402,7 @@ create_ctxpopup_more_menu(void *data)
 	elm_object_style_set(ctxpopup, "more/default");
 	eext_object_event_callback_add(ctxpopup, EEXT_CALLBACK_BACK, eext_ctxpopup_back_cb, NULL);
 	eext_object_event_callback_add(ctxpopup, EEXT_CALLBACK_MORE, eext_ctxpopup_back_cb, NULL);
+	evas_object_smart_callback_add(ctxpopup, "focused", _menu_popup_focus_cb, NULL);
 
 	win = elm_object_top_widget_get(ad->naviframe);
 	evas_object_smart_callback_add(win, "rotation,changed", move_more_ctxpopup, ctxpopup);
