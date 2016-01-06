@@ -680,7 +680,6 @@ collections {
         program { name: "loading_done";
            signal: "elm,holy_bible,loading,done";
            source: "elm";
-           in: 1.0 0.0;
            transition: LINEAR 0.3;
            action: STATE_SET "loaded" 0.0;
            target: "base";

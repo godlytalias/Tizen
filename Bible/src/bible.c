@@ -515,12 +515,30 @@ gl_del_cb(void *data, Evas_Object *obj)
 }
 
 static Eina_Bool
+_progress_show(void *data)
+{
+	appdata_s *ad = (appdata_s*)data;
+	Evas_Object *obj = (Evas_Object*)evas_object_data_get(ad->layout, "progressbar");
+	double val = elm_progressbar_value_get(obj);
+	if (val == 1.0)
+	{
+		elm_layout_signal_emit(ad->layout, "elm,holy_bible,loading,done", "elm");
+		return ECORE_CALLBACK_CANCEL;
+	}
+	else
+	{
+		elm_progressbar_value_set(obj, val + 0.02);
+		return ECORE_CALLBACK_RENEW;
+	}
+}
+
+static Eina_Bool
 _load_chapter(void *data)
 {
 	appdata_s *ad = (appdata_s*)data;
 	_query_chapter(data, ad->cur_book, ad->cur_chapter);
 	_get_chapter_count_query(data, ad->cur_book);
-	elm_layout_signal_emit(ad->layout, "elm,holy_bible,loading,done", "elm");
+	ecore_timer_add(0.02, _progress_show, ad);
 	return ECORE_CALLBACK_CANCEL;
 }
 
@@ -543,11 +561,11 @@ _home_screen(appdata_s *ad)
 	elm_object_part_text_set(ad->layout, "elm.text.apptitle", TITLE);
 	elm_object_part_text_set(ad->layout, "elm.text.loading", LOADING_DATABASE);
 	Evas_Object *progressbar = elm_progressbar_add(ad->layout);
-	elm_object_style_set(progressbar, "pending");
+	elm_progressbar_value_set(progressbar, 0.0);
+	evas_object_data_set(ad->layout, "progressbar", progressbar);
 	elm_progressbar_horizontal_set(progressbar, EINA_TRUE);
 	evas_object_size_hint_align_set(progressbar, EVAS_HINT_FILL, EVAS_HINT_FILL);
 	evas_object_size_hint_weight_set(progressbar, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
-	elm_progressbar_pulse(progressbar, EINA_TRUE);
 	elm_object_part_content_set(ad->layout, "elm.swallow.progressbar", progressbar);
 
 	Evas_Object *cancel_btn = elm_button_add(ad->naviframe);
