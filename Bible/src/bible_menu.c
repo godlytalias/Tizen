@@ -1364,8 +1364,6 @@ show_ctxpopup_more_button_cb(void *data, Evas_Object *obj, void *event_info)
 	{
 		evas_object_freeze_events_set(ad->menu_ctxpopup, EINA_FALSE);
 		evas_object_show(ad->menu_ctxpopup);
-		Elm_Object_Item *temp = elm_ctxpopup_item_append(ad->menu_ctxpopup, NULL, NULL, NULL, NULL);
-		elm_object_item_del(temp);
 	}
 	else
 	{
