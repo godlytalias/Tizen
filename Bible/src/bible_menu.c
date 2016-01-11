@@ -679,6 +679,7 @@ _populate_parallel_app_list(appdata_s *ad)
 	package_manager_h pkg_manager;
 	package_manager_create(&pkg_manager);
 	package_manager_foreach_package_info(_check_package, ad);
+	package_manager_destroy(pkg_manager);
 }
 
 static void
