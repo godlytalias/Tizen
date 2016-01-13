@@ -14,10 +14,11 @@ static void
 _ctxpopup_dismiss_cb(void *data, Evas_Object *obj, void *event_info)
 {
 	appdata_s *ad = (appdata_s*)data;
-	elm_object_item_del(ad->readmode_item);
-	elm_object_item_del(ad->fontsize_item);
-	elm_object_item_del(ad->help_item);
-	elm_object_item_del(ad->about_item);
+	elm_ctxpopup_clear(ad->menu_ctxpopup);
+	evas_object_hide(ad->menu_ctxpopup);
+	evas_object_del(ad->menu_ctxpopup);
+	ad->menu_ctxpopup = NULL;
+	create_ctxpopup_more_menu(ad);
 }
 
 static void
@@ -1399,18 +1400,15 @@ show_ctxpopup_more_button_cb(void *data, Evas_Object *obj, void *event_info)
 		evas_object_show(ctxpopup);
 		return;
 	}
-	move_more_ctxpopup(ad->menu_ctxpopup, ad->menu_ctxpopup, NULL);
 	if (ad->menu_ctxpopup)
 	{
+		move_more_ctxpopup(ad->menu_ctxpopup, ad->menu_ctxpopup, NULL);
 		evas_object_freeze_events_set(ad->menu_ctxpopup, EINA_FALSE);
 		preference_get_int("readmode", &readmode);
 		if (readmode == 0)
-			ad->readmode_item = elm_ctxpopup_item_append(ad->menu_ctxpopup, DAY_MODE, NULL, ctxpopup_item_select_cb, ad);
+			elm_object_item_text_set(ad->readmode_item, DAY_MODE);
 		else
-			ad->readmode_item = elm_ctxpopup_item_append(ad->menu_ctxpopup, NIGHT_MODE, NULL, ctxpopup_item_select_cb, ad);
-		ad->fontsize_item = elm_ctxpopup_item_append(ad->menu_ctxpopup, FONT_SIZE, NULL, ctxpopup_item_select_cb, ad);
-		ad->help_item = elm_ctxpopup_item_append(ad->menu_ctxpopup, HELP, NULL, ctxpopup_item_select_cb, ad);
-		ad->about_item = elm_ctxpopup_item_append(ad->menu_ctxpopup, ABOUT, NULL, ctxpopup_item_select_cb, ad);
+			elm_object_item_text_set(ad->readmode_item, NIGHT_MODE);
 		evas_object_show(ad->menu_ctxpopup);
 	}
 	else
@@ -1454,6 +1452,10 @@ create_ctxpopup_more_menu(void *data)
 	elm_ctxpopup_item_append(ctxpopup, BOOKMARKS, NULL, ctxpopup_item_select_cb, ad);
 	elm_ctxpopup_item_append(ctxpopup, SELECT_CHAPTER, NULL, ctxpopup_item_select_cb, ad);
 	elm_ctxpopup_item_append(ctxpopup, PARALLEL_READING, NULL, ctxpopup_item_select_cb, ad);
+	ad->readmode_item = elm_ctxpopup_item_append(ctxpopup, DAY_MODE, NULL, ctxpopup_item_select_cb, ad);
+	elm_ctxpopup_item_append(ctxpopup, FONT_SIZE, NULL, ctxpopup_item_select_cb, ad);
+	elm_ctxpopup_item_append(ctxpopup, HELP, NULL, ctxpopup_item_select_cb, ad);
+	elm_ctxpopup_item_append(ctxpopup, ABOUT, NULL, ctxpopup_item_select_cb, ad);
 
 	elm_ctxpopup_direction_priority_set(ctxpopup, ELM_CTXPOPUP_DIRECTION_UP, ELM_CTXPOPUP_DIRECTION_UNKNOWN, ELM_CTXPOPUP_DIRECTION_UNKNOWN, ELM_CTXPOPUP_DIRECTION_UNKNOWN);
 }
