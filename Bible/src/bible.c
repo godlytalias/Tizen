@@ -791,7 +791,11 @@ app_terminate(void *data)
 			ad->app_list_head = temp;
 		}
 	}
-	if (ad->menu_ctxpopup) evas_object_del(ad->menu_ctxpopup);
+	if (ad->menu_ctxpopup)
+	{
+		elm_ctxpopup_clear(ad->menu_ctxpopup);
+		evas_object_del(ad->menu_ctxpopup);
+	}
 }
 
 static void
