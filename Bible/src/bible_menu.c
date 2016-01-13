@@ -1327,6 +1327,7 @@ ctxpopup_item_select_cb(void *data, Evas_Object *obj, void *event_info)
 					continue;
 				}
 				package_info_destroy(pkg_info);
+				free(version);
 				item = elm_genlist_item_append(pl_genlist, pl_itc, app_det, NULL, ELM_GENLIST_ITEM_NONE, NULL, NULL);
 				elm_object_item_data_set(item, app_det);
 				if (cur_para_app_id && (strcmp(cur_para_app_id, app_det->app_id) == 0))
