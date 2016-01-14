@@ -238,6 +238,7 @@ _get_bookmarks_list(void *data, int argc, char **argv, char **azColName)
 		verse_item->verse = strdup(argv[3]);
 	}
 
+	verse_item->verse_s = NULL;
 	verse_item->it = elm_genlist_item_append(ad->bookmarks_notes_genlist, ad->bookmarks_itc, verse_item, NULL, ELM_GENLIST_ITEM_NONE, NULL, NULL);
 	elm_object_item_data_set(verse_item->it, verse_item);
 
