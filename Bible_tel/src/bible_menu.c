@@ -18,7 +18,6 @@ _ctxpopup_dismiss_cb(void *data, Evas_Object *obj, void *event_info)
 	evas_object_hide(ad->menu_ctxpopup);
 	evas_object_del(ad->menu_ctxpopup);
 	ad->menu_ctxpopup = NULL;
-	create_ctxpopup_more_menu(ad);
 }
 
 static void
@@ -26,7 +25,7 @@ _rate_app_cb(void *data, Evas_Object *obj, void *event_info)
 {
 	_popup_del(data, obj, event_info);
 
-	char *app_id = (char*)malloc(sizeof(char) * 32);
+	char *app_id = NULL;
 	char app_url[128];
 	app_get_id(&app_id);
 	sprintf(app_url, "tizenstore://ProductDetail/%s", app_id);
@@ -46,8 +45,8 @@ _report_cb(void *data, Evas_Object *obj, void *event_info)
 {
 	_popup_del(data, obj, event_info);
 
-	char *app_name = (char*)malloc(sizeof(char) * 32);
-	char *app_version = (char*)malloc(sizeof(char) * 32);
+	char *app_name = NULL;
+	char *app_version = NULL;
 	char app_details[128];
 	app_get_name(&app_name);
 	app_get_version(&app_version);
@@ -98,7 +97,7 @@ _install_apps_cb(void *data, Evas_Object *obj, void *event_info)
 	app_control_create(&app_control);
 	app_control_set_operation(app_control, APP_CONTROL_OPERATION_VIEW);
 	app_control_set_app_id(app_control, "org.tizen.tizenstore");
-	app_control_set_uri(app_control, "tizenstore://SellerDetail/df2ezocp72");
+	app_control_set_uri(app_control, "tizenstore://SellerApps/df2ezocp72");
 	app_control_set_launch_mode(app_control, APP_CONTROL_LAUNCH_MODE_GROUP);
 	app_control_send_launch_request(app_control, NULL, NULL);
 	app_control_destroy(app_control);
@@ -238,6 +237,7 @@ _get_bookmarks_list(void *data, int argc, char **argv, char **azColName)
 		verse_item->verse = strdup(argv[3]);
 	}
 
+	verse_item->verse_s = NULL;
 	verse_item->it = elm_genlist_item_append(ad->bookmarks_notes_genlist, ad->bookmarks_itc, verse_item, NULL, ELM_GENLIST_ITEM_NONE, NULL, NULL);
 	elm_object_item_data_set(verse_item->it, verse_item);
 
@@ -1415,6 +1415,12 @@ show_ctxpopup_more_button_cb(void *data, Evas_Object *obj, void *event_info)
 	else
 	{
 		create_ctxpopup_more_menu(ad);
+		preference_get_int("readmode", &readmode);
+		if (readmode == 0)
+			elm_object_item_text_set(ad->readmode_item, DAY_MODE);
+		else
+			elm_object_item_text_set(ad->readmode_item, NIGHT_MODE);
+		move_more_ctxpopup(ad->menu_ctxpopup, ad->menu_ctxpopup, NULL);
 		evas_object_show(ad->menu_ctxpopup);
 	}
 }
