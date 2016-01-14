@@ -454,7 +454,7 @@ gl_longpressed_cb(void *data, Evas_Object *obj, void *event_info)
 	elm_genlist_item_selected_set(it, EINA_FALSE);
 	Evas_Object *verse_popup = elm_ctxpopup_add(ad->naviframe);
 	elm_ctxpopup_auto_hide_disabled_set(verse_popup, EINA_TRUE);
-    elm_object_style_set(verse_popup, "more/default");
+	elm_ctxpopup_hover_parent_set(verse_popup, ad->genlist);
     evas_object_data_set(ad->genlist, "verse_popup", verse_popup);
     if (!verse_item->bookmark)
     	elm_ctxpopup_item_append(verse_popup, BOOKMARK_VERSE, NULL, _bookmark_verse_cb, verse_item);
@@ -467,10 +467,9 @@ gl_longpressed_cb(void *data, Evas_Object *obj, void *event_info)
 	elm_ctxpopup_item_append(verse_popup, SHARE_VERSE, NULL, _share_verse_item_cb, verse_item);
 	elm_ctxpopup_item_append(verse_popup, COPY_VERSE, NULL, _copy_verse_item_cb, verse_item);
 	evas_object_smart_callback_add(verse_popup, "dismissed", _popup_del, verse_popup);
-	evas_object_smart_callback_add(ad->win, "rotation,changed", move_more_ctxpopup, verse_popup);
 	eext_object_event_callback_add(verse_popup, EEXT_CALLBACK_BACK, eext_ctxpopup_back_cb, verse_popup);
 	eext_object_event_callback_add(verse_popup, EEXT_CALLBACK_MORE, eext_ctxpopup_back_cb, verse_popup);
-	move_more_ctxpopup(verse_popup, NULL, NULL);
+	evas_object_move(verse_popup, ad->mouse_x, ad->mouse_y);
 	evas_object_show(verse_popup);
 }
 
@@ -534,12 +533,30 @@ gl_del_cb(void *data, Evas_Object *obj)
 }
 
 static Eina_Bool
+_progress_show(void *data)
+{
+	appdata_s *ad = (appdata_s*)data;
+	Evas_Object *obj = (Evas_Object*)evas_object_data_get(ad->layout, "progressbar");
+	double val = elm_progressbar_value_get(obj);
+	if (val == 1.0)
+	{
+		elm_layout_signal_emit(ad->layout, "elm,holy_bible,loading,done", "elm");
+		return ECORE_CALLBACK_CANCEL;
+	}
+	else
+	{
+		elm_progressbar_value_set(obj, val + 0.02);
+		return ECORE_CALLBACK_RENEW;
+	}
+}
+
+static Eina_Bool
 _load_chapter(void *data)
 {
 	appdata_s *ad = (appdata_s*)data;
 	_query_chapter(data, ad->cur_book, ad->cur_chapter);
 	_get_chapter_count_query(data, ad->cur_book);
-	elm_layout_signal_emit(ad->layout, "elm,holy_bible,loading,done", "elm");
+	ecore_timer_add(0.03, _progress_show, ad);
 	return ECORE_CALLBACK_CANCEL;
 }
 
@@ -562,11 +579,11 @@ _home_screen(appdata_s *ad)
 	elm_object_part_text_set(ad->layout, "elm.text.apptitle", TITLE);
 	elm_object_part_text_set(ad->layout, "elm.text.loading", LOADING_DATABASE);
 	Evas_Object *progressbar = elm_progressbar_add(ad->layout);
-	elm_object_style_set(progressbar, "pending");
+	elm_progressbar_value_set(progressbar, 0.0);
+	evas_object_data_set(ad->layout, "progressbar", progressbar);
 	elm_progressbar_horizontal_set(progressbar, EINA_TRUE);
 	evas_object_size_hint_align_set(progressbar, EVAS_HINT_FILL, EVAS_HINT_FILL);
 	evas_object_size_hint_weight_set(progressbar, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
-	elm_progressbar_pulse(progressbar, EINA_TRUE);
 	elm_object_part_content_set(ad->layout, "elm.swallow.progressbar", progressbar);
 
 	Evas_Object *cancel_btn = elm_button_add(ad->naviframe);
@@ -794,7 +811,11 @@ app_terminate(void *data)
 			ad->app_list_head = temp;
 		}
 	}
-	if (ad->menu_ctxpopup) evas_object_del(ad->menu_ctxpopup);
+	if (ad->menu_ctxpopup)
+	{
+		elm_ctxpopup_clear(ad->menu_ctxpopup);
+		evas_object_del(ad->menu_ctxpopup);
+	}
 }
 
 static void
