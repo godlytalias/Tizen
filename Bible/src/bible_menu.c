@@ -18,7 +18,6 @@ _ctxpopup_dismiss_cb(void *data, Evas_Object *obj, void *event_info)
 	evas_object_hide(ad->menu_ctxpopup);
 	evas_object_del(ad->menu_ctxpopup);
 	ad->menu_ctxpopup = NULL;
-	create_ctxpopup_more_menu(ad);
 }
 
 static void
@@ -1416,6 +1415,12 @@ show_ctxpopup_more_button_cb(void *data, Evas_Object *obj, void *event_info)
 	else
 	{
 		create_ctxpopup_more_menu(ad);
+		preference_get_int("readmode", &readmode);
+		if (readmode == 0)
+			elm_object_item_text_set(ad->readmode_item, DAY_MODE);
+		else
+			elm_object_item_text_set(ad->readmode_item, NIGHT_MODE);
+		move_more_ctxpopup(ad->menu_ctxpopup, ad->menu_ctxpopup, NULL);
 		evas_object_show(ad->menu_ctxpopup);
 	}
 }
