@@ -680,7 +680,6 @@ collections {
         program { name: "loading_done";
            signal: "elm,holy_bible,loading,done";
            source: "elm";
-           in: 1.0 0.0;
            transition: LINEAR 0.3;
            action: STATE_SET "loaded" 0.0;
            target: "base";
@@ -740,8 +739,8 @@ collections {
             type: TEXTBLOCK;
             scale: 1;
             description { state: "default" 0.0;
-               text.style: "main_verse_style";
-               min: 320 60;
+               text.style: "note_style";
+               min: 340 60;
                fixed: 1 1;
                rel1.to: "elm.padding.left_top";
                rel1.relative: 1.0 1.0;
@@ -752,7 +751,7 @@ collections {
             }
             description { state: "night_mode" 0.0;
                inherit: "default" 0.0;
-               text.style: "main_verse_style_night_mode";
+               text.style: "note_style_night_mode";
             }
          }
          part { name: "elm.swallow.check";
@@ -1220,7 +1219,6 @@ collections {
             type: RECT;
             description { state: "default" 0.0;
                min: 480 64;
-               fixed: 1 0;
                color: 0 0 0 0;
             }
             description { state: "night_mode" 0.0;
@@ -1233,7 +1231,6 @@ collections {
             scale: 1;
             description { state: "default" 0.0;
                min: 480 0;
-               fixed: 1 0;
                rel1.to: "base";
                rel2.to: "base";
                color: 200 0 0 0;
@@ -1272,7 +1269,6 @@ collections {
             type: TEXTBLOCK;
             description { state: "default" 0.0;
                min: 416 0;
-               fixed: 1 0;
                text.style: "main_verse_style";
                rel1.to: "left_top_padding";
                rel1.relative: 1.0 1.0;
@@ -1453,7 +1449,6 @@ collections {
             type: TEXTBLOCK;
             description { state: "default" 0.0;
                min: 200 0;
-               fixed: 1 0;
                text.style: "main_verse_style";
                rel1.to: "left_top_padding";
                rel1.relative: 1.0 1.0;
@@ -1496,7 +1491,6 @@ collections {
             type: TEXTBLOCK;
             description { state: "default" 0.0;
                min: 200 0;
-               fixed: 1 0;
                text.style: "main_verse_style";
                rel1.to_x: "elm.verse.padding";
                rel1.to_y: "left_top_padding";

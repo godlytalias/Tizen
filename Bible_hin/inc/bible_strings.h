@@ -9,6 +9,7 @@
 #define YES "हाँ"
 #define OK "ठीक"
 #define GO_TO "से जाओ"
+#define GO "चल"
 #define SAVE "सहेजें"
 #define DELETE "हटाऐँ"
 #define EDIT "संपादित"
@@ -67,4 +68,4 @@
 #define ON "सक्षम करें"
 #define OFF "अक्षम करें"
 #define GTA_APP_INSTALL_WARNING "किसी भी जीटीए बाइबिल एप्लिकेशन नहीं मिल सका।स्टोर से डाउनलोड करें ।"
-
+#define PARALLEL_READING_FAILED "विफल! आवश्यक आप्लीकेशन स्थापित करें!."
