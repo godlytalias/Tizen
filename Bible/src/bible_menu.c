@@ -26,7 +26,7 @@ _rate_app_cb(void *data, Evas_Object *obj, void *event_info)
 {
 	_popup_del(data, obj, event_info);
 
-	char *app_id = (char*)malloc(sizeof(char) * 32);
+	char *app_id = NULL;
 	char app_url[128];
 	app_get_id(&app_id);
 	sprintf(app_url, "tizenstore://ProductDetail/%s", app_id);
@@ -46,8 +46,8 @@ _report_cb(void *data, Evas_Object *obj, void *event_info)
 {
 	_popup_del(data, obj, event_info);
 
-	char *app_name = (char*)malloc(sizeof(char) * 32);
-	char *app_version = (char*)malloc(sizeof(char) * 32);
+	char *app_name = NULL;
+	char *app_version = NULL;
 	char app_details[128];
 	app_get_name(&app_name);
 	app_get_version(&app_version);
