@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<manifest xmlns="http://tizen.org/ns/packages" api-version="2.4" package="org.tizen.gtaholybibletelugu" version="0.5.0">
+<manifest xmlns="http://tizen.org/ns/packages" api-version="2.4" package="org.tizen.gtaholybibletelugu" version="0.5.1">
     <author email="godlytalias@yahoo.co.in" href="godlytalias.blogspot.com">Godly T Alias</author>
     <description>This is a free Bible application based in Telugu language released with GPL license.</description>
     <profile name="mobile"/>
     <ui-application appid="org.tizen.gtaholybibletelugu" exec="gtaholybibletelugu" multiple="false" nodisplay="false" taskmanage="true" type="capp">
-        <label>పవిత్ర బైబిల్</label>
+        <label>Telugu Bible</label>
         <icon>Bible.png</icon>
     </ui-application>
     <privileges>

@@ -10,6 +10,7 @@ _genlist_free_idler(void *data)
 	appdata_s *ad = (appdata_s*)data;
 	if (ad->search_result_genlist)
 		elm_genlist_clear(ad->search_result_genlist);
+	evas_object_del(ad->search_result_genlist);
 	ad->search_result_genlist = NULL;
 	if (ad->search_itc)
 		elm_genlist_item_class_free(ad->search_itc);
@@ -280,38 +281,26 @@ _search_keyword(void *data,
 		int t;
 		if (elm_check_state_get(ad->check_nt))
 		{
-			strcpy(book_list, "'");
-			strcat(book_list, Books[39]);
-			strcat(book_list, "'");
+			sprintf(book_list, "39");
 			for (t = 40; t < 66; t++)
 			{
-				strcat(book_list, ", '");
-				strcat(book_list, Books[t]);
-				strcat(book_list, "'");
+				sprintf(book_list, "%s, %d", book_list, t);
 			}
 		}
 		else if (elm_check_state_get(ad->check_ot))
 		{
-			strcpy(book_list, "'");
-			strcat(book_list, Books[0]);
-			strcat(book_list, "'");
+			sprintf(book_list, "0");
 			for (t = 1; t < 39; t++)
 			{
-				strcat(book_list, ", '");
-				strcat(book_list, Books[t]);
-				strcat(book_list, "'");
+				sprintf(book_list, "%s, %d", book_list, t);
 			}
 		}
 		else if (elm_check_state_get(ad->check_custom))
 		{
-			strcpy(book_list, "'");
-			strcat(book_list, Books[ad->search_from]);
-			strcat(book_list, "'");
+			sprintf(book_list, "%d", ad->search_from);
 			for (t = ad->search_from + 1; t <= ad->search_to; t++)
 			{
-				strcat(book_list, ", '");
-				strcat(book_list, Books[t]);
-				strcat(book_list, "'");
+				sprintf(book_list, "%s, %d", book_list, t);
 			}
 		}
 		sprintf(keyword_query, "%s AND Book in (%s)", keyword_query, book_list);
