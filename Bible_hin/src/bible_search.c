@@ -654,6 +654,11 @@ _panel_create(void *data)
 	elm_object_style_set(btn, "naviframe/drawers");
 	evas_object_smart_callback_add(btn, "clicked", panel_toggle, panel);
 	elm_object_item_part_content_set(elm_naviframe_top_item_get(ad->naviframe), "drawers", btn);
+
+	Evas_Object *menu_btn = elm_button_add(ad->naviframe);
+	elm_object_style_set(menu_btn, "naviframe/more/default");
+	evas_object_smart_callback_add(menu_btn, "clicked", panel_toggle, panel);
+	elm_object_item_part_content_set(elm_naviframe_top_item_get(ad->naviframe), "toolbar_more_btn", menu_btn);
 	return ECORE_CALLBACK_DONE;
 }
 
