@@ -69,3 +69,5 @@
 #define OFF "ഓഫ്"
 #define GTA_APP_INSTALL_WARNING "മറ്റു GTA ബൈബിൾ അപ്ലിക്കേഷനുകൾ കണ്ടെത്തിയില്ല. സ്റ്റോറിൽ നിന്നും അപ്ലിക്കേഷനുകൾ ഇൻസ്റ്റോൾ / അപ്ഡേറ്റ് ചെയ്യുക."
 #define PARALLEL_READING_FAILED "പരാജയപ്പെട്ടു ! ആവശ്യമായ ആപ്ലിക്കേഷൻ ഇൻസ്റ്റാൾ ചെയ്യുക."
+#define BIBLE_NAME_STRING "Malayalam Bible"
+#define LANGUAGE_SUPPORT_STRING "This application requires Malayalam language support!"

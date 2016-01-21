@@ -99,8 +99,8 @@ static void
 _show_warning_popup(appdata_s *ad)
 {
 	Evas_Object *popup = elm_popup_add(ad->win);
-	elm_object_part_text_set(popup, "title,text", "Malayalam Bible");
-	elm_object_text_set(popup, "This application requires Malayalam language support!");
+	elm_object_part_text_set(popup, "title,text", BIBLE_NAME_STRING);
+	elm_object_text_set(popup, LANGUAGE_SUPPORT_STRING);
 	Evas_Object *ok_btn = elm_button_add(popup);
 	elm_object_text_set(ok_btn, "GOT IT");
 	elm_popup_align_set(popup, ELM_NOTIFY_ALIGN_FILL, 1.0);

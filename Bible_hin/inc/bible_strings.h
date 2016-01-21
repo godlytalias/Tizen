@@ -69,3 +69,5 @@
 #define OFF "अक्षम करें"
 #define GTA_APP_INSTALL_WARNING "किसी भी जी.टी.ए बाइबिल एप्लिकेशन नहीं मिल सका।स्टोर से डाउनलोड करें ।"
 #define PARALLEL_READING_FAILED "विफल! आवश्यक आप्लीकेशन स्थापित करें!."
+#define BIBLE_NAME_STRING "Hindi Bible"
+#define LANGUAGE_SUPPORT_STRING "This application requires Hindi language support!"
