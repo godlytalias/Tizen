@@ -113,3 +113,4 @@ void _copy_verse_cb(appdata_s *);
 void _cancel_cb(void *, Evas_Object *, void *);
 void _app_no_memory(appdata_s *);
 void _change_read_mode(appdata_s *, Eina_Bool);
+void _search_genlist_free(appdata_s*);

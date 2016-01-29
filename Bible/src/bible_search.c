@@ -4,18 +4,13 @@
 
 static Eina_Bool _hoversel_item_add(void *data);
 
-static Eina_Bool
-_genlist_free_idler(void *data)
+void
+_search_genlist_free(appdata_s *ad)
 {
-	appdata_s *ad = (appdata_s*)data;
 	if (ad->search_result_genlist)
 		elm_genlist_clear(ad->search_result_genlist);
 	evas_object_del(ad->search_result_genlist);
 	ad->search_result_genlist = NULL;
-	if (ad->search_itc)
-		elm_genlist_item_class_free(ad->search_itc);
-	ad->search_itc = NULL;
-	return ECORE_CALLBACK_CANCEL;
 }
 
 static void
@@ -173,7 +168,6 @@ _get_search_results(void *data, int argc, char **argv, char **azColName)
 			   verse_item->verse = strdup(argv[i]);
 	   }
 	   verse_item->appdata = ad;
-
 	   gl_item = elm_genlist_item_append(ad->search_result_genlist, ad->search_itc, (void*)verse_item, NULL, ELM_GENLIST_ITEM_NONE, _search_result_selected, (void*)verse_item);
 	   elm_object_item_data_set(gl_item, verse_item);
 	   return 0;
@@ -183,28 +177,10 @@ static void
 _bible_search_query(char* search_query, appdata_s *ad)
 {
 	if (ad->search_result_genlist)
-		_genlist_free_idler(ad);
+		elm_genlist_clear(ad->search_result_genlist);
 	char toast[64];
 	int res_count = 0;
-	ad->search_result_genlist = elm_genlist_add(ad->naviframe);
-	elm_object_style_set(ad->search_result_genlist, "handler");
-	evas_object_size_hint_weight_set(ad->search_result_genlist, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
-	evas_object_size_hint_align_set(ad->search_result_genlist, EVAS_HINT_FILL, EVAS_HINT_FILL);
-	elm_genlist_select_mode_set(ad->search_result_genlist, ELM_OBJECT_SELECT_MODE_ALWAYS);
-	elm_genlist_homogeneous_set(ad->search_result_genlist, EINA_TRUE);
-	ad->search_itc = elm_genlist_item_class_new();
-	ad->search_itc->item_style = "full";
-	ad->search_itc->func.content_get = search_gl_content_get_cb;
-	ad->search_itc->func.text_get = NULL;
-	ad->search_itc->func.del = search_gl_del_cb;
 	_database_query(search_query, _get_search_results, ad);
-	elm_object_part_content_set(ad->search_layout, "elm.swallow.result", ad->search_result_genlist);
-	evas_object_smart_callback_add(ad->search_result_genlist, "drag,start,up", _down_arrow_show, ad);
-	evas_object_smart_callback_add(ad->search_result_genlist, "drag,start,down", _up_arrow_show, ad);
-	evas_object_smart_callback_add(ad->search_result_genlist, "longpressed", _gl_longpressed_cb, ad);
-	elm_layout_signal_callback_add(ad->search_layout, "elm,holy_bible,top", "elm", _go_top, ad);
-	elm_layout_signal_callback_add(ad->search_layout, "elm,holy_bible,bottom", "elm", _go_bottom, ad);
-	evas_object_show(ad->search_result_genlist);
 	res_count = elm_genlist_items_count(ad->search_result_genlist);
 	if (res_count > 0)
 		elm_layout_signal_emit(ad->search_layout, "elm,holy_bible,bg,hide", "elm");
@@ -307,6 +283,7 @@ _search_keyword(void *data,
 	}
 	sprintf(search_query, "SELECT Book, Chapter, Versecount, %s FROM %s WHERE %s;", BIBLE_VERSE_COLUMN, BIBLE_TABLE_NAME, keyword_query);
 	_bible_search_query(search_query, ad);
+	if (keyword) free(keyword);
 }
 
 static void
@@ -697,31 +674,31 @@ static Eina_Bool
 _search_navi_pop_cb(void *data, Elm_Object_Item *it)
 {
 	appdata_s *ad = (appdata_s*)data;
+	elm_object_item_content_unset(it);
+	evas_object_stack_below(ad->search_layout, ad->layout);
+	evas_object_hide(ad->search_layout);
 	Evas_Object *panel = (Evas_Object*)evas_object_data_get(ad->search_layout, "panel");
+	if (ad->search_itc)
+		elm_genlist_item_class_free(ad->search_itc);
+	ad->search_itc = NULL;
 	if (!elm_panel_hidden_get(panel))
 	{
 		panel_toggle(panel, panel, NULL);
 		return EINA_FALSE;
 	}
-	ecore_idler_add(_genlist_free_idler, data);
-	elm_layout_signal_callback_del(ad->search_layout, "elm,holy_bible,top", "elm", _go_top);
-	elm_layout_signal_callback_del(ad->search_layout, "elm,holy_bible,bottom", "elm", _go_bottom);
-	_loading_progress(ad->win);
 	return EINA_TRUE;
 }
 
 void
-_search_word(void *data,
-              Evas_Object *obj EINA_UNUSED,
-              void *event_info EINA_UNUSED)
+_search_layout_setup(appdata_s *ad)
 {
-	appdata_s *ad = (appdata_s*)data;
-	Elm_Object_Item *nf_it;
 	ad->search_layout = elm_layout_add(ad->win);
 	elm_layout_file_set(ad->search_layout, ad->edj_path, "search_layout");
 	evas_object_size_hint_align_set(ad->search_layout, EVAS_HINT_FILL, EVAS_HINT_FILL);
 	evas_object_size_hint_weight_set(ad->search_layout, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
 	evas_object_show(ad->search_layout);
+	evas_object_event_callback_add(ad->search_layout, EVAS_CALLBACK_MOUSE_DOWN, _content_mouse_down, ad);
+	evas_object_event_callback_add(ad->search_layout, EVAS_CALLBACK_MOUSE_UP, _content_mouse_up, ad);
 	ad->search_entry = elm_entry_add(ad->search_layout);
 	evas_object_size_hint_weight_set(ad->search_entry, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
 	evas_object_size_hint_align_set(ad->search_entry, EVAS_HINT_FILL, EVAS_HINT_FILL);
@@ -735,10 +712,37 @@ _search_word(void *data,
 	elm_object_text_set(go_btn, SEARCH);
 	evas_object_smart_callback_add(go_btn, "clicked", _search_keyword, (void*)ad);
 	evas_object_smart_callback_add(ad->search_entry, "activated", _search_keyword, (void*)ad);
-	evas_object_show(go_btn);
 	elm_object_part_content_set(ad->search_layout, "elm.swallow.go", go_btn);
-	evas_object_event_callback_add(ad->search_layout, EVAS_CALLBACK_MOUSE_DOWN, _content_mouse_down, ad);
-	evas_object_event_callback_add(ad->search_layout, EVAS_CALLBACK_MOUSE_UP, _content_mouse_up, ad);
+	evas_object_show(go_btn);
+	ad->search_result_genlist = elm_genlist_add(ad->naviframe);
+	elm_object_style_set(ad->search_result_genlist, "handler");
+	evas_object_size_hint_weight_set(ad->search_result_genlist, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
+	evas_object_size_hint_align_set(ad->search_result_genlist, EVAS_HINT_FILL, EVAS_HINT_FILL);
+	elm_genlist_select_mode_set(ad->search_result_genlist, ELM_OBJECT_SELECT_MODE_ALWAYS);
+	elm_genlist_homogeneous_set(ad->search_result_genlist, EINA_TRUE);
+	elm_object_part_content_set(ad->search_layout, "elm.swallow.result", ad->search_result_genlist);
+	evas_object_smart_callback_add(ad->search_result_genlist, "drag,start,up", _down_arrow_show, ad);
+	evas_object_smart_callback_add(ad->search_result_genlist, "drag,start,down", _up_arrow_show, ad);
+	evas_object_smart_callback_add(ad->search_result_genlist, "longpressed", _gl_longpressed_cb, ad);
+	elm_layout_signal_callback_add(ad->search_layout, "elm,holy_bible,top", "elm", _go_top, ad);
+	elm_layout_signal_callback_add(ad->search_layout, "elm,holy_bible,bottom", "elm", _go_bottom, ad);
+	evas_object_show(ad->search_result_genlist);
+}
+
+void
+_search_word(void *data,
+              Evas_Object *obj EINA_UNUSED,
+              void *event_info EINA_UNUSED)
+{
+	appdata_s *ad = (appdata_s*)data;
+	Elm_Object_Item *nf_it;
+	ad->search_itc = elm_genlist_item_class_new();
+	ad->search_itc->item_style = "full";
+	ad->search_itc->func.content_get = search_gl_content_get_cb;
+	ad->search_itc->func.text_get = NULL;
+	ad->search_itc->func.del = search_gl_del_cb;
+	if (!ad->search_layout)
+		_search_layout_setup(ad);
 	nf_it = elm_naviframe_item_push(ad->naviframe, SEARCH, NULL, NULL, ad->search_layout, "drawers");
 	elm_naviframe_item_pop_cb_set(nf_it, _search_navi_pop_cb, ad);
 	ecore_idler_add(_panel_create, ad);

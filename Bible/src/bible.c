@@ -747,6 +747,8 @@ app_create(void *data)
 	ad->menu_ctxpopup = NULL;
 	ad->app_list_head = NULL;
 	ad->app_list_tail = NULL;
+	ad->search_layout = NULL;
+	ad->search_result_genlist = NULL;
 
 	create_base_gui(ad);
 
@@ -791,6 +793,10 @@ app_terminate(void *data)
 			ad->app_list_head = temp;
 		}
 	}
+	if (ad->search_result_genlist)
+		_search_genlist_free(ad);
+	if (ad->search_layout)
+		evas_object_del(ad->search_layout);
 	if (ad->menu_ctxpopup)
 	{
 		elm_ctxpopup_clear(ad->menu_ctxpopup);
