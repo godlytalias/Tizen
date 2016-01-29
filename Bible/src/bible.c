@@ -618,6 +618,20 @@ _home_screen(appdata_s *ad)
 	return ad->layout;
 }
 
+static void
+_exit_toast_timeout(void *data, Evas_Object *obj, void *event_info)
+{
+	appdata_s *ad = (appdata_s*)data;
+	ad->exit_mode = EINA_FALSE;
+}
+
+static void
+_pop_naviframe(void *data, Evas_Object *obj, void *event_info)
+{
+	appdata_s *ad = (appdata_s*)data;
+	elm_naviframe_item_pop(ad->naviframe);
+}
+
 static Eina_Bool
 naviframe_pop_cb(void *data, Elm_Object_Item *it)
 {
@@ -627,15 +641,20 @@ naviframe_pop_cb(void *data, Elm_Object_Item *it)
 		_cancel_cb(data, NULL, NULL);
 		return EINA_FALSE;
 	}
-	Evas_Object *popup = _loading_progress_show(ad->win);
-	if (ad->genlist)
-		elm_genlist_clear(ad->genlist);
-	ad->genlist = NULL;
-	if (ad->itc)
-		elm_genlist_item_class_free(ad->itc);
-	ad->itc = NULL;
-	_loading_progress_hide(popup);
-	ui_app_exit();
+	if (!ad->exit_mode)
+	{
+		Evas_Object *exit_toast = elm_popup_add(ad->naviframe);
+		elm_object_style_set(exit_toast, "toast");
+		elm_object_text_set(exit_toast, PRESS_BACK_AGAIN_TO_EXIT);
+		elm_popup_allow_events_set(exit_toast, EINA_TRUE);
+		elm_popup_timeout_set(exit_toast, 2.0);
+		eext_object_event_callback_add(exit_toast, EEXT_CALLBACK_BACK, _pop_naviframe, ad);
+		evas_object_smart_callback_add(exit_toast, "timeout", _exit_toast_timeout, ad);
+		evas_object_show(exit_toast);
+		ad->exit_mode = EINA_TRUE;
+		return EINA_FALSE;
+	}
+	else return EINA_TRUE;//ui_app_exit();
 	return EINA_FALSE;
 }
 
@@ -744,6 +763,7 @@ app_create(void *data)
 	ad->cur_book = 0;
 	ad->cur_chapter = 1;
 	ad->count = 0;
+	ad->exit_mode = EINA_FALSE;
 	ad->menu_ctxpopup = NULL;
 	ad->app_list_head = NULL;
 	ad->app_list_tail = NULL;
@@ -802,6 +822,12 @@ app_terminate(void *data)
 		elm_ctxpopup_clear(ad->menu_ctxpopup);
 		evas_object_del(ad->menu_ctxpopup);
 	}
+	if (ad->genlist)
+		elm_genlist_clear(ad->genlist);
+	ad->genlist = NULL;
+	if (ad->itc)
+		elm_genlist_item_class_free(ad->itc);
+	ad->itc = NULL;
 }
 
 static void

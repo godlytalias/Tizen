@@ -671,12 +671,19 @@ _content_mouse_up(void *data,
 }
 
 static Eina_Bool
+_search_layout_hide_idler(void *data)
+{
+	appdata_s *ad = (appdata_s*)data;
+	evas_object_stack_below(ad->search_layout, ad->layout);
+	evas_object_hide(ad->search_layout);
+	return ECORE_CALLBACK_CANCEL;
+}
+
+static Eina_Bool
 _search_navi_pop_cb(void *data, Elm_Object_Item *it)
 {
 	appdata_s *ad = (appdata_s*)data;
 	elm_object_item_content_unset(it);
-	evas_object_stack_below(ad->search_layout, ad->layout);
-	evas_object_hide(ad->search_layout);
 	Evas_Object *panel = (Evas_Object*)evas_object_data_get(ad->search_layout, "panel");
 	if (ad->search_itc)
 		elm_genlist_item_class_free(ad->search_itc);
@@ -686,6 +693,7 @@ _search_navi_pop_cb(void *data, Elm_Object_Item *it)
 		panel_toggle(panel, panel, NULL);
 		return EINA_FALSE;
 	}
+	ecore_idler_add(_search_layout_hide_idler, ad);
 	return EINA_TRUE;
 }
 

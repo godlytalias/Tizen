@@ -69,3 +69,4 @@
 #define OFF "Off"
 #define GTA_APP_INSTALL_WARNING "No other GTA Bible applications above v0.5 is detected. Please install / update application from Tizen Store"
 #define PARALLEL_READING_FAILED "Parallel reading failed!. Please re-install the required application."
+#define PRESS_BACK_AGAIN_TO_EXIT "Press back again to exit!"
