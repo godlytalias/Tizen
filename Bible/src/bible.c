@@ -654,7 +654,7 @@ naviframe_pop_cb(void *data, Elm_Object_Item *it)
 		ad->exit_mode = EINA_TRUE;
 		return EINA_FALSE;
 	}
-	else return ui_app_exit();
+	else ui_app_exit();
 	return EINA_FALSE;
 }
 
