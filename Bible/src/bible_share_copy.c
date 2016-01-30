@@ -46,7 +46,7 @@ _prepare_verse_list(appdata_s *ad)
 		int last_verse;
 		sprintf(buf, "%s %d : ", Books[ad->cur_book], ad->cur_chapter);
 		Eina_Bool hyphen = EINA_FALSE;
-		Evas_Object *check = (Evas_Object*)evas_object_data_get(ad->genlist, "select_all_check");
+		Evas_Object *check = ad->select_all_check;
 
 		if ((sel_count == elm_genlist_items_count(ad->genlist)) && elm_check_state_get(check))
 			sprintf(buf, "%s1 - %d", buf, sel_count);

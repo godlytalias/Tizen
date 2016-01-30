@@ -1,6 +1,8 @@
 #include <tizen.h>
 #include "bible.h"
 
+static void _create_genlist(appdata_s*);
+
 static void
 win_delete_request_cb(void *data, Evas_Object *obj, void *event_info)
 {
@@ -151,25 +153,51 @@ _content_mouse_down(void *data,
 }
 
 static void
-_content_mouse_up(void *data,
-        Evas *evas EINA_UNUSED,
-        Evas_Object *obj,
-        void *event_info)
+_del_genlist(void *data, Elm_Transit *transit)
 {
-   appdata_s *ad = (appdata_s*)data;
-   if(ad->share_copy_mode) return;
+	Evas_Object *genlist = (Evas_Object*)data;
+	evas_object_del(genlist);
+}
 
-   int x_del, y_del;
-   Evas_Event_Mouse_Up *ev = (Evas_Event_Mouse_Up*)event_info;
-   if ((ev->timestamp - ad->mouse_down_time) > 1000) return;
-   x_del = ev->canvas.x - ad->mouse_x;
-   y_del = ev->canvas.y - ad->mouse_y;
-   if (abs(x_del) < (2 * abs(y_del))) return;
-   if (abs(x_del) < 100) return;
-   if (x_del < 0)
-	   _nxt_chapter(data, obj, NULL, NULL);
-   else
-	   _prev_chapter(data, obj, NULL, NULL);
+static void
+_content_mouse_up(void *data,
+		Evas *evas EINA_UNUSED,
+		Evas_Object *obj,
+		void *event_info)
+{
+	Evas_Coord w;
+	appdata_s *ad = (appdata_s*)data;
+	if(ad->share_copy_mode) return;
+
+	int x_del, y_del;
+	Evas_Event_Mouse_Up *ev = (Evas_Event_Mouse_Up*)event_info;
+	if ((ev->timestamp - ad->mouse_down_time) > 1000) return;
+	x_del = ev->canvas.x - ad->mouse_x;
+	y_del = ev->canvas.y - ad->mouse_y;
+	if (abs(x_del) < (2 * abs(y_del))) return;
+	if (abs(x_del) < 100) return;
+
+	evas_object_geometry_get(ad->genlist, NULL, NULL, &w, NULL);
+	ad->old_genlist = elm_object_part_content_unset(ad->layout, "elm.swallow.content");
+	evas_object_freeze_events_set(ad->old_genlist, EINA_TRUE);
+	_create_genlist(ad);
+	Elm_Transit *transit = elm_transit_add();
+	elm_transit_object_add(transit, ad->old_genlist);
+	elm_transit_tween_mode_set(transit, ELM_TRANSIT_TWEEN_MODE_DECELERATE);
+
+	if (x_del < 0)
+	{
+		_nxt_chapter(data, obj, NULL, NULL);
+		elm_transit_effect_translation_add(transit, 0, 0, -w, 0);
+	}
+	else
+	{
+		_prev_chapter(data, obj, NULL, NULL);
+		elm_transit_effect_translation_add(transit, 0, 0, w, 0);
+	}
+	elm_transit_duration_set(transit, 0.3);
+	elm_transit_del_cb_set(transit, _del_genlist, ad->old_genlist);
+	elm_transit_go(transit);
 }
 
 static void
@@ -541,6 +569,26 @@ _load_chapter(void *data)
 	return ECORE_CALLBACK_CANCEL;
 }
 
+static void
+_create_genlist(appdata_s *ad)
+{
+	ad->genlist = elm_genlist_add(ad->layout);
+	evas_object_size_hint_align_set(ad->genlist, EVAS_HINT_FILL, EVAS_HINT_FILL);
+	evas_object_size_hint_weight_set(ad->genlist, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
+	elm_object_part_content_set(ad->layout, "elm.swallow.content", ad->genlist);
+	elm_genlist_mode_set(ad->genlist, ELM_LIST_COMPRESS);
+	elm_genlist_homogeneous_set(ad->genlist, EINA_FALSE);
+	elm_genlist_multi_select_set(ad->genlist, EINA_TRUE);
+	evas_object_smart_callback_add(ad->genlist, "selected", gl_selected_cb, ad);
+	evas_object_smart_callback_add(ad->genlist, "unselected", gl_unselected_cb, ad);
+	evas_object_smart_callback_add(ad->genlist, "highlighted", gl_highlighted_cb, ad);
+	evas_object_smart_callback_add(ad->genlist, "unhighlighted", gl_unhighlighted_cb, ad);
+	evas_object_smart_callback_add(ad->genlist, "longpressed", gl_longpressed_cb, ad);
+	evas_object_smart_callback_add(ad->genlist, "clicked,double", gl_longpressed_cb, ad);
+    evas_object_event_callback_add(ad->genlist, EVAS_CALLBACK_MOUSE_DOWN, _content_mouse_down, ad);
+    evas_object_event_callback_add(ad->genlist, EVAS_CALLBACK_MOUSE_UP, _content_mouse_up, ad);
+}
+
 /*static*/ Evas_Object*
 _home_screen(appdata_s *ad)
 {
@@ -576,28 +624,6 @@ _home_screen(appdata_s *ad)
 	elm_object_style_set(done_btn, "naviframe/title_done");
 	elm_layout_content_set(ad->layout, "title_right_button", done_btn);
 
-	ad->itc = elm_genlist_item_class_new();
-	ad->itc->item_style = "full";
-	ad->itc->func.content_get = gl_content_get_cb;
-	ad->itc->func.text_get = NULL;
-	ad->itc->func.del = gl_del_cb;
-
-	ad->genlist = elm_genlist_add(ad->layout);
-	evas_object_size_hint_align_set(ad->genlist, EVAS_HINT_FILL, EVAS_HINT_FILL);
-	evas_object_size_hint_weight_set(ad->genlist, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
-	elm_object_part_content_set(ad->layout, "elm.swallow.content", ad->genlist);
-	elm_genlist_mode_set(ad->genlist, ELM_LIST_COMPRESS);
-	elm_genlist_homogeneous_set(ad->genlist, EINA_FALSE);
-	elm_genlist_multi_select_set(ad->genlist, EINA_TRUE);
-	evas_object_smart_callback_add(ad->genlist, "selected", gl_selected_cb, ad);
-	evas_object_smart_callback_add(ad->genlist, "unselected", gl_unselected_cb, ad);
-	evas_object_smart_callback_add(ad->genlist, "highlighted", gl_highlighted_cb, ad);
-	evas_object_smart_callback_add(ad->genlist, "unhighlighted", gl_unhighlighted_cb, ad);
-	evas_object_smart_callback_add(ad->genlist, "longpressed", gl_longpressed_cb, ad);
-	evas_object_smart_callback_add(ad->genlist, "clicked,double", gl_longpressed_cb, ad);
-    evas_object_event_callback_add(ad->genlist, EVAS_CALLBACK_MOUSE_DOWN, _content_mouse_down, ad);
-    evas_object_event_callback_add(ad->genlist, EVAS_CALLBACK_MOUSE_UP, _content_mouse_up, ad);
-
     Evas_Object *layout = elm_layout_add(ad->layout);
     elm_layout_file_set(layout, ad->edj_path, "select_all_layout");
 	evas_object_size_hint_align_set(layout, EVAS_HINT_FILL, EVAS_HINT_FILL);
@@ -607,10 +633,17 @@ _home_screen(appdata_s *ad)
 	elm_layout_content_set(layout, "elm.swallow.check", check);
 	elm_layout_content_set(ad->layout, "elm.select.all", layout);
 	evas_object_data_set(check, "appdata", ad);
-	evas_object_data_set(ad->genlist, "select_all_check", check);
 	elm_layout_signal_callback_add(ad->layout, "elm,holy_bible,share_copy,on", "elm", _reset_select_check, check);
 	elm_layout_signal_callback_add(layout, "elm,holy_bible,select_all", "elm", _select_all_verses, check);
+	ad->select_all_check = check;
 
+	ad->itc = elm_genlist_item_class_new();
+	ad->itc->item_style = "full";
+	ad->itc->func.content_get = gl_content_get_cb;
+	ad->itc->func.text_get = NULL;
+	ad->itc->func.del = gl_del_cb;
+
+	_create_genlist(ad);
 	_load_appdata(ad);
 	ecore_idler_add(_load_chapter, ad);
 

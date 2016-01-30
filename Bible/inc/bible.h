@@ -34,8 +34,8 @@ typedef struct app_struct_list app_struct;
 typedef struct appdata{
 	Evas_Object* win;
 	Evas_Object* layout, *search_layout, *bookmark_note_layout;
-	Evas_Object* label, *naviframe;
-	Evas_Object* genlist, *search_result_genlist, *bookmarks_notes_genlist;
+	Evas_Object* label, *naviframe, *select_all_check;
+	Evas_Object* genlist, *old_genlist, *search_result_genlist, *bookmarks_notes_genlist;
 	Evas_Object *list1, *list2, *search_entry, *note_entry;
 	Evas_Object *check_entire, *check_ot, *check_nt, *check_custom, *check_strict, *check_whole;
 	Evas_Object *from_dropdown, *to_dropdown;
