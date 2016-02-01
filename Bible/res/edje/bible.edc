@@ -580,23 +580,33 @@ collections {
               set_int(click_mod, get_int(click_mod)+1);
            }
         }
-        program { name: "next_chap_signal";
-           action: SIGNAL_EMIT "elm,holy_bible,next,chapter" "elm";
+        program { name: "next_down";
+           signal: "mouse,down,*";
+           source: "nxt_btn";
+           action: SIGNAL_EMIT "elm,holy_bible,next,down" "elm";
         }
-        program { name: "next_chap";
-           signal: "mouse,clicked,*";
+        program { name: "prev_down";
+           signal: "mouse,down,*";
+           source: "prev_btn";
+           action: SIGNAL_EMIT "elm,holy_bible,prev,down" "elm";
+        }
+        program { name: "next_signal_up";
+           action: SIGNAL_EMIT "elm,holy_bible,next,up" "elm";
+        }
+        program { name: "next_up";
+           signal: "mouse,up,*";
            source: "nxt_btn";
            action: RUN_PLUGIN "touch_sound";
-           after: "next_chap_signal";
+           after: "next_signal_up";
         }
-        program { name: "prev_chap_signal";
-           action: SIGNAL_EMIT "elm,holy_bible,prev,chapter" "elm";
+        program { name: "prev_signal_up";
+           action: SIGNAL_EMIT "elm,holy_bible,prev,up" "elm";
         }
-        program { name: "prev_chap";
-           signal: "mouse,clicked,*";
+        program { name: "prev_up";
+           signal: "mouse,up,*";
            source: "prev_btn";
            action: RUN_PLUGIN "touch_sound";
-           after: "prev_chap_signal";
+           after: "prev_signal_up";
         }
         program { name: "arrow_unhighlight_day";
            transition: LINEAR 0.3;

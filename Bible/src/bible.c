@@ -54,10 +54,34 @@ _get_prev_chapter(void *data)
 	return ECORE_CALLBACK_CANCEL;
 }
 
+static Eina_Bool
+_get_prev_book(void *data)
+{
+	appdata_s *ad = (appdata_s*)data;
+	Evas_Object *popup = _loading_progress_show(ad->win);
+
+	if (ad->cur_book == 0) {
+		_get_chapter_count_query(data, 65);
+		_query_chapter(data, 65, 1);
+	}
+	else {
+		_get_chapter_count_query(data, ad->cur_book - 1);
+		_query_chapter(data, ad->cur_book - 1, 1);
+	}
+	_loading_progress_hide(popup);
+	return ECORE_CALLBACK_CANCEL;
+}
+
 static void
 _prev_chapter(void *data, Evas_Object *obj, const char *emission, const char *source)
 {
 	ecore_idle_enterer_add(_get_prev_chapter, data);
+}
+
+static void
+_prev_book(void *data, Evas_Object *obj, const char *emission, const char *source)
+{
+	ecore_idle_enterer_add(_get_prev_book, data);
 }
 
 void _show_verse(void *data, int verse)
@@ -91,10 +115,102 @@ _get_nxt_chapter(void *data)
 	return ECORE_CALLBACK_CANCEL;
 }
 
+static Eina_Bool
+_get_nxt_book(void *data)
+{
+	appdata_s *ad = (appdata_s*)data;
+	Evas_Object *popup = _loading_progress_show(ad->win);
+
+	if (ad->cur_book == 65) {
+		_get_chapter_count_query(data, 0);
+		_query_chapter(data, 0, 1);
+	}
+	else {
+		_get_chapter_count_query(data, ad->cur_book + 1);
+		_query_chapter(data, ad->cur_book + 1, 1);
+	}
+	_loading_progress_hide(popup);
+	return ECORE_CALLBACK_CANCEL;
+}
+
+static Eina_Bool
+_longpress_cb(void *data)
+{
+	appdata_s *ad = (appdata_s*)data;
+	ad->long_pressed = EINA_TRUE;
+	if (ad->long_press_mode == 0)
+		elm_layout_signal_emit(ad->layout, "elm,holy_bible,prev,book", "elm");
+	else
+		elm_layout_signal_emit(ad->layout, "elm,holy_bible,next,book", "elm");
+	return ECORE_CALLBACK_RENEW;
+}
+
 static void
 _nxt_chapter(void *data, Evas_Object *obj, const char *emission, const char *source)
 {
 	ecore_idle_enterer_add(_get_nxt_chapter, data);
+}
+
+static void
+_nxt_book(void *data, Evas_Object *obj, const char *emission, const char *source)
+{
+	ecore_idle_enterer_add(_get_nxt_book, data);
+}
+
+static void
+_nxt_up(void *data, Evas_Object *obj, const char *emission, const char *source)
+{
+	appdata_s *ad = (appdata_s*)data;
+	if (ad->long_timer)
+	{
+		ecore_timer_del(ad->long_timer);
+		ad->long_timer = NULL;
+	}
+	if (!ad->long_pressed)
+		elm_layout_signal_emit(ad->layout, "elm,holy_bible,next,chapter", "elm");
+	ad->long_pressed = EINA_FALSE;
+}
+
+static void
+_nxt_down(void *data, Evas_Object *obj, const char *emission, const char *source)
+{
+	appdata_s *ad = (appdata_s*)data;
+	ad->long_pressed = EINA_FALSE;
+	ad->long_press_mode = 1;
+	if (ad->long_timer)
+	{
+		ecore_timer_del(ad->long_timer);
+		ad->long_timer = NULL;
+	}
+	ad->long_timer = ecore_timer_add(LONGPRESS_TIMEOUT, _longpress_cb, data);
+}
+
+static void
+_prev_up(void *data, Evas_Object *obj, const char *emission, const char *source)
+{
+	appdata_s *ad = (appdata_s*)data;
+	if (ad->long_timer)
+	{
+		ecore_timer_del(ad->long_timer);
+		ad->long_timer = NULL;
+	}
+	if (!ad->long_pressed)
+		elm_layout_signal_emit(ad->layout, "elm,holy_bible,prev,chapter", "elm");
+	ad->long_pressed = EINA_FALSE;
+}
+
+static void
+_prev_down(void *data, Evas_Object *obj, const char *emission, const char *source)
+{
+	appdata_s *ad = (appdata_s*)data;
+	ad->long_pressed = EINA_FALSE;
+	ad->long_press_mode = 0;
+	if (ad->long_timer)
+	{
+		ecore_timer_del(ad->long_timer);
+		ad->long_timer = NULL;
+	}
+	ad->long_timer = ecore_timer_add(LONGPRESS_TIMEOUT, _longpress_cb, data);
 }
 
 static void
@@ -599,8 +715,14 @@ _home_screen(appdata_s *ad)
 	evas_object_show(ad->layout);
 	elm_win_resize_object_add(ad->win, ad->layout);
 	elm_layout_signal_callback_add(ad->layout, "elm,holy_bible,book,change", "elm", _change_book, (void*)ad);
+	elm_layout_signal_callback_add(ad->layout, "elm,holy_bible,next,up", "elm", _nxt_up, (void*)ad);
+	elm_layout_signal_callback_add(ad->layout, "elm,holy_bible,prev,up", "elm", _prev_up, (void*)ad);
+	elm_layout_signal_callback_add(ad->layout, "elm,holy_bible,next,down", "elm", _nxt_down, (void*)ad);
+	elm_layout_signal_callback_add(ad->layout, "elm,holy_bible,prev,down", "elm", _prev_down, (void*)ad);
 	elm_layout_signal_callback_add(ad->layout, "elm,holy_bible,next,chapter", "elm", _nxt_chapter, (void*)ad);
 	elm_layout_signal_callback_add(ad->layout, "elm,holy_bible,prev,chapter", "elm", _prev_chapter, (void*)ad);
+	elm_layout_signal_callback_add(ad->layout, "elm,holy_bible,next,book", "elm", _nxt_book, (void*)ad);
+	elm_layout_signal_callback_add(ad->layout, "elm,holy_bible,prev,book", "elm", _prev_book, (void*)ad);
 	elm_layout_signal_callback_add(ad->layout, "elm,holy_bible,splash,over", "elm", _splash_over, (void*)ad);
 
 	elm_object_part_text_set(ad->layout, "elm.text.copyright", COPYRIGHT);

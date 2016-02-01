@@ -25,6 +25,7 @@
 #define DB_NAME "holybible.db"
 #define BIBLE_TABLE_NAME "bible"
 #define BIBLE_VERSE_COLUMN "verse"
+#define LONGPRESS_TIMEOUT 1.0
 
 #endif /* __bible_H__ */
 
@@ -44,6 +45,9 @@ typedef struct appdata{
 	Evas_Coord mouse_x, mouse_y;
 	Eina_Bool share_copy_mode:1;
 	Eina_Bool exit_mode:1;
+	Eina_Bool long_pressed:1;
+	int long_press_mode:1; //0 - up / prev, 1 - down / next
+	Ecore_Timer *long_timer;
 	Elm_Object_Item *readmode_item;
 	uint mouse_down_time;
 	int search_from, search_to;
