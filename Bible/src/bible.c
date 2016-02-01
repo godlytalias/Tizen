@@ -275,6 +275,14 @@ _del_genlist(void *data, Elm_Transit *transit)
 	evas_object_del(genlist);
 }
 
+static Eina_Bool
+_transit_idler(void *data)
+{
+	Elm_Transit *transit = (Elm_Transit*)data;
+	elm_transit_go(transit);
+	return ECORE_CALLBACK_CANCEL;
+}
+
 static void
 _content_mouse_up(void *data,
 		Evas *evas EINA_UNUSED,
@@ -296,6 +304,9 @@ _content_mouse_up(void *data,
 	evas_object_geometry_get(ad->genlist, NULL, NULL, &w, NULL);
 	ad->old_genlist = elm_object_part_content_unset(ad->layout, "elm.swallow.content");
 	evas_object_freeze_events_set(ad->old_genlist, EINA_TRUE);
+	Elm_Object_Item *sel_item = elm_genlist_selected_item_get(ad->old_genlist);
+	elm_genlist_item_selected_set(sel_item, EINA_FALSE);
+	evas_object_repeat_events_set(ad->old_genlist, EINA_FALSE);
 	_create_genlist(ad);
 	Elm_Transit *transit = elm_transit_add();
 	elm_transit_object_add(transit, ad->old_genlist);
@@ -313,7 +324,7 @@ _content_mouse_up(void *data,
 	}
 	elm_transit_duration_set(transit, 0.3);
 	elm_transit_del_cb_set(transit, _del_genlist, ad->old_genlist);
-	elm_transit_go(transit);
+	ecore_idle_exiter_add(_transit_idler, transit);
 }
 
 static void
@@ -923,6 +934,7 @@ app_create(void *data)
 	ad->app_list_head = NULL;
 	ad->app_list_tail = NULL;
 	ad->search_layout = NULL;
+	ad->long_timer = NULL;
 	ad->search_result_genlist = NULL;
 
 	create_base_gui(ad);
