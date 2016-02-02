@@ -892,7 +892,7 @@ collections {
                rel1.relative: 0.0 1.0;
                rel2.to: "elm.swallow.entry";
                align: 0.5 1.0;
-               color_class: "F057";
+               color: 0 0 0 100;
             }
          }
          part { name: "elm.swallow.go";
@@ -1906,7 +1906,7 @@ collections {
             scale: 1;
             description { state: "default" 0.0;
                fixed: 1 0;
-               color_class: "F057";
+               color: 0 0 0 100;
                rel1.to: "elm.swallow.content1";
                rel1.relative: 1.0 0.0;
                rel2.to: "elm.swallow.content1";
