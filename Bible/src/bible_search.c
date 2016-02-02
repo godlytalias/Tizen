@@ -13,18 +13,94 @@ _search_genlist_free(appdata_s *ad)
 	ad->search_result_genlist = NULL;
 }
 
-static void
-_go_top(void *data, Evas_Object *obj, const char *emission, const char *source)
+static Eina_Bool
+_longpress_cb(void *data)
 {
 	appdata_s *ad = (appdata_s*)data;
-	elm_genlist_item_bring_in(elm_genlist_first_item_get(ad->search_result_genlist), ELM_GENLIST_ITEM_SCROLLTO_IN);
+
+	ad->long_pressed = EINA_TRUE;
+	if (ad->long_press_mode == 0)
+		elm_genlist_item_bring_in(elm_genlist_first_item_get(ad->search_result_genlist), ELM_GENLIST_ITEM_SCROLLTO_IN);
+	else
+		elm_genlist_item_bring_in(elm_genlist_last_item_get(ad->search_result_genlist), ELM_GENLIST_ITEM_SCROLLTO_IN);
+
+	ad->long_timer = NULL;
+	return ECORE_CALLBACK_CANCEL;
 }
 
 static void
-_go_bottom(void *data, Evas_Object *obj, const char *emission, const char *source)
+_go_top_up(void *data, Evas_Object *obj, const char *emission, const char *source)
 {
 	appdata_s *ad = (appdata_s*)data;
-	elm_genlist_item_bring_in(elm_genlist_last_item_get(ad->search_result_genlist), ELM_GENLIST_ITEM_SCROLLTO_IN);
+	Elm_Object_Item *item;
+	int posret;
+	Evas_Coord x, y, w, h;
+
+	if (ad->long_timer)
+	{
+		ecore_timer_del(ad->long_timer);
+		ad->long_timer = NULL;
+	}
+	if (ad->long_pressed)
+	{
+		ad->long_pressed = EINA_FALSE;
+		return;
+	}
+	evas_object_geometry_get(ad->search_result_genlist, &x, &y, &w, &h);
+	item = elm_genlist_at_xy_item_get(ad->search_result_genlist, x, y - h, &posret);
+	elm_genlist_item_bring_in(item, ELM_GENLIST_ITEM_SCROLLTO_IN);
+}
+
+static void
+_go_top_down(void *data, Evas_Object *obj, const char *emission, const char *source)
+{
+	appdata_s *ad = (appdata_s*)data;
+	ad->long_pressed = EINA_FALSE;
+	ad->long_press_mode = 0;
+	if (ad->long_timer)
+	{
+		ecore_timer_del(ad->long_timer);
+		ad->long_timer = NULL;
+	}
+	ad->long_timer = ecore_timer_add(LONGPRESS_TIMEOUT, _longpress_cb, data);
+}
+
+static void
+_go_bottom_up(void *data, Evas_Object *obj, const char *emission, const char *source)
+{
+	appdata_s *ad = (appdata_s*)data;
+	Elm_Object_Item *item;
+	int posret;
+	Evas_Coord x, y, w, h;
+
+	if (ad->long_timer)
+	{
+		ecore_timer_del(ad->long_timer);
+		ad->long_timer = NULL;
+	}
+	if (ad->long_pressed)
+	{
+		ad->long_pressed = EINA_FALSE;
+		return;
+	}
+	evas_object_geometry_get(ad->search_result_genlist, &x, &y, &w, &h);
+	item = elm_genlist_at_xy_item_get(ad->search_result_genlist, x, y + h, &posret);
+	item = elm_genlist_item_next_get(item);
+	elm_genlist_item_bring_in(item, ELM_GENLIST_ITEM_SCROLLTO_TOP);
+}
+
+static void
+_go_bottom_down(void *data, Evas_Object *obj, const char *emission, const char *source)
+{
+	appdata_s *ad = (appdata_s*)data;
+	ad->long_pressed = EINA_FALSE;
+	ad->long_press_mode = 1;
+	if (ad->long_timer)
+	{
+		ecore_timer_del(ad->long_timer);
+		ad->long_timer = NULL;
+	}
+	ad->long_timer = ecore_timer_add(LONGPRESS_TIMEOUT, _longpress_cb, data);
 }
 
 Evas_Object*
@@ -732,8 +808,10 @@ _search_layout_setup(appdata_s *ad)
 	evas_object_smart_callback_add(ad->search_result_genlist, "drag,start,up", _down_arrow_show, ad);
 	evas_object_smart_callback_add(ad->search_result_genlist, "drag,start,down", _up_arrow_show, ad);
 	evas_object_smart_callback_add(ad->search_result_genlist, "longpressed", _gl_longpressed_cb, ad);
-	elm_layout_signal_callback_add(ad->search_layout, "elm,holy_bible,top", "elm", _go_top, ad);
-	elm_layout_signal_callback_add(ad->search_layout, "elm,holy_bible,bottom", "elm", _go_bottom, ad);
+	elm_layout_signal_callback_add(ad->search_layout, "elm,holy_bible,top,down", "elm", _go_top_down, ad);
+	elm_layout_signal_callback_add(ad->search_layout, "elm,holy_bible,top,up", "elm", _go_top_up, ad);
+	elm_layout_signal_callback_add(ad->search_layout, "elm,holy_bible,bottom,up", "elm", _go_bottom_up, ad);
+	elm_layout_signal_callback_add(ad->search_layout, "elm,holy_bible,bottom,down", "elm", _go_bottom_down, ad);
 	evas_object_show(ad->search_result_genlist);
 }
 
@@ -749,6 +827,7 @@ _search_word(void *data,
 	ad->search_itc->func.content_get = search_gl_content_get_cb;
 	ad->search_itc->func.text_get = NULL;
 	ad->search_itc->func.del = search_gl_del_cb;
+	ad->long_timer = NULL;
 	if (!ad->search_layout)
 		_search_layout_setup(ad);
 	nf_it = elm_naviframe_item_push(ad->naviframe, SEARCH, NULL, NULL, ad->search_layout, "drawers");

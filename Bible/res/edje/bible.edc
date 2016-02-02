@@ -1025,17 +1025,27 @@ collections {
          program { name: "click_sound";
             action: RUN_PLUGIN "touch_sound";
          }
-         program { name: "go_bottom";
-            signal: "mouse,clicked,1";
+         program { name: "go_bottom_up";
+            signal: "mouse,up,1";
             source: "down_arrow";
-            action: SIGNAL_EMIT "elm,holy_bible,bottom" "elm";
+            action: SIGNAL_EMIT "elm,holy_bible,bottom,up" "elm";
             after: "click_sound";
          }
-         program { name: "go_top";
-            signal: "mouse,clicked,1";
+         program { name: "go_bottom_down";
+            signal: "mouse,down,1";
+            source: "down_arrow";
+            action: SIGNAL_EMIT "elm,holy_bible,bottom,down" "elm";
+         }
+         program { name: "go_top_up";
+            signal: "mouse,up,1";
             source: "up_arrow";
-            action: SIGNAL_EMIT "elm,holy_bible,top" "elm";
+            action: SIGNAL_EMIT "elm,holy_bible,top,up" "elm";
             after: "click_sound";
+         }
+         program { name: "go_top_down";
+            signal: "mouse,down,1";
+            source: "up_arrow";
+            action: SIGNAL_EMIT "elm,holy_bible,top,down" "elm";
          }
          program { name: "arrow_visible";
             action: STATE_SET "visible" 0.0;
