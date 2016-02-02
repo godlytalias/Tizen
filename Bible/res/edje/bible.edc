@@ -1496,6 +1496,25 @@ collections {
                align: 0.0 0.5;
             }
          }
+         part { name: "elm.verse.separator";
+            scale: 1;
+            type: RECT;
+            description { state: "default" 0.0;
+               min: 2 0;
+               fixed: 1 0;
+               rel1.to_x: "elm.verse.padding";
+               rel1.to_y: "base";
+               rel1.relative: 0.3 0.0;
+               rel2.to_x: "elm.verse.padding";
+               rel2.to_y: "base";
+               rel2.relative: 0.3 1.0;
+               color: 0 0 0 100;
+            }
+            description { state: "night_mode" 0.0;
+               inherit: "default" 0.0;
+               color: 100 100 100 100;
+            }
+         }
          part{ name: "elm.text.verse_s";
             scale: 1;
             type: TEXTBLOCK;
@@ -1551,6 +1570,7 @@ collections {
            target: "elm.text.verse";
            target: "elm.text.verse_s";
            target: "elm.text.verse_count";
+           target: "elm.verse.separator";
            after: "bookmark_nightmode_activate";
         }
         program { name: "night_mode_deactivate";
@@ -1561,6 +1581,7 @@ collections {
            target: "elm.text.verse";
            target: "elm.text.verse_s";
            target: "elm.text.verse_count";
+           target: "elm.verse.separator";
            after: "bookmark_nightmode_deactivate";
         }
         program { name: "bookmark_activate_script";
