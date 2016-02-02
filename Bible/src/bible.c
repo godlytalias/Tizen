@@ -289,7 +289,7 @@ _content_mouse_up(void *data,
 		Evas_Object *obj,
 		void *event_info)
 {
-	Evas_Coord w;
+	Evas_Coord x, y, w;
 	appdata_s *ad = (appdata_s*)data;
 	if(ad->share_copy_mode) return;
 
@@ -301,7 +301,7 @@ _content_mouse_up(void *data,
 	if (abs(x_del) < (2 * abs(y_del))) return;
 	if (abs(x_del) < 100) return;
 
-	evas_object_geometry_get(ad->genlist, NULL, NULL, &w, NULL);
+	evas_object_geometry_get(ad->genlist, &x, &y, &w, NULL);
 	ad->old_genlist = elm_object_part_content_unset(ad->layout, "elm.swallow.content");
 	evas_object_freeze_events_set(ad->old_genlist, EINA_TRUE);
 	Elm_Object_Item *sel_item = elm_genlist_selected_item_get(ad->old_genlist);
@@ -315,16 +315,16 @@ _content_mouse_up(void *data,
 	if (x_del < 0)
 	{
 		_nxt_chapter(data, obj, NULL, NULL);
-		elm_transit_effect_translation_add(transit, 0, 0, -w, 0);
+		elm_transit_effect_translation_add(transit, x, y, -w, y);
 	}
 	else
 	{
 		_prev_chapter(data, obj, NULL, NULL);
-		elm_transit_effect_translation_add(transit, 0, 0, w, 0);
+		elm_transit_effect_translation_add(transit, x, y, w, y);
 	}
 	elm_transit_duration_set(transit, 0.3);
 	elm_transit_del_cb_set(transit, _del_genlist, ad->old_genlist);
-	ecore_idle_exiter_add(_transit_idler, transit);
+	ecore_idler_add(_transit_idler, transit);
 }
 
 static void
