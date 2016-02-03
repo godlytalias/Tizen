@@ -32,7 +32,7 @@ static void
 _go_top_up(void *data, Evas_Object *obj, const char *emission, const char *source)
 {
 	appdata_s *ad = (appdata_s*)data;
-	Elm_Object_Item *item;
+	Elm_Object_Item *item = NULL;
 	int posret;
 	Evas_Coord x, y, w, h;
 
@@ -48,7 +48,11 @@ _go_top_up(void *data, Evas_Object *obj, const char *emission, const char *sourc
 	}
 	evas_object_geometry_get(ad->search_result_genlist, &x, &y, &w, &h);
 	item = elm_genlist_at_xy_item_get(ad->search_result_genlist, x, y - h, &posret);
-	elm_genlist_item_bring_in(item, ELM_GENLIST_ITEM_SCROLLTO_IN);
+	if (posret != -1) item = elm_genlist_item_next_get(item);
+	if (item)
+		elm_genlist_item_bring_in(item, ELM_GENLIST_ITEM_SCROLLTO_IN);
+	else
+		elm_genlist_item_bring_in(elm_genlist_first_item_get(ad->search_result_genlist), ELM_GENLIST_ITEM_SCROLLTO_IN);
 }
 
 static void
@@ -69,7 +73,7 @@ static void
 _go_bottom_up(void *data, Evas_Object *obj, const char *emission, const char *source)
 {
 	appdata_s *ad = (appdata_s*)data;
-	Elm_Object_Item *item;
+	Elm_Object_Item *item = NULL;
 	int posret;
 	Evas_Coord x, y, w, h;
 
@@ -85,7 +89,12 @@ _go_bottom_up(void *data, Evas_Object *obj, const char *emission, const char *so
 	}
 	evas_object_geometry_get(ad->search_result_genlist, &x, &y, &w, &h);
 	item = elm_genlist_at_xy_item_get(ad->search_result_genlist, x, y + h, &posret);
-	item = elm_genlist_item_next_get(item);
+	if (!item)
+	{
+		elm_genlist_item_bring_in(elm_genlist_last_item_get(ad->search_result_genlist), ELM_GENLIST_ITEM_SCROLLTO_IN);
+		return;
+	}
+	if (posret == 1) item = elm_genlist_item_next_get(item);
 	elm_genlist_item_bring_in(item, ELM_GENLIST_ITEM_SCROLLTO_TOP);
 }
 
