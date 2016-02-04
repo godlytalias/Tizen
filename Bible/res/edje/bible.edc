@@ -1259,6 +1259,10 @@ collections {
                inherit: "default" 0.0;
                color: 200 0 0 100;
             }
+            description { state: "anim_bg";
+               inherit: "default" 0.0;
+               color: 250 250 250 250;
+            }
          }
          part{ name: "left_top_padding";
             scale: 1;
@@ -1381,6 +1385,12 @@ collections {
            signal: "elm,holy_bible,selection,show";
            source: "elm";
            action: STATE_SET "visible" 0.0;
+           target: "selection_marker";
+        }
+        program { name: "animation_bg";
+           signal: "elm,holy_bible,anim,bg";
+           source: "elm";
+           action: STATE_SET "anim_bg" 0.0;
            target: "selection_marker";
         }
         program { name: "selection_hide";

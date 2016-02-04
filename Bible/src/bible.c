@@ -290,6 +290,10 @@ _content_mouse_up(void *data,
 		void *event_info)
 {
 	Evas_Coord w;
+	int readmode = 0;
+	Eina_List *l;
+	Evas_Object *layout;
+	Elm_Object_Item *item;
 	appdata_s *ad = (appdata_s*)data;
 	if(ad->share_copy_mode) return;
 
@@ -302,10 +306,19 @@ _content_mouse_up(void *data,
 	if (abs(x_del) < 100) return;
 
 	evas_object_geometry_get(ad->genlist, NULL, NULL, &w, NULL);
+	preference_get_int("readmode", &readmode);
+	if (readmode == 1)
+	{
+		Eina_List *list = elm_genlist_realized_items_get(ad->genlist);
+		EINA_LIST_FOREACH(list, l, item)
+		{
+			layout = elm_object_item_part_content_get(item, "elm.swallow.content");
+			elm_layout_signal_emit(layout, "elm,holy_bible,anim,bg", "elm");
+		}
+		eina_list_free(list);
+	}
 	ad->old_genlist = elm_object_part_content_unset(ad->layout, "elm.swallow.content");
 	evas_object_freeze_events_set(ad->old_genlist, EINA_TRUE);
-	Elm_Object_Item *sel_item = elm_genlist_selected_item_get(ad->old_genlist);
-	elm_genlist_item_selected_set(sel_item, EINA_FALSE);
 	evas_object_repeat_events_set(ad->old_genlist, EINA_FALSE);
 	_create_genlist(ad);
 	Elm_Transit *transit = elm_transit_add();
