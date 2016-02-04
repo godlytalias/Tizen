@@ -46,6 +46,7 @@ typedef struct appdata{
 	Eina_Bool share_copy_mode:1;
 	Eina_Bool exit_mode:1;
 	Eina_Bool long_pressed:1;
+	Eina_Bool panel_mode:1;
 	int long_press_mode:1; //0 - up / prev, 1 - down / next
 	Ecore_Timer *long_timer;
 	Elm_Object_Item *readmode_item;

@@ -168,6 +168,12 @@ _search_result_selected(void *data, Evas_Object *obj, void *event_info)
 	char style[256];
 	int fontsize = 25;
 	Elm_Object_Item *item = (Elm_Object_Item*)event_info;
+
+	if (verse_item->appdata->panel_mode)
+	{
+		elm_genlist_item_selected_set(item, EINA_FALSE);
+		return;
+	}
 	Evas_Object *verse_popup = elm_popup_add(verse_item->appdata->search_layout);
 	elm_popup_align_set(verse_popup, ELM_NOTIFY_ALIGN_FILL, 1.0);
 	sprintf(title, "%s %d : %d", Books[verse_item->bookcount], verse_item->chaptercount, verse_item->versecount + 1);
@@ -731,6 +737,7 @@ _content_mouse_down(void *data,
         void *event_info)
 {
    appdata_s *ad = (appdata_s*)data;
+   ad->panel_mode = EINA_FALSE;
    Evas_Event_Mouse_Down *ev = (Evas_Event_Mouse_Down*)event_info;
    ad->mouse_x = ev->canvas.x;
    ad->mouse_y = ev->canvas.y;
@@ -744,6 +751,7 @@ _content_mouse_up(void *data,
         void *event_info)
 {
    appdata_s *ad = (appdata_s*)data;
+   ad->panel_mode = EINA_FALSE;
    int x_del, y_del;
    Evas_Event_Mouse_Up *ev = (Evas_Event_Mouse_Up*)event_info;
    if ((ev->timestamp - ad->mouse_down_time) > 1000) return;
@@ -752,7 +760,10 @@ _content_mouse_up(void *data,
    if (abs(x_del) < (2 * abs(y_del))) return;
    if (abs(x_del) < 100) return;
    if (x_del > 0)
+   {
+	   ad->panel_mode = EINA_TRUE;
 	   panel_toggle(ad, NULL, NULL);
+   }
 }
 
 static Eina_Bool
