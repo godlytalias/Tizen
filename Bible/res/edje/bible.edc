@@ -954,8 +954,29 @@ collections {
                visible: 1;
             }
          }
+         part{ name: "elm.swallow.panel";
+            type: SWALLOW;
+            scale: 1;
+            description { state: "default" 0.0;
+               min: 400 0;
+               fixed: 1 0;
+               rel1.to: "base";
+               rel2.to: "base";
+            }         
+         }
+         part{ name: "events";
+            type: RECT;
+            scale: 1;
+            repeat_events: 1;
+            description { state: "default" 0.0;
+               rel1.to: "elm.swallow.result";
+               rel2.to: "elm.swallow.result";
+               color: 0 0 0 0;
+            }
+         }
          part { name: "down_arrow";
             scale: 1;
+            repeat_events: 0;
             description { state: "default" 0.0;
                min: 32 32;
                fixed: 1 1;
@@ -979,6 +1000,7 @@ collections {
          }
          part { name: "up_arrow";
             scale: 1;
+            repeat_events: 0;
             description { state: "default" 0.0;
                min: 32 32;
                fixed: 1 1;
@@ -997,26 +1019,6 @@ collections {
             description { state: "show" 0.0;
                inherit: "visible" 0.0;
                color: 255 255 255 200;
-            }
-         }
-         part{ name: "elm.swallow.panel";
-            type: SWALLOW;
-            scale: 1;
-            description { state: "default" 0.0;
-               min: 400 0;
-               fixed: 1 0;
-               rel1.to: "base";
-               rel2.to: "base";
-            }         
-         }
-         part{ name: "events";
-            type: RECT;
-            scale: 1;
-            repeat_events: 1;
-            description { state: "default" 0.0;
-               rel1.to: "elm.swallow.result";
-               rel2.to: "elm.swallow.result";
-               color: 0 0 0 0;
             }
          }
       }
