@@ -580,23 +580,33 @@ collections {
               set_int(click_mod, get_int(click_mod)+1);
            }
         }
-        program { name: "next_chap_signal";
-           action: SIGNAL_EMIT "elm,holy_bible,next,chapter" "elm";
+        program { name: "next_down";
+           signal: "mouse,down,*";
+           source: "nxt_btn";
+           action: SIGNAL_EMIT "elm,holy_bible,next,down" "elm";
         }
-        program { name: "next_chap";
-           signal: "mouse,clicked,*";
+        program { name: "prev_down";
+           signal: "mouse,down,*";
+           source: "prev_btn";
+           action: SIGNAL_EMIT "elm,holy_bible,prev,down" "elm";
+        }
+        program { name: "next_signal_up";
+           action: SIGNAL_EMIT "elm,holy_bible,next,up" "elm";
+        }
+        program { name: "next_up";
+           signal: "mouse,up,*";
            source: "nxt_btn";
            action: RUN_PLUGIN "touch_sound";
-           after: "next_chap_signal";
+           after: "next_signal_up";
         }
-        program { name: "prev_chap_signal";
-           action: SIGNAL_EMIT "elm,holy_bible,prev,chapter" "elm";
+        program { name: "prev_signal_up";
+           action: SIGNAL_EMIT "elm,holy_bible,prev,up" "elm";
         }
-        program { name: "prev_chap";
-           signal: "mouse,clicked,*";
+        program { name: "prev_up";
+           signal: "mouse,up,*";
            source: "prev_btn";
            action: RUN_PLUGIN "touch_sound";
-           after: "prev_chap_signal";
+           after: "prev_signal_up";
         }
         program { name: "arrow_unhighlight_day";
            transition: LINEAR 0.3;
@@ -882,7 +892,7 @@ collections {
                rel1.relative: 0.0 1.0;
                rel2.to: "elm.swallow.entry";
                align: 0.5 1.0;
-               color_class: "F057";
+               color: 0 0 0 100;
             }
          }
          part { name: "elm.swallow.go";
@@ -944,8 +954,29 @@ collections {
                visible: 1;
             }
          }
+         part{ name: "elm.swallow.panel";
+            type: SWALLOW;
+            scale: 1;
+            description { state: "default" 0.0;
+               min: 400 0;
+               fixed: 1 0;
+               rel1.to: "base";
+               rel2.to: "base";
+            }         
+         }
+         part{ name: "events";
+            type: RECT;
+            scale: 1;
+            repeat_events: 1;
+            description { state: "default" 0.0;
+               rel1.to: "elm.swallow.result";
+               rel2.to: "elm.swallow.result";
+               color: 0 0 0 0;
+            }
+         }
          part { name: "down_arrow";
             scale: 1;
+            repeat_events: 0;
             description { state: "default" 0.0;
                min: 32 32;
                fixed: 1 1;
@@ -969,6 +1000,7 @@ collections {
          }
          part { name: "up_arrow";
             scale: 1;
+            repeat_events: 0;
             description { state: "default" 0.0;
                min: 32 32;
                fixed: 1 1;
@@ -989,43 +1021,33 @@ collections {
                color: 255 255 255 200;
             }
          }
-         part{ name: "elm.swallow.panel";
-            type: SWALLOW;
-            scale: 1;
-            description { state: "default" 0.0;
-               min: 400 0;
-               fixed: 1 0;
-               rel1.to: "base";
-               rel2.to: "base";
-            }         
-         }
-         part{ name: "events";
-            type: RECT;
-            scale: 1;
-            repeat_events: 1;
-            description { state: "default" 0.0;
-               rel1.to: "elm.swallow.result";
-               rel2.to: "elm.swallow.result";
-               color: 0 0 0 0;
-            }
-         }
       }
       
       programs {
          program { name: "click_sound";
             action: RUN_PLUGIN "touch_sound";
          }
-         program { name: "go_bottom";
-            signal: "mouse,clicked,1";
+         program { name: "go_bottom_up";
+            signal: "mouse,up,1";
             source: "down_arrow";
-            action: SIGNAL_EMIT "elm,holy_bible,bottom" "elm";
+            action: SIGNAL_EMIT "elm,holy_bible,bottom,up" "elm";
             after: "click_sound";
          }
-         program { name: "go_top";
-            signal: "mouse,clicked,1";
+         program { name: "go_bottom_down";
+            signal: "mouse,down,1";
+            source: "down_arrow";
+            action: SIGNAL_EMIT "elm,holy_bible,bottom,down" "elm";
+         }
+         program { name: "go_top_up";
+            signal: "mouse,up,1";
             source: "up_arrow";
-            action: SIGNAL_EMIT "elm,holy_bible,top" "elm";
+            action: SIGNAL_EMIT "elm,holy_bible,top,up" "elm";
             after: "click_sound";
+         }
+         program { name: "go_top_down";
+            signal: "mouse,down,1";
+            source: "up_arrow";
+            action: SIGNAL_EMIT "elm,holy_bible,top,down" "elm";
          }
          program { name: "arrow_visible";
             action: STATE_SET "visible" 0.0;
@@ -1239,6 +1261,10 @@ collections {
                inherit: "default" 0.0;
                color: 200 0 0 100;
             }
+            description { state: "anim_bg";
+               inherit: "default" 0.0;
+               color: 250 250 250 250;
+            }
          }
          part{ name: "left_top_padding";
             scale: 1;
@@ -1361,6 +1387,12 @@ collections {
            signal: "elm,holy_bible,selection,show";
            source: "elm";
            action: STATE_SET "visible" 0.0;
+           target: "selection_marker";
+        }
+        program { name: "animation_bg";
+           signal: "elm,holy_bible,anim,bg";
+           source: "elm";
+           action: STATE_SET "anim_bg" 0.0;
            target: "selection_marker";
         }
         program { name: "selection_hide";
@@ -1486,6 +1518,25 @@ collections {
                align: 0.0 0.5;
             }
          }
+         part { name: "elm.verse.separator";
+            scale: 1;
+            type: RECT;
+            description { state: "default" 0.0;
+               min: 2 0;
+               fixed: 1 0;
+               rel1.to_x: "elm.verse.padding";
+               rel1.to_y: "base";
+               rel1.relative: 0.3 0.0;
+               rel2.to_x: "elm.verse.padding";
+               rel2.to_y: "base";
+               rel2.relative: 0.3 1.0;
+               color: 0 0 0 100;
+            }
+            description { state: "night_mode" 0.0;
+               inherit: "default" 0.0;
+               color: 100 100 100 100;
+            }
+         }
          part{ name: "elm.text.verse_s";
             scale: 1;
             type: TEXTBLOCK;
@@ -1541,6 +1592,7 @@ collections {
            target: "elm.text.verse";
            target: "elm.text.verse_s";
            target: "elm.text.verse_count";
+           target: "elm.verse.separator";
            after: "bookmark_nightmode_activate";
         }
         program { name: "night_mode_deactivate";
@@ -1551,6 +1603,7 @@ collections {
            target: "elm.text.verse";
            target: "elm.text.verse_s";
            target: "elm.text.verse_count";
+           target: "elm.verse.separator";
            after: "bookmark_nightmode_deactivate";
         }
         program { name: "bookmark_activate_script";
@@ -1875,7 +1928,7 @@ collections {
             scale: 1;
             description { state: "default" 0.0;
                fixed: 1 0;
-               color_class: "F057";
+               color: 0 0 0 100;
                rel1.to: "elm.swallow.content1";
                rel1.relative: 1.0 0.0;
                rel2.to: "elm.swallow.content1";

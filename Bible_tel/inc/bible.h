@@ -25,6 +25,7 @@
 #define DB_NAME "holybible.db"
 #define BIBLE_TABLE_NAME "bible"
 #define BIBLE_VERSE_COLUMN "verse"
+#define LONGPRESS_TIMEOUT 1.0
 
 #endif /* __bible_H__ */
 
@@ -32,26 +33,31 @@ typedef struct _bible_verse_item bible_verse_item;
 typedef struct app_struct_list app_struct;
 
 typedef struct appdata{
+	struct app_struct_list *app_list_head, *app_list_tail;
 	Evas_Object* win;
 	Evas_Object* layout, *search_layout, *bookmark_note_layout;
-	Evas_Object* label, *naviframe;
-	Evas_Object* genlist, *search_result_genlist, *bookmarks_notes_genlist;
+	Evas_Object* label, *naviframe, *select_all_check;
+	Evas_Object* genlist, *old_genlist, *search_result_genlist, *bookmarks_notes_genlist;
 	Evas_Object *list1, *list2, *search_entry, *note_entry;
 	Evas_Object *check_entire, *check_ot, *check_nt, *check_custom, *check_strict, *check_whole;
 	Evas_Object *from_dropdown, *to_dropdown;
 	Evas_Object *menu_ctxpopup;
 	Elm_Genlist_Item_Class *itc, *search_itc, *bookmarks_itc;
-	Evas_Coord mouse_x, mouse_y;
-	Eina_Bool share_copy_mode:1;
+	Ecore_Timer *long_timer;
 	Elm_Object_Item *readmode_item;
-	uint mouse_down_time;
+	char *parallel_db_path;
 	int search_from, search_to;
 	int count, versecount, chaptercount;
 	int cur_chapter, cur_book;
 	int nxt_chapter, nxt_book;
+	Evas_Coord mouse_x, mouse_y;
+	uint mouse_down_time;
 	char edj_path[PATH_MAX];
-	char *parallel_db_path;
-	struct app_struct_list *app_list_head, *app_list_tail;
+	int long_press_mode:1; //0 - up / prev, 1 - down / next
+	Eina_Bool share_copy_mode:1;
+	Eina_Bool exit_mode:1;
+	Eina_Bool long_pressed:1;
+	Eina_Bool panel_mode:1;
 } appdata_s;
 
 #define PARALLEL_READING_SUPPORT_VERSION 0.5
@@ -77,11 +83,11 @@ const static char *Books[] = {
 struct _bible_verse_item
 {
    appdata_s *appdata;
+   Elm_Object_Item *it;
+   char *verse, *verse_s;
    int bookcount, chaptercount, versecount;
    Eina_Bool bookmark : 1;
    Eina_Bool note : 1;
-   Elm_Object_Item *it;
-   char *verse, *verse_s;
 };
 
 void _query_chapter(void*, int, int);
@@ -113,3 +119,4 @@ void _copy_verse_cb(appdata_s *);
 void _cancel_cb(void *, Evas_Object *, void *);
 void _app_no_memory(appdata_s *);
 void _change_read_mode(appdata_s *, Eina_Bool);
+void _search_genlist_free(appdata_s*);

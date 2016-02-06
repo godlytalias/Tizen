@@ -71,3 +71,4 @@
 #define PARALLEL_READING_FAILED "Parallel reading failed!. Please re-install the required application."
 #define BIBLE_NAME_STRING "Telugu Bible"
 #define LANGUAGE_SUPPORT_STRING "This application requires Telugu language support!"
+#define PRESS_BACK_AGAIN_TO_EXIT "Press back again to exit!"

@@ -32,7 +32,6 @@ _rate_app_cb(void *data, Evas_Object *obj, void *event_info)
 	app_control_h handler;
 	app_control_create(&handler);
 	app_control_set_app_id(handler, "org.tizen.tizenstore");
-	app_control_set_launch_mode(handler, APP_CONTROL_LAUNCH_MODE_GROUP);
 	app_control_set_operation(handler, APP_CONTROL_OPERATION_VIEW);
 	app_control_set_uri(handler, app_url);
 	app_control_send_launch_request(handler, NULL, NULL);
@@ -98,7 +97,6 @@ _install_apps_cb(void *data, Evas_Object *obj, void *event_info)
 	app_control_set_operation(app_control, APP_CONTROL_OPERATION_VIEW);
 	app_control_set_app_id(app_control, "org.tizen.tizenstore");
 	app_control_set_uri(app_control, "tizenstore://SellerApps/df2ezocp72");
-	app_control_set_launch_mode(app_control, APP_CONTROL_LAUNCH_MODE_GROUP);
 	app_control_send_launch_request(app_control, NULL, NULL);
 	app_control_destroy(app_control);
 }
