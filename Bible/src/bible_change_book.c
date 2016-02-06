@@ -22,7 +22,7 @@ naviframe_pop_cb(void *data, Elm_Object_Item *it)
 {
 	appdata_s *ad = (appdata_s*)data;
 	_get_chapter_count_query(data, ad->cur_book);
-    _clear_item_data(ad->list1);
+	_clear_item_data(ad->list1);
 	return EINA_TRUE;
 }
 
@@ -84,7 +84,7 @@ _book_selected(void *data, Evas_Object *obj, void *event_info)
 		if (item) elm_list_item_selected_set(item, EINA_TRUE);
 	}
 	else
-	  elm_list_item_selected_set(elm_list_first_item_get(ad->list2), EINA_TRUE);
+		elm_list_item_selected_set(elm_list_first_item_get(ad->list2), EINA_TRUE);
 	elm_list_go(ad->list2);
 	evas_object_show(ad->list2);
 	item = elm_list_selected_item_get(ad->list2);
