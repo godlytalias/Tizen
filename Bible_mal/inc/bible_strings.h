@@ -71,3 +71,4 @@
 #define PARALLEL_READING_FAILED "പരാജയപ്പെട്ടു ! ആവശ്യമായ ആപ്ലിക്കേഷൻ ഇൻസ്റ്റാൾ ചെയ്യുക."
 #define BIBLE_NAME_STRING "Malayalam Bible"
 #define LANGUAGE_SUPPORT_STRING "This application requires Malayalam language support!"
+#define PRESS_BACK_AGAIN_TO_EXIT "അടയ്ക്കുന്നതിന് വീണ്ടും ബാക്ക് അമർത്തുക"
