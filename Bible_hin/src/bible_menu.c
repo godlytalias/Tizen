@@ -104,27 +104,27 @@ _install_apps_cb(void *data, Evas_Object *obj, void *event_info)
 static void
 _toggle_parallel_reading(void *data, Evas_Object *obj, void *event_info)
 {
-   Evas_Object *pl_genlist = (Evas_Object*)data;
-   appdata_s *ad = (appdata_s*)evas_object_data_get(pl_genlist, "appdata");
-   if (strcmp(elm_object_text_get(obj), ON) == 0)
-   {
-	   preference_set_boolean("parallel", true);
-	   elm_object_disabled_set(pl_genlist, EINA_FALSE);
-	   elm_object_text_set(obj, OFF);
-	   if (elm_genlist_items_count(pl_genlist) == 1)
-		   elm_genlist_item_selected_set(elm_genlist_first_item_get(pl_genlist), EINA_TRUE);
-   }
-   else
-   {
-	   preference_set_boolean("parallel", false);
-	   preference_remove("parallel_app_id");
-	   Elm_Object_Item *item = elm_genlist_selected_item_get(pl_genlist);
-	   if (item) elm_genlist_item_selected_set(item, EINA_FALSE);
-	   elm_object_disabled_set(pl_genlist, EINA_TRUE);
-	   ad->parallel_db_path = NULL;
-	   elm_object_text_set(obj, ON);
-	   _query_chapter(ad, ad->cur_book, ad->cur_chapter);
-   }
+	Evas_Object *pl_genlist = (Evas_Object*)data;
+	appdata_s *ad = (appdata_s*)evas_object_data_get(pl_genlist, "appdata");
+	if (strcmp(elm_object_text_get(obj), ON) == 0)
+	{
+		preference_set_boolean("parallel", true);
+		elm_object_disabled_set(pl_genlist, EINA_FALSE);
+		elm_object_text_set(obj, OFF);
+		if (elm_genlist_items_count(pl_genlist) == 1)
+			elm_genlist_item_selected_set(elm_genlist_first_item_get(pl_genlist), EINA_TRUE);
+	}
+	else
+	{
+		preference_set_boolean("parallel", false);
+		preference_remove("parallel_app_id");
+		Elm_Object_Item *item = elm_genlist_selected_item_get(pl_genlist);
+		if (item) elm_genlist_item_selected_set(item, EINA_FALSE);
+		elm_object_disabled_set(pl_genlist, EINA_TRUE);
+		ad->parallel_db_path = NULL;
+		elm_object_text_set(obj, ON);
+		_query_chapter(ad, ad->cur_book, ad->cur_chapter);
+	}
 }
 
 static Evas_Object*
@@ -156,8 +156,8 @@ _parallel_gl_selected_cb(void *data, Evas_Object *obj, void *event_info)
 	elm_check_state_set(check, EINA_TRUE);
 	if (ad->parallel_db_path)
 	{
-	   temp_path = (char*)malloc(sizeof(char)*PATH_MAX);
-	   strcpy(temp_path, ad->parallel_db_path);
+		temp_path = (char*)malloc(sizeof(char)*PATH_MAX);
+		strcpy(temp_path, ad->parallel_db_path);
 	}
 	preference_set_boolean("parallel", true);
 	preference_set_string("parallel_app_id", app_det->app_id);
@@ -167,13 +167,13 @@ _parallel_gl_selected_cb(void *data, Evas_Object *obj, void *event_info)
 	{
 		if (db_path) free(db_path);
 		if (temp_path) free(temp_path);
-    	Evas_Object *toast = elm_popup_add(ad->naviframe);
-    	elm_object_style_set(toast, "toast");
-    	elm_popup_timeout_set(toast, 3.0);
-    	elm_popup_allow_events_set(toast, EINA_TRUE);
-    	evas_object_smart_callback_add(toast, "timeout", _popup_del, toast);
-    	elm_object_text_set(toast, PARALLEL_READING_FAILED);
-    	evas_object_show(toast);
+		Evas_Object *toast = elm_popup_add(ad->naviframe);
+		elm_object_style_set(toast, "toast");
+		elm_popup_timeout_set(toast, 3.0);
+		elm_popup_allow_events_set(toast, EINA_TRUE);
+		evas_object_smart_callback_add(toast, "timeout", _popup_del, toast);
+		elm_object_text_set(toast, PARALLEL_READING_FAILED);
+		evas_object_show(toast);
 		return;
 	}
 	package_info_get_root_path(pkg_info, &db_path);
@@ -205,7 +205,7 @@ _parallel_text_get_cb(void *data, Evas_Object *obj, const char *part)
 	app_struct *app_det = (app_struct*)data;
 	const char *text = app_det->app_name;
 	if (strcmp(part, "elm.text") == 0)
-	   return strdup(text);
+		return strdup(text);
 	else return NULL;
 }
 
@@ -634,12 +634,12 @@ _check_package(package_info_h pkg_info, void *data)
 	app_get_id(&app_id);
 	package_info_get_package(pkg_info, &package);
 	if ((strncmp(package, "org.tizen.gtaholybible", 22) == 0) ||
-		(strcmp(package, "org.tizen.gta_holy_bible") == 0))
+			(strcmp(package, "org.tizen.gta_holy_bible") == 0))
 	{
 		package_manager_compare_result_type_e comp_result;
 		package_manager_compare_app_cert_info(app_id, package, &comp_result);
 		if ((strcmp(package, app_id) != 0) &&
-			(comp_result == PACKAGE_MANAGER_COMPARE_MATCH))
+				(comp_result == PACKAGE_MANAGER_COMPARE_MATCH))
 		{
 			app_det = (app_struct*)malloc(sizeof(app_struct));
 			app_det->app_id = (char*)malloc(sizeof(char) * (strlen(package) + 1));
@@ -1368,7 +1368,7 @@ ctxpopup_item_select_cb(void *data, Evas_Object *obj, void *event_info)
 	evas_object_smart_callback_add(button, "clicked", _popup_del, popup);
 	eext_object_event_callback_add(popup, EEXT_CALLBACK_BACK, eext_popup_back_cb, NULL);
 	if (sel_item)
-	  evas_object_smart_callback_add(popup, "show,finished", _item_selection, sel_item);
+		evas_object_smart_callback_add(popup, "show,finished", _item_selection, sel_item);
 	elm_ctxpopup_dismiss(obj);
 }
 
