@@ -8,16 +8,16 @@ _app_database_query(char *query, int func(void*,int,char**,char**), void *data)
 	sqlite3 *db = NULL;
 	char *err_msg;
 
-	   char *db_path = malloc(200);
-	   char *res_path = app_get_data_path();
-	   sprintf(db_path, "%sappdata.db", res_path);
-	   sqlite3_open_v2(db_path, &db, SQLITE_OPEN_FULLMUTEX | SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE, NULL);
-	   free(res_path);
-	   free(db_path);
-	   sqlite3_exec(db, query, func, data, &err_msg);
-	   sqlite3_free(err_msg);
-	   sqlite3_close(db);
-	   db = NULL;
+	char *db_path = malloc(200);
+	char *res_path = app_get_data_path();
+	sprintf(db_path, "%sappdata.db", res_path);
+	sqlite3_open_v2(db_path, &db, SQLITE_OPEN_FULLMUTEX | SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE, NULL);
+	free(res_path);
+	free(db_path);
+	sqlite3_exec(db, query, func, data, &err_msg);
+	sqlite3_free(err_msg);
+	sqlite3_close(db);
+	db = NULL;
 }
 
 int
@@ -147,16 +147,16 @@ _database_query(char *query, int func(void*,int,char**,char**), void *data)
 	sqlite3 *db = NULL;
 	char *err_msg;
 
-	   char *db_path = malloc(200);
-	   char *res_path = app_get_shared_resource_path();
-	   sprintf(db_path, "%s%s", res_path, DB_NAME);
-	   sqlite3_open(db_path, &(db));
-	   free(res_path);
-	   free(db_path);
-	   sqlite3_exec(db, query, func, data, &err_msg);
-	   sqlite3_free(err_msg);
-	   sqlite3_close(db);
-	   db = NULL;
+	char *db_path = malloc(200);
+	char *res_path = app_get_shared_resource_path();
+	sprintf(db_path, "%s%s", res_path, DB_NAME);
+	sqlite3_open(db_path, &(db));
+	free(res_path);
+	free(db_path);
+	sqlite3_exec(db, query, func, data, &err_msg);
+	sqlite3_free(err_msg);
+	sqlite3_close(db);
+	db = NULL;
 }
 
 static int
@@ -196,80 +196,80 @@ _get_chapter_count_query(void *data, int book)
 static int
 _put_notes(void *data, int argc, char **argv, char **azColName)
 {
-   bible_verse_item *verse_item = (bible_verse_item*)data;
-   if (argc == 1 && (atoi(argv[0]) > 0))
-	   verse_item->note = EINA_TRUE;
-   else
-	   verse_item->note = EINA_FALSE;
-   return 0;
+	bible_verse_item *verse_item = (bible_verse_item*)data;
+	if (argc == 1 && (atoi(argv[0]) > 0))
+		verse_item->note = EINA_TRUE;
+	else
+		verse_item->note = EINA_FALSE;
+	return 0;
 }
 
 static int
 _put_bookmarks(void *data, int argc, char **argv, char **azColName)
 {
-   bible_verse_item *verse_item = (bible_verse_item*)data;
-   if (argc == 1 && (atoi(argv[0]) > 0))
-	   verse_item->bookmark = EINA_TRUE;
-   else
-	   verse_item->bookmark = EINA_FALSE;
-   return 0;
+	bible_verse_item *verse_item = (bible_verse_item*)data;
+	if (argc == 1 && (atoi(argv[0]) > 0))
+		verse_item->bookmark = EINA_TRUE;
+	else
+		verse_item->bookmark = EINA_FALSE;
+	return 0;
 }
 
 void
 _check_notes(appdata_s *ad)
 {
-   Elm_Object_Item *it = elm_genlist_first_item_get(ad->genlist);
-   bible_verse_item *verse_item;
-   char query[512];
-   while (it)
-   {
-	   verse_item = (bible_verse_item*)elm_object_item_data_get(it);
-	   sprintf(query, "SELECT count(note) FROM notes WHERE bookcount = %d AND chaptercount = %d AND versecount = %d", verse_item->bookcount, verse_item->chaptercount, verse_item->versecount);
-	   _app_database_query(query, &_put_notes, verse_item);
-	   it = elm_genlist_item_next_get(it);
-   }
+	Elm_Object_Item *it = elm_genlist_first_item_get(ad->genlist);
+	bible_verse_item *verse_item;
+	char query[512];
+	while (it)
+	{
+		verse_item = (bible_verse_item*)elm_object_item_data_get(it);
+		sprintf(query, "SELECT count(note) FROM notes WHERE bookcount = %d AND chaptercount = %d AND versecount = %d", verse_item->bookcount, verse_item->chaptercount, verse_item->versecount);
+		_app_database_query(query, &_put_notes, verse_item);
+		it = elm_genlist_item_next_get(it);
+	}
 }
 
 void
 _check_bookmarks(appdata_s *ad)
 {
-   Elm_Object_Item *it = elm_genlist_first_item_get(ad->genlist);
-   bible_verse_item *verse_item;
-   char query[512];
-   while (it)
-   {
-	   verse_item = (bible_verse_item*)elm_object_item_data_get(it);
-	   sprintf(query, "SELECT count(versecount) FROM bookmark WHERE bookcount = %d AND chaptercount = %d AND versecount = %d", verse_item->bookcount, verse_item->chaptercount, verse_item->versecount);
-	   _app_database_query(query, &_put_bookmarks, verse_item);
-	   it = elm_genlist_item_next_get(it);
-   }
+	Elm_Object_Item *it = elm_genlist_first_item_get(ad->genlist);
+	bible_verse_item *verse_item;
+	char query[512];
+	while (it)
+	{
+		verse_item = (bible_verse_item*)elm_object_item_data_get(it);
+		sprintf(query, "SELECT count(versecount) FROM bookmark WHERE bookcount = %d AND chaptercount = %d AND versecount = %d", verse_item->bookcount, verse_item->chaptercount, verse_item->versecount);
+		_app_database_query(query, &_put_bookmarks, verse_item);
+		it = elm_genlist_item_next_get(it);
+	}
 }
 
 static int
 _get_verse_list(void *data, int argc, char **argv, char **azColName)
 {
-   appdata_s *ad = (appdata_s*) data;
-   Elm_Object_Item *it;
-   if (argv == NULL) return 0;
+	appdata_s *ad = (appdata_s*) data;
+	Elm_Object_Item *it;
+	if (argv == NULL) return 0;
 
-   bible_verse_item *verse_item = malloc(sizeof(bible_verse_item));
-   verse_item->versecount = ad->count;
-   verse_item->verse = strdup(argv[0]);
-   if (argc > 1)
-	   verse_item->verse_s = strdup(argv[1]);
-   else
-	   verse_item->verse_s = NULL;
-   verse_item->bookcount = ad->cur_book;
-   verse_item->chaptercount = ad->cur_chapter;
-   verse_item->appdata = ad;
-   verse_item->bookmark = EINA_FALSE;
-   verse_item->note = EINA_FALSE;
-   it = elm_genlist_item_append(ad->genlist, ad->itc, (void*)verse_item, NULL, ELM_GENLIST_ITEM_NONE, NULL, (void*)verse_item);
-   elm_object_item_data_set(it, (void*)verse_item);
-   verse_item->it = it;
-   ad->count++;
+	bible_verse_item *verse_item = malloc(sizeof(bible_verse_item));
+	verse_item->versecount = ad->count;
+	verse_item->verse = strdup(argv[0]);
+	if (argc > 1)
+		verse_item->verse_s = strdup(argv[1]);
+	else
+		verse_item->verse_s = NULL;
+	verse_item->bookcount = ad->cur_book;
+	verse_item->chaptercount = ad->cur_chapter;
+	verse_item->appdata = ad;
+	verse_item->bookmark = EINA_FALSE;
+	verse_item->note = EINA_FALSE;
+	it = elm_genlist_item_append(ad->genlist, ad->itc, (void*)verse_item, NULL, ELM_GENLIST_ITEM_NONE, NULL, (void*)verse_item);
+	elm_object_item_data_set(it, (void*)verse_item);
+	verse_item->it = it;
+	ad->count++;
 
-   return 0;
+	return 0;
 }
 
 void
@@ -288,38 +288,38 @@ _query_chapter(void *data, int book, int chapter)
 		elm_ctxpopup_dismiss(verse_popup);
 	}
 
-    ad->count = 0;
-    ad->cur_book = book;
-    ad->cur_chapter = chapter;
-    preference_get_boolean("parallel", &parallel);
-    if (!parallel)
-    	sprintf(query, "select %s from %s where Book=%d and Chapter=%d", BIBLE_VERSE_COLUMN, BIBLE_TABLE_NAME, book, chapter);
-    else
-    {
-    	if (ad->parallel_db_path)
-    		sprintf (query, "attach database '%s' as db1;select verse,verse_s from "
-    				"(select verse,Book,Chapter,Versecount from %s where Book=%d and Chapter=%d) t1 inner join "
-    				"(select verse as verse_s,Book,Chapter,Versecount from db1.%s where Book=%d and Chapter=%d) t2 on "
-    				"(t1.Book=t2.Book and t1.Chapter=t2.Chapter and t1.Versecount=t2.Versecount);",
-    				ad->parallel_db_path, BIBLE_TABLE_NAME, book, chapter, BIBLE_TABLE_NAME, book, chapter);
-    	else
-        	sprintf(query, "select %s from %s where Book=%d and Chapter=%d", BIBLE_VERSE_COLUMN, BIBLE_TABLE_NAME, book, chapter);
-    }
-    _database_query(query, &_get_verse_list, data);
-    if (parallel && elm_genlist_items_count(ad->genlist) == 0)
-    {
-    	preference_set_boolean("parallel", false);
+	ad->count = 0;
+	ad->cur_book = book;
+	ad->cur_chapter = chapter;
+	preference_get_boolean("parallel", &parallel);
+	if (!parallel)
+		sprintf(query, "select %s from %s where Book=%d and Chapter=%d", BIBLE_VERSE_COLUMN, BIBLE_TABLE_NAME, book, chapter);
+	else
+	{
+		if (ad->parallel_db_path)
+			sprintf (query, "attach database '%s' as db1;select verse,verse_s from "
+					"(select verse,Book,Chapter,Versecount from %s where Book=%d and Chapter=%d) t1 inner join "
+					"(select verse as verse_s,Book,Chapter,Versecount from db1.%s where Book=%d and Chapter=%d) t2 on "
+					"(t1.Book=t2.Book and t1.Chapter=t2.Chapter and t1.Versecount=t2.Versecount);",
+					ad->parallel_db_path, BIBLE_TABLE_NAME, book, chapter, BIBLE_TABLE_NAME, book, chapter);
+		else
+			sprintf(query, "select %s from %s where Book=%d and Chapter=%d", BIBLE_VERSE_COLUMN, BIBLE_TABLE_NAME, book, chapter);
+	}
+	_database_query(query, &_get_verse_list, data);
+	if (parallel && elm_genlist_items_count(ad->genlist) == 0)
+	{
+		preference_set_boolean("parallel", false);
 		preference_remove("parallel_app_id");
-    	Evas_Object *toast = elm_popup_add(ad->naviframe);
-    	elm_object_style_set(toast, "toast");
-    	elm_popup_timeout_set(toast, 3.0);
-    	elm_popup_allow_events_set(toast, EINA_TRUE);
-    	evas_object_smart_callback_add(toast, "timeout", _popup_del, toast);
-    	elm_object_text_set(toast, PARALLEL_READING_FAILED);
-    	evas_object_show(toast);
-    	_query_chapter(ad, ad->cur_book, ad->cur_chapter);
-    	return;
-    }
+		Evas_Object *toast = elm_popup_add(ad->naviframe);
+		elm_object_style_set(toast, "toast");
+		elm_popup_timeout_set(toast, 3.0);
+		elm_popup_allow_events_set(toast, EINA_TRUE);
+		evas_object_smart_callback_add(toast, "timeout", _popup_del, toast);
+		elm_object_text_set(toast, PARALLEL_READING_FAILED);
+		evas_object_show(toast);
+		_query_chapter(ad, ad->cur_book, ad->cur_chapter);
+		return;
+	}
 	_check_bookmarks(ad);
 	_check_notes(ad);
 

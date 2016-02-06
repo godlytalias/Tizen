@@ -115,30 +115,30 @@ _go_bottom_down(void *data, Evas_Object *obj, const char *emission, const char *
 Evas_Object*
 search_gl_content_get_cb(void *data, Evas_Object *obj, const char *part)
 {
-    bible_verse_item *verse_item = (bible_verse_item*)data;
-    if(strcmp(part, "elm.swallow.content") == 0)
-    {
-    	char reference[512];
-    	Evas_Object *layout = elm_layout_add(obj);
-    	elm_layout_file_set(layout, verse_item->appdata->edj_path, "search_verse_layout");
-    	evas_object_size_hint_weight_set(layout, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
-    	evas_object_size_hint_align_set(layout, EVAS_HINT_FILL, EVAS_HINT_FILL);
-    	sprintf(reference, "%s %d : %d", Books[verse_item->bookcount], verse_item->chaptercount, verse_item->versecount+1);
-    	elm_object_part_text_set(layout, "elm.text.reference", reference);
-    	elm_object_part_text_set(layout, "elm.text.verse", verse_item->verse);
-    	evas_object_show(layout);
-    	return layout;
-    }
-    else return NULL;
+	bible_verse_item *verse_item = (bible_verse_item*)data;
+	if(strcmp(part, "elm.swallow.content") == 0)
+	{
+		char reference[512];
+		Evas_Object *layout = elm_layout_add(obj);
+		elm_layout_file_set(layout, verse_item->appdata->edj_path, "search_verse_layout");
+		evas_object_size_hint_weight_set(layout, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
+		evas_object_size_hint_align_set(layout, EVAS_HINT_FILL, EVAS_HINT_FILL);
+		sprintf(reference, "%s %d : %d", Books[verse_item->bookcount], verse_item->chaptercount, verse_item->versecount+1);
+		elm_object_part_text_set(layout, "elm.text.reference", reference);
+		elm_object_part_text_set(layout, "elm.text.verse", verse_item->verse);
+		evas_object_show(layout);
+		return layout;
+	}
+	else return NULL;
 }
 
 static void
 search_gl_del_cb(void *data, Evas_Object *obj)
 {
-   bible_verse_item *verse_item = (bible_verse_item*)data;
-   free(verse_item->verse);
-   free(verse_item);
-   verse_item = NULL;
+	bible_verse_item *verse_item = (bible_verse_item*)data;
+	free(verse_item->verse);
+	free(verse_item);
+	verse_item = NULL;
 }
 
 static void
@@ -202,66 +202,66 @@ _search_result_selected(void *data, Evas_Object *obj, void *event_info)
 static void
 _gl_longpressed_cb(void *data, Evas_Object *obj, void *event_info)
 {
-    Elm_Object_Item *item = (Elm_Object_Item*)event_info;
-    char popup_text[128];
-    bible_verse_item *verse_item = (bible_verse_item*)elm_object_item_data_get(item);
-    appdata_s *ad = (appdata_s*)data;
-    Evas_Object *popup = elm_popup_add(ad->win);
+	Elm_Object_Item *item = (Elm_Object_Item*)event_info;
+	char popup_text[128];
+	bible_verse_item *verse_item = (bible_verse_item*)elm_object_item_data_get(item);
+	appdata_s *ad = (appdata_s*)data;
+	Evas_Object *popup = elm_popup_add(ad->win);
 	elm_genlist_item_selected_set(item, EINA_FALSE);
-    elm_popup_align_set(popup, ELM_NOTIFY_ALIGN_FILL, 0.5);
-    sprintf(popup_text, "<align='center'>%s %d : %d -%s ?</align>", Books[verse_item->bookcount], verse_item->chaptercount, verse_item->versecount + 1, GO_TO);
-    elm_object_text_set(popup, popup_text);
-    Evas_Object *button1 = elm_button_add(ad->win);
-    elm_object_text_set(button1, NO);
-    evas_object_smart_callback_add(button1, "clicked", _popup_del, popup);
-    Evas_Object *button2 = elm_button_add(ad->win);
-    elm_object_text_set(button2, YES);
-    evas_object_smart_callback_add(button2, "clicked", _get_chapter, popup);
-    evas_object_data_set(popup, "verse_item", verse_item);
-    elm_object_part_content_set(popup, "button1", button1);
-    elm_object_part_content_set(popup, "button2", button2);
-    eext_object_event_callback_add(popup, EEXT_CALLBACK_BACK, eext_popup_back_cb, popup);
-    evas_object_show(popup);
+	elm_popup_align_set(popup, ELM_NOTIFY_ALIGN_FILL, 0.5);
+	sprintf(popup_text, "<align='center'>%s %d : %d -%s ?</align>", Books[verse_item->bookcount], verse_item->chaptercount, verse_item->versecount + 1, GO_TO);
+	elm_object_text_set(popup, popup_text);
+	Evas_Object *button1 = elm_button_add(ad->win);
+	elm_object_text_set(button1, NO);
+	evas_object_smart_callback_add(button1, "clicked", _popup_del, popup);
+	Evas_Object *button2 = elm_button_add(ad->win);
+	elm_object_text_set(button2, YES);
+	evas_object_smart_callback_add(button2, "clicked", _get_chapter, popup);
+	evas_object_data_set(popup, "verse_item", verse_item);
+	elm_object_part_content_set(popup, "button1", button1);
+	elm_object_part_content_set(popup, "button2", button2);
+	eext_object_event_callback_add(popup, EEXT_CALLBACK_BACK, eext_popup_back_cb, popup);
+	evas_object_show(popup);
 }
 
 static void
 _up_arrow_show(void *data, Evas_Object *obj, void *event_info)
 {
-   appdata_s *ad = (appdata_s*)data;
-   elm_layout_signal_emit(ad->search_layout, "elm,holy_bible,up,show", "elm");
+	appdata_s *ad = (appdata_s*)data;
+	elm_layout_signal_emit(ad->search_layout, "elm,holy_bible,up,show", "elm");
 }
 
 static void
 _down_arrow_show(void *data, Evas_Object *obj, void *event_info)
 {
-   appdata_s *ad = (appdata_s*)data;
-   elm_layout_signal_emit(ad->search_layout, "elm,holy_bible,down,show", "elm");
+	appdata_s *ad = (appdata_s*)data;
+	elm_layout_signal_emit(ad->search_layout, "elm,holy_bible,down,show", "elm");
 }
 
 static int
 _get_search_results(void *data, int argc, char **argv, char **azColName)
 {
-	   appdata_s *ad = (appdata_s*) data;
-	   Elm_Object_Item *gl_item;
-	   int i;
-	   bible_verse_item *verse_item = malloc(sizeof(bible_verse_item));
-	   for (i = 0; i < argc; i++)
-	   {
-		   if (!strcmp(azColName[i], "Book"))
-			   verse_item->bookcount = atoi(argv[i]);
-		   if (!strcmp(azColName[i], "Chapter"))
-			   verse_item->chaptercount = atoi(argv[i]);
-		   if (!strcmp(azColName[i], "Versecount")) {
-			   verse_item->versecount = atoi(argv[i]);
-			   verse_item->versecount--;
-		   }
-		   if (!strcmp(azColName[i], BIBLE_VERSE_COLUMN))
-			   verse_item->verse = strdup(argv[i]);
-	   }
-	   verse_item->appdata = ad;
-	   gl_item = elm_genlist_item_append(ad->search_result_genlist, ad->search_itc, (void*)verse_item, NULL, ELM_GENLIST_ITEM_NONE, _search_result_selected, (void*)verse_item);
-	   elm_object_item_data_set(gl_item, verse_item);
-	   return 0;
+	appdata_s *ad = (appdata_s*) data;
+	Elm_Object_Item *gl_item;
+	int i;
+	bible_verse_item *verse_item = malloc(sizeof(bible_verse_item));
+	for (i = 0; i < argc; i++)
+	{
+		if (!strcmp(azColName[i], "Book"))
+			verse_item->bookcount = atoi(argv[i]);
+		if (!strcmp(azColName[i], "Chapter"))
+			verse_item->chaptercount = atoi(argv[i]);
+		if (!strcmp(azColName[i], "Versecount")) {
+			verse_item->versecount = atoi(argv[i]);
+			verse_item->versecount--;
+		}
+		if (!strcmp(azColName[i], BIBLE_VERSE_COLUMN))
+			verse_item->verse = strdup(argv[i]);
+	}
+	verse_item->appdata = ad;
+	gl_item = elm_genlist_item_append(ad->search_result_genlist, ad->search_itc, (void*)verse_item, NULL, ELM_GENLIST_ITEM_NONE, _search_result_selected, (void*)verse_item);
+	elm_object_item_data_set(gl_item, verse_item);
+	return 0;
 }
 
 static void
@@ -290,8 +290,8 @@ _bible_search_query(char* search_query, appdata_s *ad)
 
 static void
 _search_keyword(void *data,
-        Evas_Object *obj ,
-        void *event_info EINA_UNUSED)
+		Evas_Object *obj ,
+		void *event_info EINA_UNUSED)
 {
 	appdata_s *ad = (appdata_s*)data;
 	char *keyword = strdup(elm_entry_entry_get(ad->search_entry));
@@ -310,23 +310,23 @@ _search_keyword(void *data,
 		return;
 	}
 	else if (keyword && (strlen(keyword) < 2))
-		{
-			Evas_Object *toast_popup = elm_popup_add(ad->naviframe);
-			elm_popup_timeout_set(toast_popup, 2);
-			elm_object_style_set(toast_popup, "toast");
-			elm_object_text_set(toast_popup, SEARCH_KEYWORD_IS_TOO_SMALL);
-			evas_object_smart_callback_add(toast_popup, "timeout", _dismiss_verse_popup, toast_popup);
-			evas_object_show(toast_popup);
-			return;
-		}
+	{
+		Evas_Object *toast_popup = elm_popup_add(ad->naviframe);
+		elm_popup_timeout_set(toast_popup, 2);
+		elm_object_style_set(toast_popup, "toast");
+		elm_object_text_set(toast_popup, SEARCH_KEYWORD_IS_TOO_SMALL);
+		evas_object_smart_callback_add(toast_popup, "timeout", _dismiss_verse_popup, toast_popup);
+		evas_object_show(toast_popup);
+		return;
+	}
 
 	_loading_progress(ad->win);
 	if (keyword) {
 		ch = strtok(keyword, " ");
 		if (elm_check_state_get(ad->check_whole))
-		   sprintf(keyword_query, "( %s LIKE '%% %s %%'", BIBLE_VERSE_COLUMN, ch);
+			sprintf(keyword_query, "( %s LIKE '%% %s %%'", BIBLE_VERSE_COLUMN, ch);
 		else
-		   sprintf(keyword_query, "( %s LIKE '%%%s%%'", BIBLE_VERSE_COLUMN, ch);
+			sprintf(keyword_query, "( %s LIKE '%%%s%%'", BIBLE_VERSE_COLUMN, ch);
 	}
 	ch = strtok(NULL, " ");
 	if (elm_check_state_get(ad->check_strict))
@@ -336,9 +336,9 @@ _search_keyword(void *data,
 	while (ch)
 	{
 		if (elm_check_state_get(ad->check_whole))
-		   sprintf(keyword_query, "%s %s %s LIKE '%% %s %%'", keyword_query, condition_key, BIBLE_VERSE_COLUMN, ch);
+			sprintf(keyword_query, "%s %s %s LIKE '%% %s %%'", keyword_query, condition_key, BIBLE_VERSE_COLUMN, ch);
 		else
-		   sprintf(keyword_query, "%s %s %s LIKE '%%%s%%'", keyword_query, condition_key, BIBLE_VERSE_COLUMN, ch);
+			sprintf(keyword_query, "%s %s %s LIKE '%%%s%%'", keyword_query, condition_key, BIBLE_VERSE_COLUMN, ch);
 		ch = strtok(NULL, " ");
 	}
 	strcat(keyword_query, " )");
@@ -384,7 +384,7 @@ panel_toggle(void *data, Evas_Object *obj, void *event_info)
 	{
 		appdata_s *ad = (appdata_s*)data;
 		Evas_Object* panel_btn = (Evas_Object*) elm_object_item_part_content_get
-				  (elm_naviframe_top_item_get(ad->naviframe), "drawers");
+				(elm_naviframe_top_item_get(ad->naviframe), "drawers");
 		evas_object_smart_callback_call(panel_btn, "clicked", NULL);
 	}
 	else
@@ -454,7 +454,7 @@ _hoversel_item_creation(void *data)
 	appdata_s *ad = (appdata_s*)evas_object_data_get(hoversel, "appdata");
 	elm_object_disabled_set(hoversel, EINA_FALSE);
 	for(i = ad->search_from; i < 66; i++)
-			elm_hoversel_item_add(hoversel, Books[i], NULL, 0, _dropdown_item_select, ad);
+		elm_hoversel_item_add(hoversel, Books[i], NULL, 0, _dropdown_item_select, ad);
 	Evas_Object *loading = (Evas_Object*)evas_object_data_get(hoversel, "loading");
 	evas_object_del(loading);
 	return ECORE_CALLBACK_DONE;
@@ -538,7 +538,7 @@ _custom_pref_changed(void *data, Evas_Object *obj, void *event_info)
 		ad->search_to = 65;
 		evas_object_data_set(ad->from_dropdown, "appdata", (void*)ad);
 		if (eina_list_count(elm_hoversel_items_get(ad->from_dropdown)) < 66)
-		   ecore_idler_add(_hoversel_item_add, ad->from_dropdown);
+			ecore_idler_add(_hoversel_item_add, ad->from_dropdown);
 		else
 			elm_object_disabled_set(ad->from_dropdown, EINA_FALSE);
 		elm_object_text_set(ad->from_dropdown, SELECT_BOOK);
@@ -732,38 +732,38 @@ _panel_create(void *data)
 
 static void
 _content_mouse_down(void *data,
-        Evas *evas EINA_UNUSED,
-        Evas_Object *obj,
-        void *event_info)
+		Evas *evas EINA_UNUSED,
+		Evas_Object *obj,
+		void *event_info)
 {
-   appdata_s *ad = (appdata_s*)data;
-   ad->panel_mode = EINA_FALSE;
-   Evas_Event_Mouse_Down *ev = (Evas_Event_Mouse_Down*)event_info;
-   ad->mouse_x = ev->canvas.x;
-   ad->mouse_y = ev->canvas.y;
-   ad->mouse_down_time = ev->timestamp;
+	appdata_s *ad = (appdata_s*)data;
+	ad->panel_mode = EINA_FALSE;
+	Evas_Event_Mouse_Down *ev = (Evas_Event_Mouse_Down*)event_info;
+	ad->mouse_x = ev->canvas.x;
+	ad->mouse_y = ev->canvas.y;
+	ad->mouse_down_time = ev->timestamp;
 }
 
 static void
 _content_mouse_up(void *data,
-        Evas *evas EINA_UNUSED,
-        Evas_Object *obj,
-        void *event_info)
+		Evas *evas EINA_UNUSED,
+		Evas_Object *obj,
+		void *event_info)
 {
-   appdata_s *ad = (appdata_s*)data;
-   ad->panel_mode = EINA_FALSE;
-   int x_del, y_del;
-   Evas_Event_Mouse_Up *ev = (Evas_Event_Mouse_Up*)event_info;
-   if ((ev->timestamp - ad->mouse_down_time) > 1000) return;
-   x_del = ev->canvas.x - ad->mouse_x;
-   y_del = ev->canvas.y - ad->mouse_y;
-   if (abs(x_del) < (2 * abs(y_del))) return;
-   if (abs(x_del) < 100) return;
-   if (x_del > 0)
-   {
-	   ad->panel_mode = EINA_TRUE;
-	   panel_toggle(ad, NULL, NULL);
-   }
+	appdata_s *ad = (appdata_s*)data;
+	ad->panel_mode = EINA_FALSE;
+	int x_del, y_del;
+	Evas_Event_Mouse_Up *ev = (Evas_Event_Mouse_Up*)event_info;
+	if ((ev->timestamp - ad->mouse_down_time) > 1000) return;
+	x_del = ev->canvas.x - ad->mouse_x;
+	y_del = ev->canvas.y - ad->mouse_y;
+	if (abs(x_del) < (2 * abs(y_del))) return;
+	if (abs(x_del) < 100) return;
+	if (x_del > 0)
+	{
+		ad->panel_mode = EINA_TRUE;
+		panel_toggle(ad, NULL, NULL);
+	}
 }
 
 static Eina_Bool
@@ -837,8 +837,8 @@ _search_layout_setup(appdata_s *ad)
 
 void
 _search_word(void *data,
-              Evas_Object *obj EINA_UNUSED,
-              void *event_info EINA_UNUSED)
+		Evas_Object *obj EINA_UNUSED,
+		void *event_info EINA_UNUSED)
 {
 	appdata_s *ad = (appdata_s*)data;
 	Elm_Object_Item *nf_it;
