@@ -8,14 +8,14 @@ _prepare_verse_list(appdata_s *ad)
 	Eina_List *sel_list = elm_genlist_selected_items_get(ad->genlist);
 	if (!sel_list)
 	{
-    	Evas_Object *toast = elm_popup_add(ad->naviframe);
-    	elm_object_style_set(toast, "toast");
-    	elm_popup_allow_events_set(toast, EINA_TRUE);
-    	elm_object_text_set(toast, NO_VERSE_SELECTED);
-    	evas_object_show(toast);
-    	elm_popup_timeout_set(toast, 2.0);
-    	evas_object_smart_callback_add(toast, "timeout", _popup_del, toast);
-    	return NULL;
+		Evas_Object *toast = elm_popup_add(ad->naviframe);
+		elm_object_style_set(toast, "toast");
+		elm_popup_allow_events_set(toast, EINA_TRUE);
+		elm_object_text_set(toast, NO_VERSE_SELECTED);
+		evas_object_show(toast);
+		elm_popup_timeout_set(toast, 2.0);
+		evas_object_smart_callback_add(toast, "timeout", _popup_del, toast);
+		return NULL;
 	}
 	int sel_count = eina_list_count(sel_list);
 	if (sel_count == 1)
@@ -53,38 +53,38 @@ _prepare_verse_list(appdata_s *ad)
 		else
 			EINA_LIST_FOREACH(sel_list, sel_list_iter, item)
 			{
+			verse_item = (bible_verse_item*)elm_object_item_data_get(item);
+			last_verse = verse_item->versecount + 1;
+			temp_list = eina_list_next(sel_list_iter);
+			if (temp_list)
+			{
+				item = eina_list_data_get(temp_list);
 				verse_item = (bible_verse_item*)elm_object_item_data_get(item);
-				last_verse = verse_item->versecount + 1;
-				temp_list = eina_list_next(sel_list_iter);
-				if (temp_list)
+				if (!hyphen && ((verse_item->versecount == last_verse)
+						|| (verse_item->versecount + 2 == last_verse)))
 				{
-					item = eina_list_data_get(temp_list);
-					verse_item = (bible_verse_item*)elm_object_item_data_get(item);
-					if (!hyphen && ((verse_item->versecount == last_verse)
-							    || (verse_item->versecount + 2 == last_verse)))
-					{
-						sprintf(buf, "%s%d", buf, last_verse);
-						strcat(buf, " - ");
-						hyphen = EINA_TRUE;
-					}
-					else if (hyphen && ((verse_item->versecount == last_verse)
-						            || (verse_item->versecount + 2 == last_verse)))
-						continue;
-					else if (hyphen && ((verse_item->versecount != last_verse)
-				                    || (verse_item->versecount + 2 != last_verse)))
-					{
-						sprintf(buf, "%s%d", buf, last_verse);
-						strcat(buf, ", ");
-						hyphen = EINA_FALSE;
-					}
-					else
-					{
-						sprintf(buf, "%s%d", buf, last_verse);
-						strcat(buf, ", ");
-					}
+					sprintf(buf, "%s%d", buf, last_verse);
+					strcat(buf, " - ");
+					hyphen = EINA_TRUE;
+				}
+				else if (hyphen && ((verse_item->versecount == last_verse)
+						|| (verse_item->versecount + 2 == last_verse)))
+					continue;
+				else if (hyphen && ((verse_item->versecount != last_verse)
+						|| (verse_item->versecount + 2 != last_verse)))
+				{
+					sprintf(buf, "%s%d", buf, last_verse);
+					strcat(buf, ", ");
+					hyphen = EINA_FALSE;
 				}
 				else
+				{
 					sprintf(buf, "%s%d", buf, last_verse);
+					strcat(buf, ", ");
+				}
+			}
+			else
+				sprintf(buf, "%s%d", buf, last_verse);
 			}
 		strcat(buf, "\n");
 		if ((sel_count == elm_genlist_items_count(ad->genlist))  && elm_check_state_get(check))
@@ -100,8 +100,8 @@ _prepare_verse_list(appdata_s *ad)
 		else
 			EINA_LIST_FOREACH(sel_list, sel_list_iter, item)
 			{
-				verse_item = (bible_verse_item*)elm_object_item_data_get(item);
-				sprintf(buf,"%s\n%d. %s", buf, verse_item->versecount + 1, verse_item->verse);
+			verse_item = (bible_verse_item*)elm_object_item_data_get(item);
+			sprintf(buf,"%s\n%d. %s", buf, verse_item->versecount + 1, verse_item->verse);
 			}
 		return buf;
 	}
@@ -112,8 +112,8 @@ _share_verse_done_cb(void *data, Evas_Object *obj, void *event_info)
 {
 	char *buf;
 	appdata_s *ad = (appdata_s*)data;
-    buf = _prepare_verse_list(ad);
-    if (!buf) return;
+	buf = _prepare_verse_list(ad);
+	if (!buf) return;
 	_cancel_cb(ad, NULL, NULL);
 	app_control_h handler;
 	app_control_create(&handler);
@@ -131,8 +131,8 @@ _copy_verse_done_cb(void *data, Evas_Object *obj, void *event_info)
 {
 	char *buf;
 	appdata_s *ad = (appdata_s*)data;
-    buf = _prepare_verse_list(ad);
-    if (!buf) return;
+	buf = _prepare_verse_list(ad);
+	if (!buf) return;
 	_cancel_cb(ad, NULL, NULL);
 	elm_cnp_selection_set(obj, ELM_SEL_TYPE_CLIPBOARD, ELM_SEL_FORMAT_TEXT, buf, strlen(buf));
 	free(buf);
