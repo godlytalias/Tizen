@@ -824,10 +824,6 @@ _search_layout_setup(appdata_s *ad)
 		evas_object_smart_callback_add(ad->search_result_genlist, "drag,start,up", _down_arrow_show, ad);
 		evas_object_smart_callback_add(ad->search_result_genlist, "drag,start,down", _up_arrow_show, ad);
 		evas_object_smart_callback_add(ad->search_result_genlist, "longpressed", _gl_longpressed_cb, ad);
-		elm_layout_signal_callback_add(ad->search_layout, "elm,holy_bible,top,down", "elm", _go_top_down, ad);
-		elm_layout_signal_callback_add(ad->search_layout, "elm,holy_bible,top,up", "elm", _go_top_up, ad);
-		elm_layout_signal_callback_add(ad->search_layout, "elm,holy_bible,bottom,up", "elm", _go_bottom_up, ad);
-		elm_layout_signal_callback_add(ad->search_layout, "elm,holy_bible,bottom,down", "elm", _go_bottom_down, ad);
 	}
 	else
 	{
@@ -841,6 +837,10 @@ _search_layout_setup(appdata_s *ad)
 	}
 	elm_object_part_content_set(ad->search_layout, "elm.swallow.result", ad->search_result_genlist);
 	evas_object_show(ad->search_result_genlist);
+	elm_layout_signal_callback_add(ad->search_layout, "elm,holy_bible,top,down", "elm", _go_top_down, ad);
+	elm_layout_signal_callback_add(ad->search_layout, "elm,holy_bible,top,up", "elm", _go_top_up, ad);
+	elm_layout_signal_callback_add(ad->search_layout, "elm,holy_bible,bottom,up", "elm", _go_bottom_up, ad);
+	elm_layout_signal_callback_add(ad->search_layout, "elm,holy_bible,bottom,down", "elm", _go_bottom_down, ad);
 }
 
 void
