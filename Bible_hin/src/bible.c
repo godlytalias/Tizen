@@ -821,6 +821,8 @@ _exit_toast_timeout(void *data, Evas_Object *obj, void *event_info)
 {
 	appdata_s *ad = (appdata_s*)data;
 	ad->exit_mode = EINA_FALSE;
+	evas_object_hide(obj);
+	evas_object_del(obj);
 }
 
 static void
@@ -966,7 +968,6 @@ app_create(void *data)
 	ad->menu_ctxpopup = NULL;
 	ad->app_list_head = NULL;
 	ad->app_list_tail = NULL;
-	ad->search_layout = NULL;
 	ad->long_timer = NULL;
 	ad->search_result_genlist = NULL;
 
@@ -1013,10 +1014,9 @@ app_terminate(void *data)
 			ad->app_list_head = temp;
 		}
 	}
+	evas_object_data_del(ad->search_result_genlist, "keyword");
 	if (ad->search_result_genlist)
 		_search_genlist_free(ad);
-	if (ad->search_layout)
-		evas_object_del(ad->search_layout);
 	if (ad->menu_ctxpopup)
 	{
 		elm_ctxpopup_clear(ad->menu_ctxpopup);
