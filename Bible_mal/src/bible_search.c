@@ -321,6 +321,8 @@ _search_keyword(void *data,
 	}
 
 	_loading_progress(ad->win);
+	evas_object_data_del(ad->search_result_genlist, "keyword");
+	evas_object_data_set(ad->search_result_genlist, "keyword", strdup(keyword));
 	if (keyword) {
 		ch = strtok(keyword, " ");
 		if (elm_check_state_get(ad->check_whole))
@@ -767,29 +769,22 @@ _content_mouse_up(void *data,
 }
 
 static Eina_Bool
-_search_layout_hide_idler(void *data)
-{
-	appdata_s *ad = (appdata_s*)data;
-	evas_object_stack_below(ad->search_layout, ad->layout);
-	evas_object_hide(ad->search_layout);
-	return ECORE_CALLBACK_CANCEL;
-}
-
-static Eina_Bool
 _search_navi_pop_cb(void *data, Elm_Object_Item *it)
 {
 	appdata_s *ad = (appdata_s*)data;
-	elm_object_item_content_unset(it);
 	Evas_Object *panel = (Evas_Object*)evas_object_data_get(ad->search_layout, "panel");
-	if (ad->search_itc)
-		elm_genlist_item_class_free(ad->search_itc);
-	ad->search_itc = NULL;
 	if (!elm_panel_hidden_get(panel))
 	{
 		panel_toggle(panel, panel, NULL);
 		return EINA_FALSE;
 	}
-	ecore_idler_add(_search_layout_hide_idler, ad);
+	if (ad->search_itc)
+		elm_genlist_item_class_free(ad->search_itc);
+	ad->search_itc = NULL;
+	elm_layout_text_set(ad->search_layout, "no_content_text", "");
+	elm_layout_signal_emit(ad->search_layout, "elm,holy_bible,bg,show", "elm");
+	elm_layout_content_unset(ad->search_layout, "elm.swallow.result");
+	evas_object_hide(ad->search_result_genlist);
 	return EINA_TRUE;
 }
 
@@ -818,21 +813,34 @@ _search_layout_setup(appdata_s *ad)
 	evas_object_smart_callback_add(ad->search_entry, "activated", _search_keyword, (void*)ad);
 	elm_object_part_content_set(ad->search_layout, "elm.swallow.go", go_btn);
 	evas_object_show(go_btn);
-	ad->search_result_genlist = elm_genlist_add(ad->naviframe);
-	elm_object_style_set(ad->search_result_genlist, "handler");
-	evas_object_size_hint_weight_set(ad->search_result_genlist, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
-	evas_object_size_hint_align_set(ad->search_result_genlist, EVAS_HINT_FILL, EVAS_HINT_FILL);
-	elm_genlist_select_mode_set(ad->search_result_genlist, ELM_OBJECT_SELECT_MODE_ALWAYS);
-	elm_genlist_homogeneous_set(ad->search_result_genlist, EINA_TRUE);
+	if (!ad->search_result_genlist)
+	{
+		ad->search_result_genlist = elm_genlist_add(ad->naviframe);
+		elm_object_style_set(ad->search_result_genlist, "handler");
+		evas_object_size_hint_weight_set(ad->search_result_genlist, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
+		evas_object_size_hint_align_set(ad->search_result_genlist, EVAS_HINT_FILL, EVAS_HINT_FILL);
+		elm_genlist_select_mode_set(ad->search_result_genlist, ELM_OBJECT_SELECT_MODE_ALWAYS);
+		elm_genlist_homogeneous_set(ad->search_result_genlist, EINA_TRUE);
+		evas_object_smart_callback_add(ad->search_result_genlist, "drag,start,up", _down_arrow_show, ad);
+		evas_object_smart_callback_add(ad->search_result_genlist, "drag,start,down", _up_arrow_show, ad);
+		evas_object_smart_callback_add(ad->search_result_genlist, "longpressed", _gl_longpressed_cb, ad);
+	}
+	else
+	{
+		char *key = (char*)evas_object_data_get(ad->search_result_genlist, "keyword");
+		if (key){
+			elm_entry_entry_set(ad->search_entry, key);
+			elm_entry_cursor_end_set(ad->search_entry);
+		}
+		if (elm_genlist_items_count(ad->search_result_genlist) > 0)
+			elm_layout_signal_emit(ad->search_layout, "elm,holy_bible,bg,hide", "elm");
+	}
 	elm_object_part_content_set(ad->search_layout, "elm.swallow.result", ad->search_result_genlist);
-	evas_object_smart_callback_add(ad->search_result_genlist, "drag,start,up", _down_arrow_show, ad);
-	evas_object_smart_callback_add(ad->search_result_genlist, "drag,start,down", _up_arrow_show, ad);
-	evas_object_smart_callback_add(ad->search_result_genlist, "longpressed", _gl_longpressed_cb, ad);
+	evas_object_show(ad->search_result_genlist);
 	elm_layout_signal_callback_add(ad->search_layout, "elm,holy_bible,top,down", "elm", _go_top_down, ad);
 	elm_layout_signal_callback_add(ad->search_layout, "elm,holy_bible,top,up", "elm", _go_top_up, ad);
 	elm_layout_signal_callback_add(ad->search_layout, "elm,holy_bible,bottom,up", "elm", _go_bottom_up, ad);
 	elm_layout_signal_callback_add(ad->search_layout, "elm,holy_bible,bottom,down", "elm", _go_bottom_down, ad);
-	evas_object_show(ad->search_result_genlist);
 }
 
 void
@@ -848,8 +856,7 @@ _search_word(void *data,
 	ad->search_itc->func.text_get = NULL;
 	ad->search_itc->func.del = search_gl_del_cb;
 	ad->long_timer = NULL;
-	if (!ad->search_layout)
-		_search_layout_setup(ad);
+	_search_layout_setup(ad);
 	nf_it = elm_naviframe_item_push(ad->naviframe, SEARCH, NULL, NULL, ad->search_layout, "drawers");
 	elm_naviframe_item_pop_cb_set(nf_it, _search_navi_pop_cb, ad);
 	ecore_idler_add(_panel_create, ad);
