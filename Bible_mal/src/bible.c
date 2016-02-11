@@ -269,6 +269,7 @@ _splash_over(void *data, Evas_Object *obj, const char *emission, const char *sou
 		elm_win_wm_rotation_available_rotations_set(ad->win, (const int *)(&rots), 4);
 	}
 	eext_object_event_callback_add(ad->naviframe, EEXT_CALLBACK_MORE, eext_naviframe_more_cb, NULL);
+	elm_object_focus_set(ad->genlist, EINA_TRUE);
 }
 
 static void
@@ -290,8 +291,9 @@ _content_mouse_down(void *data,
 static void
 _del_genlist(void *data, Elm_Transit *transit)
 {
-	Evas_Object *genlist = (Evas_Object*)data;
-	evas_object_del(genlist);
+	appdata_s *ad = (appdata_s*)data;
+	evas_object_del(ad->old_genlist);
+	elm_object_focus_set(ad->genlist, EINA_TRUE);
 }
 
 static Eina_Bool
@@ -355,7 +357,7 @@ _content_mouse_up(void *data,
 		elm_transit_effect_translation_add(transit, 0, 0, w, 0);
 	}
 	elm_transit_duration_set(transit, 0.3);
-	elm_transit_del_cb_set(transit, _del_genlist, ad->old_genlist);
+	elm_transit_del_cb_set(transit, _del_genlist, ad);
 	ecore_idler_add(_transit_idler, transit);
 }
 

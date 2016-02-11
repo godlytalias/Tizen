@@ -340,6 +340,7 @@ _get_chapter(void *data, Evas_Object *obj, void *event_info)
 	_show_verse(verse_item->appdata, verse_item->versecount);
 	_get_chapter_count_query(verse_item->appdata, verse_item->bookcount);
 	_popup_del(popup, NULL, NULL);
+	elm_object_focus_set(verse_item->appdata->genlist, EINA_TRUE);
 }
 
 static void
@@ -548,9 +549,7 @@ _genlist_free_idler(void *data)
 static Eina_Bool
 naviframe_pop_cb(void *data, Elm_Object_Item *it)
 {
-	appdata_s *ad = (appdata_s*)data;
 	ecore_idler_add(_genlist_free_idler, data);
-	_loading_progress(ad->win);
 	return EINA_TRUE;
 }
 
