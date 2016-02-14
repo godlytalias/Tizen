@@ -3,7 +3,7 @@ collections {
    styles {
       style {
          name: "title_style";
-         base: "font=Tizen:style=Bold align=center font_size=30 color=#FFFFFF wrap=mixed ellipsis=1.0";
+         base: "font=Tizen:style=Bold align=center font_size=30 color=#FFFFFF wrap=mixed";
          tag: "br" "\n";
          tag: "ps" "ps";
          tag: "hilight" "+ font_weight=Bold";
@@ -313,7 +313,7 @@ collections {
             clip_to: "clipper";
             description { state: "default" 0.0;
                text.style: "title_style";
-               text.min: 1 1;
+               text.min: 0 1;
                rel1.to: "elm.header.left_top.padding";
                rel1.relative: 1.0 0.0;
                rel2.to: "elm.header.right_bottom.padding";
