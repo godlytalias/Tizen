@@ -293,6 +293,7 @@ _del_genlist(void *data, Elm_Transit *transit)
 {
 	appdata_s *ad = (appdata_s*)data;
 	evas_object_del(ad->old_genlist);
+	evas_object_freeze_events_set(ad->genlist, EINA_FALSE);
 	elm_object_focus_set(ad->genlist, EINA_TRUE);
 }
 
@@ -342,6 +343,7 @@ _content_mouse_up(void *data,
 	evas_object_freeze_events_set(ad->old_genlist, EINA_TRUE);
 	evas_object_repeat_events_set(ad->old_genlist, EINA_FALSE);
 	_create_genlist(ad);
+	evas_object_freeze_events_set(ad->genlist, EINA_TRUE);
 	Elm_Transit *transit = elm_transit_add();
 	elm_transit_object_add(transit, ad->old_genlist);
 	elm_transit_tween_mode_set(transit, ELM_TRANSIT_TWEEN_MODE_DECELERATE);
