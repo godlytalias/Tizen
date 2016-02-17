@@ -30,7 +30,7 @@ collections {
       }
       style {
          name: "main_verse_style";
-         base: "font=Tizen:style=Regular align=left text_class=GTA1 font_size=23 color=#000000 wrap=mixed";
+         base: "font=Tizen:style=Regular align=left text_class=GTA1 font_size=23 linerelsize=115% color=#000000 wrap=mixed";
          tag: "br" "\n";
          tag: "ps" "ps";
          tag: "hilight" "+ font_weight=Bold";
@@ -39,7 +39,7 @@ collections {
       }
       style {
          name: "main_verse_style_night_mode";
-         base: "font=Tizen:style=Regular align=left text_class=GTA1 font_size=23 color=#ffffff wrap=mixed";
+         base: "font=Tizen:style=Regular align=left text_class=GTA1 font_size=23 linerelsize=115% color=#ffffff wrap=mixed";
          tag: "br" "\n";
          tag: "ps" "ps";
          tag: "hilight" "+ font_weight=Bold";
