@@ -596,6 +596,15 @@ _add_note_cb(void *data, Evas_Object *obj, void *event_info)
 }
 
 static void
+gl_doubleclick_cb(void *data, Evas_Object *obj, void *event_info)
+{
+	appdata_s *ad = (appdata_s*)data;
+	if (ad->share_copy_mode) return;
+
+	_bible_verse_show(data, obj, event_info);
+}
+
+static void
 gl_longpressed_cb(void *data, Evas_Object *obj, void *event_info)
 {
 	appdata_s *ad = (appdata_s*)data;
@@ -728,7 +737,7 @@ _create_genlist(appdata_s *ad)
 	evas_object_smart_callback_add(ad->genlist, "highlighted", gl_highlighted_cb, ad);
 	evas_object_smart_callback_add(ad->genlist, "unhighlighted", gl_unhighlighted_cb, ad);
 	evas_object_smart_callback_add(ad->genlist, "longpressed", gl_longpressed_cb, ad);
-	evas_object_smart_callback_add(ad->genlist, "clicked,double", gl_longpressed_cb, ad);
+	evas_object_smart_callback_add(ad->genlist, "clicked,double", gl_doubleclick_cb, ad);
 	evas_object_event_callback_add(ad->genlist, EVAS_CALLBACK_MOUSE_DOWN, _content_mouse_down, ad);
 	evas_object_event_callback_add(ad->genlist, EVAS_CALLBACK_MOUSE_UP, _content_mouse_up, ad);
 }

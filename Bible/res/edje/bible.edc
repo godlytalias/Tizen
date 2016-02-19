@@ -118,6 +118,24 @@ collections {
          tag: "b" "+ font_weight=Bold";
          tag: "tab" "\t";
       }
+      style {
+         name: "verse_show_reference_style";
+         base: "font=Tizen:style=Bold align=left font_size=20 color=#000000 wrap=mixed";
+         tag: "br" "\n";
+         tag: "ps" "ps";
+         tag: "hilight" "+ font_weight=Bold";
+         tag: "b" "+ font_weight=Bold";
+         tag: "tab" "\t";
+      }
+      style {
+         name: "verse_show_reference_style_night_mode";
+         base: "font=Tizen:style=Bold align=left font_size=20 color=#ffffff wrap=mixed";
+         tag: "br" "\n";
+         tag: "ps" "ps";
+         tag: "hilight" "+ font_weight=Bold";
+         tag: "b" "+ font_weight=Bold";
+         tag: "tab" "\t";
+      }
    }
    
    plugins {
@@ -1850,6 +1868,125 @@ collections {
             target: "content_bg";
             target: "elm.swallow.content";
             target: "no_content_text";
+         }
+      }
+   }
+
+   group { name: "verse_show_layout";
+      parts {
+         part { name: "base";
+            type: RECT;
+            scale: 1;
+            description { state: "default" 0.0;
+               min: 480 64;
+               fixed: 1 0;
+               color: 255 255 255 255;
+            }
+            description { state: "night_mode" 0.0;
+               inherit: "default" 0.0;
+               color: 0 0 0 255;
+            }      
+         }
+         part { name: "elm.padding.top_left";
+            type: SPACER;
+            scale: 1;
+            description { state: "default" 0.0;
+               min: 32 32;
+               fixed: 1 1;
+               rel1.to: "base";
+               rel2.to: "base";
+               rel2.relative: 0.0 0.0;
+               align: 0.0 0.0;
+            }
+         }
+         part { name: "elm.padding.bottom_right";
+            type: SPACER;
+            scale: 1;
+            description { state: "default" 0.0;
+               min: 32 32;
+               fixed: 1 1;
+               rel1.to: "base";
+               rel1.relative: 1.0 1.0;
+               rel2.to: "base";
+               align: 1.0 1.0;
+            }
+         }
+         part { name: "elm.text.reference";
+            type: TEXTBLOCK;
+            scale: 1;
+            description { state: "default" 0.0;
+               min: 416 50;
+               fixed: 1 0;
+               rel1.to: "elm.padding.top_left";
+               rel1.relative: 1.0 1.0;
+               rel2.to_x: "elm.padding.bottom_right";
+               rel2.to_y: "elm.padding.top_left";
+               rel2.relative: 0.0 1.0;
+               align: 0.5 0.0;
+               text.style: "verse_show_reference_style";
+               text.min: 0 1;
+            }
+            description { state: "night_mode" 0.0;
+               inherit: "default" 0.0;
+               text.style: "verse_show_reference_style_night_mode";
+            }
+         }
+         part { name: "elm.swallow.verse";
+            type: SWALLOW;
+            scale: 1;
+            description { state: "default" 0.0;
+               min: 416 0;
+               fixed: 1 0;
+               rel1.to: "elm.text.reference";
+               rel1.relative: 0.0 1.0;
+               rel2.to: "elm.padding.bottom_right";
+               rel2.relative: 0.0 0.0;
+            }
+         }
+      }
+      programs {
+         program { name: "read_mode_change";
+            signal: "elm,holy_bible,night_mode,on";
+            source: "elm";
+            action: STATE_SET "night_mode" 0.0;
+            target: "base";
+            target: "elm.text.reference";         
+         }
+      }
+   }
+
+   group { name: "verse_show_in_layout";
+      parts {
+         part { name: "base";
+            type: RECT;
+            scale: 1;
+            description { state: "default" 0.0;
+               min: 416 0;
+               fixed: 1 0;
+               color: 255 255 255 255;
+            }
+            description { state: "night_mode" 0.0;
+               inherit: "default" 0.0;
+               color: 0 0 0 255;
+            }
+         }
+         part { name: "elm.swallow.verse";
+            type: SWALLOW;
+            scale: 1;
+            description { state: "default" 0.0;
+               rel1.to: "base";
+               rel1.relative: 0.0 0.5;
+               rel2.to: "base";
+               rel2.relative: 1.0 0.5;
+            }
+         }
+      }
+      programs {      
+         program { name: "read_mode_change";
+            signal: "elm,holy_bible,night_mode,on";
+            source: "elm";
+            action: STATE_SET "night_mode" 0.0;
+            target: "base";       
          }
       }
    }
