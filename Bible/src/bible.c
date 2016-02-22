@@ -275,6 +275,7 @@ _del_genlist(void *data, Elm_Transit *transit)
 	appdata_s *ad = (appdata_s*)data;
 	evas_object_del(ad->old_genlist);
 	evas_object_freeze_events_set(ad->genlist, EINA_FALSE);
+	evas_object_freeze_events_set(ad->win, EINA_FALSE);
 	elm_object_focus_set(ad->genlist, EINA_TRUE);
 }
 
@@ -341,6 +342,7 @@ _content_mouse_up(void *data,
 	}
 	elm_transit_duration_set(transit, 0.3);
 	elm_transit_del_cb_set(transit, _del_genlist, ad);
+	evas_object_freeze_events_set(ad->win, EINA_TRUE);
 	ecore_idler_add(_transit_idler, transit);
 }
 
