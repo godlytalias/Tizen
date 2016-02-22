@@ -320,6 +320,13 @@ _content_mouse_up(void *data,
 		}
 		eina_list_free(list);
 	}
+	else
+	{
+		Elm_Object_Item *item = elm_genlist_at_xy_item_get(ad->genlist, ev->canvas.x, ev->canvas.y, NULL);
+		layout = elm_object_item_part_content_get(item, "elm.swallow.content");
+		elm_layout_signal_emit(layout, "elm,holy_bible,selection,fasthide", "elm");
+		elm_genlist_highlight_mode_set(ad->genlist, EINA_FALSE);
+	}
 	ad->old_genlist = elm_object_part_content_unset(ad->layout, "elm.swallow.content");
 	evas_object_freeze_events_set(ad->old_genlist, EINA_TRUE);
 	evas_object_repeat_events_set(ad->old_genlist, EINA_FALSE);

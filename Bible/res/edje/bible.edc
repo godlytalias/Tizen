@@ -1420,6 +1420,12 @@ collections {
            transition: LINEAR 0.3;
            target: "selection_marker";
         }
+        program { name: "selection_fast_hide";
+           signal: "elm,holy_bible,selection,fasthide";
+           source: "elm";
+           action: STATE_SET "default" 0.0;
+           target: "selection_marker";
+        }
         program { name: "bookmark_nightmode_activate";
         	script {
         		if (get_int(bookmark) == 1)
