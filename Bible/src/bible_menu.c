@@ -751,6 +751,15 @@ ctxpopup_item_select_cb(void *data, Evas_Object *obj, void *event_info)
 		return;
 	}
 
+	if (!strcmp(title_label, VERSE_VIEW))
+	{
+		Eina_List *list = elm_genlist_realized_items_get(ad->genlist);
+		_bible_verse_show(ad, ad->genlist, eina_list_data_get(list));
+		eina_list_free(list);
+		elm_ctxpopup_dismiss(obj);
+		return;
+	}
+
 	Evas_Object *popup = elm_popup_add(elm_object_top_widget_get(obj));
 	elm_popup_align_set(popup, ELM_NOTIFY_ALIGN_FILL, 1.0);
 	elm_object_part_text_set(popup, "title,text", title_label);
@@ -1457,6 +1466,7 @@ create_ctxpopup_more_menu(void *data)
 	elm_ctxpopup_item_append(ctxpopup, SELECT_CHAPTER, NULL, ctxpopup_item_select_cb, ad);
 	elm_ctxpopup_item_append(ctxpopup, PARALLEL_READING, NULL, ctxpopup_item_select_cb, ad);
 	ad->readmode_item = elm_ctxpopup_item_append(ctxpopup, DAY_MODE, NULL, ctxpopup_item_select_cb, ad);
+	elm_ctxpopup_item_append(ctxpopup, VERSE_VIEW, NULL, ctxpopup_item_select_cb, ad);
 	elm_ctxpopup_item_append(ctxpopup, FONT_SIZE, NULL, ctxpopup_item_select_cb, ad);
 	elm_ctxpopup_item_append(ctxpopup, HELP, NULL, ctxpopup_item_select_cb, ad);
 	elm_ctxpopup_item_append(ctxpopup, ABOUT, NULL, ctxpopup_item_select_cb, ad);
