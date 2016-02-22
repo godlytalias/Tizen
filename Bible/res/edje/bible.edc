@@ -1963,11 +1963,7 @@ collections {
             description { state: "default" 0.0;
                min: 416 0;
                fixed: 1 0;
-               color: 255 255 255 255;
-            }
-            description { state: "night_mode" 0.0;
-               inherit: "default" 0.0;
-               color: 0 0 0 255;
+               color: 0 0 0 0;
             }
          }
          part { name: "elm.swallow.verse";
@@ -1979,14 +1975,6 @@ collections {
                rel2.to: "base";
                rel2.relative: 1.0 0.5;
             }
-         }
-      }
-      programs {      
-         program { name: "read_mode_change";
-            signal: "elm,holy_bible,night_mode,on";
-            source: "elm";
-            action: STATE_SET "night_mode" 0.0;
-            target: "base";       
          }
       }
    }

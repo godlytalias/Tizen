@@ -43,7 +43,6 @@ _create_verse_show_view(Evas_Object *layout, bible_verse_item *verse_item)
 	else
 	{
 		sprintf(style, "DEFAULT='font=Tizen:style=Regular align=left font_size=%d color=#ffffff wrap=mixed'hilight=' + font_weight=Bold'", fontsize);
-	    elm_layout_signal_emit(verse_layout, "elm,holy_bible,night_mode,on", "elm");
 	    elm_layout_signal_emit(layout, "elm,holy_bible,night_mode,on", "elm");
 	}
 	elm_entry_text_style_user_push(entry, style);
@@ -113,7 +112,8 @@ _content_mouse_up(void *data,
 
 	evas_object_freeze_events_set(obj, EINA_TRUE);
 	Evas_Object *verse = elm_layout_content_unset(obj, "elm.swallow.verse");
-	evas_object_geometry_get(verse, &x, &y, &w, &h);
+	evas_object_geometry_get(verse, &x, &y, NULL, NULL);
+	evas_object_geometry_get(obj, NULL, NULL, &w, &h);
 
 	bible_verse_item *next_verse_item = (bible_verse_item*)elm_object_item_data_get(next_it);
 	Elm_Transit *transit = elm_transit_add();
