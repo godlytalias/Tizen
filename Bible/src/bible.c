@@ -273,7 +273,8 @@ static void
 _win_rotate_cb(void *data, Evas_Object *obj, void *event_info)
 {
 	Elm_Transit *transit = (Elm_Transit*)data;
-	elm_transit_del(transit);
+	if (elm_transit_progress_value_get(transit) > 0)
+		elm_transit_del(transit);
 }
 
 static void
