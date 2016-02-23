@@ -476,6 +476,14 @@ _copy_verse_item_cb(void *data, Evas_Object *obj, void *event_info)
 }
 
 static void
+_verse_item_show_cb(void *data, Evas_Object *obj, void *event_info)
+{
+	bible_verse_item *verse_item = (bible_verse_item*)data;
+	_popup_del(obj, NULL, NULL);
+	_bible_verse_show(verse_item->appdata, verse_item->appdata->genlist, verse_item->it);
+}
+
+static void
 _bookmark_verse_cb(void *data, Evas_Object *obj, void *event_info)
 {
 	bible_verse_item *verse_item = (bible_verse_item*)data;
@@ -645,6 +653,7 @@ gl_longpressed_cb(void *data, Evas_Object *obj, void *event_info)
 		elm_ctxpopup_item_append(verse_popup, VIEW_NOTES, NULL, _add_note_cb, verse_item);
 	elm_ctxpopup_item_append(verse_popup, SHARE_VERSE, NULL, _share_verse_item_cb, verse_item);
 	elm_ctxpopup_item_append(verse_popup, COPY_VERSE, NULL, _copy_verse_item_cb, verse_item);
+	elm_ctxpopup_item_append(verse_popup, VERSE_VIEW, NULL, _verse_item_show_cb, verse_item);
 	evas_object_smart_callback_add(verse_popup, "dismissed", _popup_del, verse_popup);
 	eext_object_event_callback_add(verse_popup, EEXT_CALLBACK_BACK, eext_ctxpopup_back_cb, verse_popup);
 	eext_object_event_callback_add(verse_popup, EEXT_CALLBACK_MORE, eext_ctxpopup_back_cb, verse_popup);
