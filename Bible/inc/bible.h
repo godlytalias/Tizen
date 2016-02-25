@@ -44,6 +44,7 @@ typedef struct appdata{
 	Evas_Object *menu_ctxpopup;
 	Elm_Genlist_Item_Class *itc, *search_itc, *bookmarks_itc;
 	Ecore_Timer *long_timer;
+	Elm_Transit *transit;
 	Elm_Object_Item *readmode_item;
 	char *parallel_db_path;
 	int search_from, search_to;
@@ -58,6 +59,7 @@ typedef struct appdata{
 	Eina_Bool exit_mode:1;
 	Eina_Bool long_pressed:1;
 	Eina_Bool panel_mode:1;
+	Eina_Bool rotate_flag:1;
 } appdata_s;
 
 #define PARALLEL_READING_SUPPORT_VERSION 0.5

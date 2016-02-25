@@ -272,9 +272,11 @@ _content_mouse_down(void *data,
 static void
 _win_rotate_cb(void *data, Evas_Object *obj, void *event_info)
 {
-	Elm_Transit *transit = (Elm_Transit*)data;
-	if (elm_transit_progress_value_get(transit) > 0)
-		elm_transit_del(transit);
+	appdata_s *ad = (appdata_s*)data;
+	if (elm_transit_progress_value_get(ad->transit) > 0)
+		elm_transit_del(ad->transit);
+	else
+		ad->rotate_flag = EINA_TRUE;
 }
 
 static void
@@ -284,14 +286,19 @@ _del_genlist(void *data, Elm_Transit *transit)
 	evas_object_del(ad->old_genlist);
 	evas_object_freeze_events_set(ad->genlist, EINA_FALSE);
 	evas_object_smart_callback_del(ad->win, "wm,rotation,changed", _win_rotate_cb);
+	ad->rotate_flag = EINA_FALSE;
+	ad->transit = NULL;
 	elm_object_focus_set(ad->genlist, EINA_TRUE);
 }
 
 static Eina_Bool
 _transit_idler(void *data)
 {
-	Elm_Transit *transit = (Elm_Transit*)data;
-	elm_transit_go(transit);
+	appdata_s *ad = (appdata_s*)data;
+	if (!ad->rotate_flag)
+		elm_transit_go(ad->transit);
+	else
+		elm_transit_del(ad->transit);
 	return ECORE_CALLBACK_CANCEL;
 }
 
@@ -319,6 +326,7 @@ _content_mouse_up(void *data,
 
 	evas_object_geometry_get(ad->genlist, NULL, NULL, &w, NULL);
 	preference_get_int("readmode", &readmode);
+	ad->rotate_flag = EINA_FALSE;
 	if (readmode == 1)
 	{
 		Eina_List *list = elm_genlist_realized_items_get(ad->genlist);
@@ -344,7 +352,7 @@ _content_mouse_up(void *data,
 	Elm_Transit *transit = elm_transit_add();
 	elm_transit_object_add(transit, ad->old_genlist);
 	elm_transit_tween_mode_set(transit, ELM_TRANSIT_TWEEN_MODE_DECELERATE);
-
+	ad->transit = transit;
 	if (x_del < 0)
 	{
 		_nxt_chapter(data, obj, NULL, NULL);
@@ -357,8 +365,8 @@ _content_mouse_up(void *data,
 	}
 	elm_transit_duration_set(transit, 0.3);
 	elm_transit_del_cb_set(transit, _del_genlist, ad);
-	evas_object_smart_callback_add(ad->win, "wm,rotation,changed", _win_rotate_cb, transit);
-	ecore_idler_add(_transit_idler, transit);
+	evas_object_smart_callback_add(ad->win, "wm,rotation,changed", _win_rotate_cb, ad);
+	ecore_idler_add(_transit_idler, ad);
 }
 
 static void
