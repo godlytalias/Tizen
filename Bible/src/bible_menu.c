@@ -580,16 +580,21 @@ static void
 _font_size_change_done(void *data, Evas_Object *obj, void *event_info)
 {
 	appdata_s *ad = (appdata_s*)data;
-	Elm_Object_Item *item;
+	Elm_Object_Item *item, *view_item;
+	Eina_List *list_items;
 	int value = (int)elm_slider_value_get(obj);
 	preference_set_int("fontsize", value);
 
+	list_items = elm_genlist_realized_items_get(ad->genlist);
+	view_item = (Elm_Object_Item*)eina_list_data_get(list_items);
 	item = elm_genlist_first_item_get(ad->genlist);
 	while(item)
 	{
 		elm_genlist_item_update(item);
 		item = elm_genlist_item_next_get(item);
 	}
+	elm_genlist_item_show(view_item, ELM_GENLIST_ITEM_SCROLLTO_IN);
+	eina_list_free(list_items);
 }
 
 static void
