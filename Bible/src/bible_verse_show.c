@@ -99,6 +99,11 @@ _verse_show(Evas_Object *layout)
 	Evas_Object *in_verse_layout = elm_object_content_get(scroller);
 	Evas_Object *entry = elm_layout_content_get(in_verse_layout, "elm.swallow.verse");
 	elm_entry_entry_set(entry, verse_item->verse);
+	if (verse_item->verse_s)
+	{
+		Evas_Object *entry_s = elm_layout_content_get(in_verse_layout, "elm.swallow.verse_s");
+		elm_entry_entry_set(entry_s, verse_item->verse_s);
+	}
     sprintf(reference, "%s %d : %d",
     		Books[verse_item->bookcount], verse_item->chaptercount,
     		verse_item->versecount + 1);
