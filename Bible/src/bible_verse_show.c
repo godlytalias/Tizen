@@ -24,8 +24,6 @@ _create_verse_show_view(Evas_Object *layout, bible_verse_item *verse_item)
 
 	evas_object_data_set(layout, "verse_item", verse_item);
     Evas_Object *scroller = elm_scroller_add(layout);
-	evas_object_size_hint_align_set(scroller, EVAS_HINT_FILL, EVAS_HINT_FILL);
-	evas_object_size_hint_weight_set(scroller, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
     Evas_Object *verse_layout = elm_layout_add(layout);
 	evas_object_size_hint_align_set(verse_layout, EVAS_HINT_FILL, EVAS_HINT_FILL);
 	evas_object_size_hint_weight_set(verse_layout, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
@@ -46,10 +44,18 @@ _create_verse_show_view(Evas_Object *layout, bible_verse_item *verse_item)
 	    elm_layout_signal_emit(layout, "elm,holy_bible,night_mode,on", "elm");
 	}
 	elm_entry_text_style_user_push(entry, style);
-	evas_object_size_hint_align_set(entry, EVAS_HINT_FILL, EVAS_HINT_FILL);
-	evas_object_size_hint_weight_set(entry, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
     elm_entry_entry_set(entry, verse_item->verse);
     elm_layout_content_set(verse_layout, "elm.swallow.verse", entry);
+
+    if (verse_item->verse_s)
+    {
+    	elm_layout_signal_emit(verse_layout, "elm,holy_bible,verse_view,sec", "elm");
+    	Evas_Object *entry_s = elm_entry_add(layout);
+    	elm_entry_editable_set(entry_s, EINA_FALSE);
+    	elm_entry_text_style_user_push(entry_s, style);
+    	elm_entry_entry_set(entry_s, verse_item->verse_s);
+    	elm_layout_content_set(verse_layout, "elm.swallow.verse_s", entry_s);
+    }
     elm_object_content_set(scroller, verse_layout);
     return scroller;
 }
