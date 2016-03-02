@@ -2192,6 +2192,30 @@ collections {
                color: 0 0 0 0;
             }
          }
+         part { name: "elm.swallow.verse";
+            type: SWALLOW;
+            scale: 1;
+            description { state: "default" 0.0;
+               rel1.to: "base";
+               rel1.relative: 0.0 0.5;
+               rel2.to: "base";
+               rel2.relative: 1.0 0.5;
+            }
+         }
+      }
+   }
+
+   group { name: "verse_show_in_parallel_layout";
+      parts {
+         part { name: "base";
+            type: RECT;
+            scale: 1;
+            description { state: "default" 0.0;
+               min: 416 0;
+               fixed: 1 0;
+               color: 0 0 0 0;
+            }
+         }
          part { name: "elm.verse.separator";
             type: RECT;
             scale: 1;
@@ -2203,11 +2227,6 @@ collections {
                min: 416 2;
                fixed: 1 1;
                color: 50 50 50 100;
-               visible: 0;
-            }
-            description { state: "sec_verse_mode" 0.0;
-               inherit: "default" 0.0;
-               visible: 1;
             }
          }
          part { name: "elm.separator.padding.top";
@@ -2221,9 +2240,6 @@ collections {
                align: 0.5 1.0;
                fixed: 1 1;
             }
-            description { state: "sec_verse_mode" 0.0;
-               inherit: "default" 0.0;
-            }
          }
          part { name: "elm.separator.padding.bottom";
             type: SPACER;
@@ -2236,20 +2252,11 @@ collections {
                align: 0.5 0.0;
                fixed: 1 1;
             }
-            description { state: "sec_verse_mode" 0.0;
-               inherit: "default" 0.0;
-            }
          }
          part { name: "elm.swallow.verse";
             type: SWALLOW;
             scale: 1;
             description { state: "default" 0.0;
-               rel1.to: "base";
-               rel1.relative: 0.0 0.5;
-               rel2.to: "base";
-               rel2.relative: 1.0 0.5;
-            }
-            description { state: "sec_verse_mode" 0.0;
                rel1.to: "base";
                rel1.relative: 0.0 0.0;
                rel2.to_y: "elm.separator.padding.top";
@@ -2267,24 +2274,7 @@ collections {
                rel1.relative: 0.0 1.0;
                rel2.to: "base";
                rel2.relative: 1.0 1.0;
-               visible: 0;
             }
-            description { state: "sec_verse_mode" 0.0;
-               inherit: "default" 0.0;
-               visible: 1;
-            }
-         }
-      }
-      programs {
-         program { name: "secondary_verse_mode";
-            signal: "elm,holy_bible,verse_view,sec";
-            source: "elm";
-            action: STATE_SET "sec_verse_mode" 0.0;
-            target: "elm.verse.separator";
-            target: "elm.separator.padding.top";
-            target: "elm.separator.padding.bottom";
-            target: "elm.swallow.verse";
-            target: "elm.swallow.verse_s";         
          }
       }
    }

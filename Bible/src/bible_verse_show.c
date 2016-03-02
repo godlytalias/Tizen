@@ -60,7 +60,10 @@ _create_verse_show_view(Evas_Object *layout, bible_verse_item *verse_item)
     Evas_Object *verse_layout = elm_layout_add(layout);
 	evas_object_size_hint_align_set(verse_layout, EVAS_HINT_FILL, EVAS_HINT_FILL);
 	evas_object_size_hint_weight_set(verse_layout, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
-    elm_layout_file_set(verse_layout, ad->edj_path, "verse_show_in_layout");
+	if (verse_item->verse_s)
+	    elm_layout_file_set(verse_layout, ad->edj_path, "verse_show_in_parallel_layout");
+	else
+		elm_layout_file_set(verse_layout, ad->edj_path, "verse_show_in_layout");
     Evas_Object *entry = elm_entry_add(layout);
     elm_entry_editable_set(entry, EINA_FALSE);
 	preference_get_int("fontsize", &fontsize);
@@ -80,9 +83,6 @@ _create_verse_show_view(Evas_Object *layout, bible_verse_item *verse_item)
 	elm_layout_signal_emit(layout, "elm,holy_bible,labels,hide", "elm");
 	if (verse_item->bookmark) elm_layout_signal_emit(layout, "elm,holy_bible,bookmark,show", "elm");
 	if (verse_item->note) elm_layout_signal_emit(layout, "elm,holy_bible,note,show", "elm");
-
-    if (verse_item->verse_s)
-    	elm_layout_signal_emit(verse_layout, "elm,holy_bible,verse_view,sec", "elm");
 
 	elm_entry_text_style_user_push(entry, style);
     elm_entry_entry_set(entry, verse_item->verse);
