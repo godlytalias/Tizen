@@ -460,6 +460,15 @@ _remove_bookmark_query(void *data, Evas_Object *obj, void *event_info)
 	evas_object_show(toast);
 	elm_object_text_set(toast, BOOKMARK_REMOVED);
 	evas_object_smart_callback_add(toast, "timeout", eext_popup_back_cb, toast);
+
+	Evas_Object *layout = (Evas_Object*)evas_object_data_get(obj, "layout");
+	if (layout)
+	{
+		elm_layout_signal_emit(layout, "elm,holy_bible,labels,hide", "elm");
+		if (verse_item->bookmark) elm_layout_signal_emit(layout, "elm,holy_bible,bookmark,show", "elm");
+		if (verse_item->note) elm_layout_signal_emit(layout, "elm,holy_bible,note,show", "elm");
+	}
+
 	elm_ctxpopup_dismiss(obj);
 	elm_object_focus_set(verse_item->appdata->genlist, EINA_TRUE);
 	return;
@@ -509,6 +518,15 @@ _bookmark_verse_cb(void *data, Evas_Object *obj, void *event_info)
 		elm_genlist_item_update(verse_item->it);
 	}
 	else elm_object_text_set(toast, VERSE_ALREADY_BOOKMARKED);
+
+	Evas_Object *layout = (Evas_Object*)evas_object_data_get(obj, "layout");
+	if (layout)
+	{
+		elm_layout_signal_emit(layout, "elm,holy_bible,labels,hide", "elm");
+		if (verse_item->bookmark) elm_layout_signal_emit(layout, "elm,holy_bible,bookmark,show", "elm");
+		if (verse_item->note) elm_layout_signal_emit(layout, "elm,holy_bible,note,show", "elm");
+	}
+
 	elm_popup_timeout_set(toast, 2.0);
 	evas_object_show(toast);
 	evas_object_smart_callback_add(toast, "timeout", eext_popup_back_cb, toast);
@@ -549,6 +567,14 @@ _save_note_query(void *data, Evas_Object *obj, void *event_info)
 	evas_object_smart_callback_add(toast, "timeout", _popup_del, toast);
 	evas_object_show(toast);
 	elm_genlist_item_update(verse_item->it);
+
+	Evas_Object *layout = (Evas_Object*)evas_object_data_get(obj, "layout");
+	if (layout)
+	{
+		elm_layout_signal_emit(layout, "elm,holy_bible,labels,hide", "elm");
+		if (verse_item->bookmark) elm_layout_signal_emit(layout, "elm,holy_bible,bookmark,show", "elm");
+		if (verse_item->note) elm_layout_signal_emit(layout, "elm,holy_bible,note,show", "elm");
+	}
 }
 
 static void
@@ -593,6 +619,9 @@ void _add_note_cb(void *data, Evas_Object *obj, void *event_info)
 		elm_object_text_set(save_btn, SAVE);
 		elm_object_part_content_set(note_popup, "button2", save_btn);
 		evas_object_smart_callback_add(save_btn, "clicked", _save_note_query, verse_item);
+
+		Evas_Object *layout = (Evas_Object*)evas_object_data_get(obj, "layout");
+		if (layout) evas_object_data_set(save_btn, "layout", layout);
 	}
 	else
 	{

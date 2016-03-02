@@ -31,6 +31,7 @@ _show_verse_view_menu_cb(void *data, Evas_Object *obj, void *event_info)
 	win = elm_object_top_widget_get(ad->naviframe);
 	evas_object_smart_callback_add(win, "rotation,changed", move_more_ctxpopup, ctxpopup);
 	evas_object_smart_callback_add(ctxpopup, "dismissed", _popup_del, ad);
+	evas_object_data_set(ctxpopup, "layout", layout);
 
 	if (!verse_item->bookmark)
 		elm_ctxpopup_item_append(ctxpopup, BOOKMARK_VERSE, NULL, _bookmark_verse_cb, verse_item);
