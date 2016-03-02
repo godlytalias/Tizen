@@ -14,6 +14,38 @@ verse_navi_pop_cb(void *data, Elm_Object_Item *it)
 	return EINA_TRUE;
 }
 
+static void
+_show_verse_view_menu_cb(void *data, Evas_Object *obj, void *event_info)
+{
+	Evas_Object *win;
+	Evas_Object *layout = (Evas_Object*)data;
+	appdata_s *ad = (appdata_s*)evas_object_data_get(layout, "appdata");
+	bible_verse_item *verse_item = (bible_verse_item*)evas_object_data_get(layout, "verse_item");
+
+	Evas_Object *ctxpopup = elm_ctxpopup_add(ad->naviframe);
+	elm_ctxpopup_auto_hide_disabled_set(ctxpopup, EINA_TRUE);
+	elm_object_style_set(ctxpopup, "more/default");
+	eext_object_event_callback_add(ctxpopup, EEXT_CALLBACK_BACK, eext_ctxpopup_back_cb, NULL);
+	eext_object_event_callback_add(ctxpopup, EEXT_CALLBACK_MORE, eext_ctxpopup_back_cb, NULL);
+
+	win = elm_object_top_widget_get(ad->naviframe);
+	evas_object_smart_callback_add(win, "rotation,changed", move_more_ctxpopup, ctxpopup);
+	evas_object_smart_callback_add(ctxpopup, "dismissed", _popup_del, ad);
+
+	if (!verse_item->bookmark)
+		elm_ctxpopup_item_append(ctxpopup, BOOKMARK_VERSE, NULL, _bookmark_verse_cb, verse_item);
+	else
+		elm_ctxpopup_item_append(ctxpopup, REMOVE_BOOKMARK, NULL, _remove_bookmark_query, verse_item);
+	if (!verse_item->note)
+		elm_ctxpopup_item_append(ctxpopup, ADD_NOTES, NULL, _add_note_cb, verse_item);
+	else
+		elm_ctxpopup_item_append(ctxpopup, VIEW_NOTES, NULL, _add_note_cb, verse_item);
+
+	elm_ctxpopup_direction_priority_set(ctxpopup, ELM_CTXPOPUP_DIRECTION_UP, ELM_CTXPOPUP_DIRECTION_UNKNOWN, ELM_CTXPOPUP_DIRECTION_UNKNOWN, ELM_CTXPOPUP_DIRECTION_UNKNOWN);
+	move_more_ctxpopup(ctxpopup, NULL, NULL);
+	evas_object_show(ctxpopup);
+}
+
 static Evas_Object*
 _create_verse_show_view(Evas_Object *layout, bible_verse_item *verse_item)
 {
@@ -295,6 +327,7 @@ void
 _bible_verse_show(void *data, Evas_Object *obj, void *event_info)
 {
 	appdata_s *ad = (appdata_s*)data;
+	Evas_Object *menu_btn;
 	Elm_Object_Item *it = (Elm_Object_Item*)event_info;
 	Elm_Object_Item *nf_it;
 	char reference[256];
@@ -318,4 +351,10 @@ _bible_verse_show(void *data, Evas_Object *obj, void *event_info)
 	elm_layout_signal_callback_add(layout, "elm,holy_bible,next,down", "elm", _next_down, ad);
 	elm_layout_signal_callback_add(layout, "elm,holy_bible,prev,up", "elm", _prev_up, ad);
 	elm_layout_signal_callback_add(layout, "elm,holy_bible,prev,down", "elm", _prev_down, ad);
+
+	menu_btn = elm_button_add(ad->naviframe);
+	elm_object_style_set(menu_btn, "naviframe/more/default");
+	evas_object_smart_callback_add(menu_btn, "clicked", _show_verse_view_menu_cb, layout);
+	elm_object_item_part_content_set(nf_it, "toolbar_more_btn", menu_btn);
+	evas_object_show(menu_btn);
 }

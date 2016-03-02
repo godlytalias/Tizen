@@ -444,7 +444,7 @@ gl_content_get_cb(void *data, Evas_Object *obj, const char *part)
 	else return NULL;
 }
 
-static void
+void
 _remove_bookmark_query(void *data, Evas_Object *obj, void *event_info)
 {
 	char query[256];
@@ -491,7 +491,7 @@ _verse_item_show_cb(void *data, Evas_Object *obj, void *event_info)
 	_bible_verse_show(verse_item->appdata, verse_item->appdata->genlist, verse_item->it);
 }
 
-static void
+void
 _bookmark_verse_cb(void *data, Evas_Object *obj, void *event_info)
 {
 	bible_verse_item *verse_item = (bible_verse_item*)data;
@@ -572,8 +572,7 @@ _get_note(void *data, int argc, char **argv, char **azColName)
 	return 0;
 }
 
-static void
-_add_note_cb(void *data, Evas_Object *obj, void *event_info)
+void _add_note_cb(void *data, Evas_Object *obj, void *event_info)
 {
 	Evas_Object *note_entry;
 	bible_verse_item *verse_item = (bible_verse_item*)data;
