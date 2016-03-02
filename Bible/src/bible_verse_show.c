@@ -44,6 +44,10 @@ _create_verse_show_view(Evas_Object *layout, bible_verse_item *verse_item)
 	    elm_layout_signal_emit(layout, "elm,holy_bible,night_mode,on", "elm");
 	}
 
+	elm_layout_signal_emit(layout, "elm,holy_bible,labels,hide", "elm");
+	if (verse_item->bookmark) elm_layout_signal_emit(layout, "elm,holy_bible,bookmark,show", "elm");
+	if (verse_item->note) elm_layout_signal_emit(layout, "elm,holy_bible,note,show", "elm");
+
     if (verse_item->verse_s)
     	elm_layout_signal_emit(verse_layout, "elm,holy_bible,verse_view,sec", "elm");
 

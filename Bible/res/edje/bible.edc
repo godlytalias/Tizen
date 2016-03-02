@@ -2008,6 +2008,51 @@ collections {
 	             color: 255 255 255 250;
 	          }
 	        }
+         part{ name: "bookmark_note_label";
+            scale: 1;
+            type: RECT;
+            description { state: "default" 0.0;
+               min: 4 0;
+               fixed: 1 0;
+               color: 255 0 0 255;
+               rel1.to: "base";
+               rel2.to: "base";
+               rel2.relative: 0.0 1.0;
+               align: 0.0 0.0;
+               visible: 0;
+            }
+            description { state: "bookmark" 0.0;
+               inherit: "default" 0.0;
+               visible: 1;
+            }
+            description { state: "note" 0.0;
+               inherit: "bookmark" 0.0;
+               color: 0 0 255 255;
+            }
+            description { state: "bookmarknote" 0.0;
+               inherit: "bookmark" 0.0;
+               rel2.relative: 0.0 0.5;
+            } 
+         }
+         part { name: "note_label";
+            type: RECT;
+            scale: 1;
+            description { state: "default" 0.0;
+               min: 4 0;
+               fixed: 1 0;
+               color: 0 0 255 255;
+               rel1.to: "base";
+               rel1.relative: 0.0 0.5;
+               rel2.to: "base";
+               rel2.relative: 0.0 1.0;
+               align: 0.0 1.0;
+               visible: 0;
+            }
+            description { state: "bookmarknote" 0.0;
+               inherit: "default" 0.0;
+               visible: 1;
+            }
+         }
       }
       programs {
          program { name: "night_mode_on_script";
@@ -2025,6 +2070,34 @@ collections {
             target: "prev_btn";
             after: "night_mode_on_script";        
          }
+        program { name: "bookmark_show";
+           signal: "elm,holy_bible,bookmark,show";
+           source: "elm";
+           action: STATE_SET "bookmark" 0.0;
+           target: "bookmark_note_label";
+        }
+        program { name: "note_show";
+           signal: "elm,holy_bible,note,show";
+           source: "elm";          
+           script {
+              new st[31], Float:vl;
+              get_state(PART:"bookmark_note_label", st, 30, vl);
+              if (!strcmp(st, "bookmark")) {
+                 set_state(PART:"bookmark_note_label", "bookmarknote", 0.0);
+                 set_state(PART:"note_label", "bookmarknote", 0.0);
+              }
+              else {
+                 set_state(PART:"bookmark_note_label", "note", 0.0);
+              }
+           }
+        }
+        program { name: "bookmark_note_label_hide";
+           signal: "elm,holy_bible,labels,hide";
+           source: "elm";
+           action: STATE_SET "default" 0.0;
+           target: "bookmark_note_label";
+           target: "note_label";
+        }
         program { name: "next_down";
            signal: "mouse,down,*";
            source: "nxt_btn";
