@@ -43,19 +43,23 @@ _create_verse_show_view(Evas_Object *layout, bible_verse_item *verse_item)
 		sprintf(style, "DEFAULT='font=Tizen:style=Regular align=left font_size=%d color=#ffffff wrap=mixed'hilight=' + font_weight=Bold'", fontsize);
 	    elm_layout_signal_emit(layout, "elm,holy_bible,night_mode,on", "elm");
 	}
+
+    if (verse_item->verse_s)
+    	elm_layout_signal_emit(verse_layout, "elm,holy_bible,verse_view,sec", "elm");
+
 	elm_entry_text_style_user_push(entry, style);
     elm_entry_entry_set(entry, verse_item->verse);
     elm_layout_content_set(verse_layout, "elm.swallow.verse", entry);
 
     if (verse_item->verse_s)
     {
-    	elm_layout_signal_emit(verse_layout, "elm,holy_bible,verse_view,sec", "elm");
     	Evas_Object *entry_s = elm_entry_add(layout);
     	elm_entry_editable_set(entry_s, EINA_FALSE);
     	elm_entry_text_style_user_push(entry_s, style);
     	elm_entry_entry_set(entry_s, verse_item->verse_s);
     	elm_layout_content_set(verse_layout, "elm.swallow.verse_s", entry_s);
     }
+
     elm_object_content_set(scroller, verse_layout);
     return scroller;
 }
