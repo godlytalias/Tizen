@@ -48,7 +48,7 @@ collections {
       }
       style {
          name: "bookmark_style";
-         base: "font=Tizen:style=Regular align=left text_class=GTA1 font_size=25 color=#500000 wrap=mixed";
+         base: "font=Tizen:style=Regular align=left text_class=GTA1 font_size=25 linerelsize=115% color=#500000 wrap=mixed";
          tag: "br" "\n";
          tag: "ps" "ps";
          tag: "hilight" "+ font_weight=Bold";
@@ -57,7 +57,7 @@ collections {
       }
       style {
          name: "bookmark_style_night_mode";
-         base: "font=Tizen:style=Bold align=left text_class=GTA1B font_size=25 color=#ffffff wrap=mixed";
+         base: "font=Tizen:style=Bold align=left text_class=GTA1B font_size=25 linerelsize=115% color=#ffffff wrap=mixed";
          tag: "br" "\n";
          tag: "ps" "ps";
          tag: "hilight" "+ font_weight=Bold";
