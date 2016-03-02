@@ -106,6 +106,11 @@ _verse_show(Evas_Object *layout)
 	Evas_Object *scroller = elm_layout_content_get(layout, "elm.swallow.verse");
 	Evas_Object *in_verse_layout = elm_object_content_get(scroller);
 	Evas_Object *entry = elm_layout_content_get(in_verse_layout, "elm.swallow.verse");
+
+	elm_layout_signal_emit(layout, "elm,holy_bible,labels,hide", "elm");
+	if (verse_item->bookmark) elm_layout_signal_emit(layout, "elm,holy_bible,bookmark,show", "elm");
+	if (verse_item->note) elm_layout_signal_emit(layout, "elm,holy_bible,note,show", "elm");
+
 	elm_entry_entry_set(entry, verse_item->verse);
 	if (verse_item->verse_s)
 	{
