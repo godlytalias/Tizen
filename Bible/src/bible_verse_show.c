@@ -257,13 +257,33 @@ _prev_down(void *data, Evas_Object *obj, const char *emission, const char *sourc
 	ad->long_timer = ecore_timer_add(LONGPRESS_TIMEOUT, _longpress_cb, obj);
 }
 
+static Eina_Bool
+_transit_start(void *transit)
+{
+	Elm_Transit *trans = (Elm_Transit*)transit;
+	elm_transit_go(trans);
+	return ECORE_CALLBACK_CANCEL;
+}
+
+static void
+_transit_cb(Elm_Transit_Effect *effect, Elm_Transit *transit, double progress)
+{
+	if (progress == 0)
+	{
+		const Eina_List *list = elm_transit_objects_get(transit);
+		Evas_Object *obj = eina_list_data_get(list);
+		Evas_Object *content_layout = elm_object_content_get(obj);
+		evas_object_show(content_layout);
+	}
+}
+
 static void
 _content_mouse_up(void *data,
 		Evas *evas EINA_UNUSED,
 		Evas_Object *obj,
 		void *event_info)
 {
-	Evas_Coord x, y, w, h;
+	Evas_Coord w, h;
 	Elm_Object_Item *next_it;
 	char reference[256];
 	appdata_s *ad = (appdata_s*)data;
@@ -286,7 +306,6 @@ _content_mouse_up(void *data,
 
 	evas_object_freeze_events_set(obj, EINA_TRUE);
 	Evas_Object *verse = elm_layout_content_unset(obj, "elm.swallow.verse");
-	evas_object_geometry_get(verse, &x, &y, NULL, NULL);
 	evas_object_geometry_get(obj, NULL, NULL, &w, &h);
 
 	bible_verse_item *next_verse_item = (bible_verse_item*)elm_object_item_data_get(next_it);
@@ -299,19 +318,22 @@ _content_mouse_up(void *data,
 
 	if (x_del < 0)
 	{
-		elm_transit_effect_translation_add(transit, x, 0, x - w, 0);
-		elm_transit_effect_translation_add(transit_nxt, x + w, y, x, y);
+		elm_transit_effect_translation_add(transit, 0, 0, -w, 0);
+		elm_transit_effect_translation_add(transit_nxt, w, 0, 0, 0);
 	}
 	else
 	{
-		elm_transit_effect_translation_add(transit, x, 0, x + w, 0);
-		elm_transit_effect_translation_add(transit_nxt, x - w, y, x, y);
+		elm_transit_effect_translation_add(transit, 0, 0, w, 0);
+		elm_transit_effect_translation_add(transit_nxt, -w, 0, 0, 0);
 	}
     sprintf(reference, "%s %d : %d",
     		Books[next_verse_item->bookcount], next_verse_item->chaptercount,
     		next_verse_item->versecount + 1);
+    elm_transit_effect_add(transit_nxt, _transit_cb, NULL, NULL);
     elm_layout_text_set(obj, "elm.text.reference", reference);
 	elm_layout_content_set(obj, "elm.swallow.verse", next_transit_obj);
+	Evas_Object *content_layout = elm_object_content_get(next_transit_obj);
+	evas_object_hide(content_layout);
 	elm_transit_tween_mode_set(transit, ELM_TRANSIT_TWEEN_MODE_DECELERATE);
 	elm_transit_tween_mode_set(transit_nxt, ELM_TRANSIT_TWEEN_MODE_DECELERATE);
 	elm_transit_duration_set(transit, 0.3);
@@ -320,8 +342,8 @@ _content_mouse_up(void *data,
 	elm_transit_del_cb_set(transit_nxt, _transit_del, next_transit_obj);
 	evas_object_data_set(next_transit_obj, "next_verse_item", next_verse_item);
 	evas_object_data_set(next_transit_obj, "layout", obj);
-	elm_transit_go(transit_nxt);
-	elm_transit_go(transit);
+	ecore_idler_add(_transit_start, transit_nxt);
+	ecore_idler_add(_transit_start, transit);
 }
 
 void
