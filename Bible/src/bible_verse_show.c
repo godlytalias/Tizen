@@ -47,6 +47,28 @@ _show_verse_view_menu_cb(void *data, Evas_Object *obj, void *event_info)
 	evas_object_show(ctxpopup);
 }
 
+static Eina_Bool
+_search_trigger(void *data)
+{
+	appdata_s *ad = (appdata_s*)data;
+	evas_object_smart_callback_call(ad->search_entry, "activated", NULL);
+	return ECORE_CALLBACK_CANCEL;
+}
+
+void
+_search_selection_cb(void *data,
+		Evas_Object *obj,
+		void *event_info EINA_UNUSED)
+{
+	appdata_s *ad = (appdata_s*)data;
+	char *keyword = strdup(elm_entry_selection_get(obj));
+	if (!_keyword_check(keyword, ad)) return;
+	_search_word(ad, NULL, NULL);
+	elm_entry_entry_set(ad->search_entry, keyword);
+	if (keyword) free(keyword);
+	ecore_idler_add(_search_trigger, ad);
+}
+
 static Evas_Object*
 _create_verse_show_view(Evas_Object *layout, bible_verse_item *verse_item)
 {
@@ -66,6 +88,7 @@ _create_verse_show_view(Evas_Object *layout, bible_verse_item *verse_item)
 	else
 		elm_layout_file_set(verse_layout, ad->edj_path, "verse_show_in_layout");
     Evas_Object *entry = elm_entry_add(layout);
+    elm_entry_context_menu_item_add(entry, SEARCH_SELECTION, NULL, ELM_ICON_NONE, _search_selection_cb, ad);
     elm_entry_editable_set(entry, EINA_FALSE);
 	preference_get_int("fontsize", &fontsize);
 	preference_get_int("readmode", &readmode);

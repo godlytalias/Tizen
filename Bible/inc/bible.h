@@ -99,6 +99,7 @@ void _app_database_query(char*, int func(void*,int,char**,char**), void*);
 void _database_query(char*, int func(void*,int,char**,char**), void*);
 void _change_book(void *, Evas_Object*, const char*, const char*);
 void _search_word(void *, Evas_Object*,void*);
+Eina_Bool _keyword_check(const char *keyword, appdata_s *ad);
 void create_ctxpopup_more_menu(void*);
 void show_ctxpopup_more_button_cb(void*, Evas_Object*, void*);
 void hide_ctxpopup_more_button_cb(void*, Evas_Object*, void*);

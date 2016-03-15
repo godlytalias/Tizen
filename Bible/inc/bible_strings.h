@@ -29,6 +29,7 @@
 #define COPY "Copy"
 #define ABOUT "About"
 #define HELP "Help"
+#define SEARCH_SELECTION "Search selection"
 #define SEARCH_KEYWORD_IS_TOO_LARGE "Search keyword is too large"
 #define SEARCH_KEYWORD_IS_TOO_SMALL "Search keyword is too small"
 #define LOADING_BOOKS "Loading Books..."
