@@ -57,6 +57,7 @@ _create_verse_show_view(Evas_Object *layout, bible_verse_item *verse_item)
 
 	evas_object_data_set(layout, "verse_item", verse_item);
     Evas_Object *scroller = elm_scroller_add(layout);
+    elm_scroller_policy_set(scroller, ELM_SCROLLER_POLICY_OFF, ELM_SCROLLER_POLICY_OFF);
     Evas_Object *verse_layout = elm_layout_add(layout);
 	evas_object_size_hint_align_set(verse_layout, EVAS_HINT_FILL, EVAS_HINT_FILL);
 	evas_object_size_hint_weight_set(verse_layout, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
