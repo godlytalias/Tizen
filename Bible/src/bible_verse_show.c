@@ -15,6 +15,26 @@ verse_navi_pop_cb(void *data, Elm_Object_Item *it)
 }
 
 static void
+_verseview_copy_cb(void *data, Evas_Object *obj, void *event_info)
+{
+	bible_verse_item *verse_item = (bible_verse_item*)data;
+	verse_item->appdata->share_copy_mode = EINA_TRUE;
+	elm_genlist_item_selected_set(verse_item->it, EINA_TRUE);
+	_copy_verse_done_cb(verse_item->appdata, obj, NULL);
+	_popup_del(obj, NULL, NULL);
+}
+
+static void
+_verseview_share_cb(void *data, Evas_Object *obj, void *event_info)
+{
+	bible_verse_item *verse_item = (bible_verse_item*)data;
+	verse_item->appdata->share_copy_mode = EINA_TRUE;
+	elm_genlist_item_selected_set(verse_item->it, EINA_TRUE);
+	_share_verse_done_cb(verse_item->appdata, NULL, NULL);
+	_popup_del(obj, NULL, NULL);
+}
+
+static void
 _show_verse_view_menu_cb(void *data, Evas_Object *obj, void *event_info)
 {
 	Evas_Object *win;
@@ -41,6 +61,8 @@ _show_verse_view_menu_cb(void *data, Evas_Object *obj, void *event_info)
 		elm_ctxpopup_item_append(ctxpopup, ADD_NOTES, NULL, _add_note_cb, verse_item);
 	else
 		elm_ctxpopup_item_append(ctxpopup, VIEW_NOTES, NULL, _add_note_cb, verse_item);
+	elm_ctxpopup_item_append(ctxpopup, COPY_VERSE, NULL, _verseview_copy_cb, verse_item);
+	elm_ctxpopup_item_append(ctxpopup, SHARE_VERSE, NULL, _verseview_share_cb, verse_item);
 
 	elm_ctxpopup_direction_priority_set(ctxpopup, ELM_CTXPOPUP_DIRECTION_UP, ELM_CTXPOPUP_DIRECTION_UNKNOWN, ELM_CTXPOPUP_DIRECTION_UNKNOWN, ELM_CTXPOPUP_DIRECTION_UNKNOWN);
 	move_more_ctxpopup(ctxpopup, NULL, NULL);

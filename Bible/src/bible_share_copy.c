@@ -21,7 +21,7 @@ _prepare_verse_list(appdata_s *ad)
 	if (sel_count == 1)
 	{
 		char *buf = NULL;
-		buf = malloc(sizeof(char)*1024);
+		buf = malloc(sizeof(char)*2048);
 		if (!buf)
 		{
 			_app_no_memory(ad);
@@ -29,7 +29,10 @@ _prepare_verse_list(appdata_s *ad)
 		}
 		item = eina_list_data_get(sel_list);
 		bible_verse_item *verse_item = (bible_verse_item*)elm_object_item_data_get(item);
-		sprintf(buf,"%s ~ %s %d : %d", verse_item->verse, Books[verse_item->bookcount], verse_item->chaptercount, verse_item->versecount + 1);
+		if (verse_item->verse_s)
+			sprintf(buf,"%s\n%s\n ~ %s %d : %d", verse_item->verse, verse_item->verse_s, Books[verse_item->bookcount], verse_item->chaptercount, verse_item->versecount + 1);
+		else
+			sprintf(buf,"%s ~ %s %d : %d", verse_item->verse, Books[verse_item->bookcount], verse_item->chaptercount, verse_item->versecount + 1);
 		return buf;
 	}
 	else
@@ -107,7 +110,7 @@ _prepare_verse_list(appdata_s *ad)
 	}
 }
 
-static void
+void
 _share_verse_done_cb(void *data, Evas_Object *obj, void *event_info)
 {
 	char *buf;
@@ -126,7 +129,7 @@ _share_verse_done_cb(void *data, Evas_Object *obj, void *event_info)
 	evas_object_smart_callback_del(obj, "clicked", _share_verse_done_cb);
 }
 
-static void
+void
 _copy_verse_done_cb(void *data, Evas_Object *obj, void *event_info)
 {
 	char *buf;
