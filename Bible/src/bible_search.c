@@ -763,6 +763,10 @@ _content_mouse_up(void *data,
 	ad->panel_mode = EINA_FALSE;
 	int x_del, y_del;
 	Evas_Event_Mouse_Up *ev = (Evas_Event_Mouse_Up*)event_info;
+	Evas_Coord x, y, w, h;
+
+	evas_object_geometry_get(ad->search_entry, &x, &y, &w, &h);
+	if (!ELM_RECTS_POINT_OUT(x, y, w, h, ad->mouse_x, ad->mouse_y)) return;
 	if ((ev->timestamp - ad->mouse_down_time) > 1000) return;
 	x_del = ev->canvas.x - ad->mouse_x;
 	y_del = ev->canvas.y - ad->mouse_y;
