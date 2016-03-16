@@ -1169,6 +1169,42 @@ ctxpopup_item_select_cb(void *data, Evas_Object *obj, void *event_info)
 		evas_object_show(label);
 		elm_box_pack_end(content_box, label);
 		sprintf(text_content, "<color=#000000FF><align=left><font_size=25>"
+				"<b>Verse View</b></font_size></align></color>");
+
+		label = elm_label_add(popup);
+		evas_object_size_hint_weight_set(label, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
+		evas_object_size_hint_align_set(label, EVAS_HINT_FILL, EVAS_HINT_FILL);
+		elm_label_line_wrap_set(label, ELM_WRAP_WORD);
+		elm_object_text_set(label, text_content);
+		evas_object_show(label);
+		elm_box_pack_end(content_box, label);
+
+		sprintf(text_content, "<color=#000000FF><align=left><font_size=20>"
+				"This option allows users to read chapters verse vise. "
+				"This screen will show one verse at a time in an enlarged manner. "
+				"Users can change between verse either by swiping on screen to left / right or by "
+				"clicking the arrows in the bottom of the screen. "
+				"Users can go to verse view screen either through application menu "
+				"or by double tapping a verse or else by selecting the verse view option "
+				"in the menu shown on long pressing the verse.</font_size></align></color>");
+
+		label = elm_label_add(popup);
+		evas_object_size_hint_weight_set(label, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
+		evas_object_size_hint_align_set(label, EVAS_HINT_FILL, EVAS_HINT_FILL);
+		elm_label_line_wrap_set(label, ELM_WRAP_WORD);
+		elm_object_text_set(label, text_content);
+		evas_object_show(label);
+		elm_box_pack_end(content_box, label);
+
+		label = elm_label_add(popup);
+		evas_object_size_hint_weight_set(label, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
+		evas_object_size_hint_align_set(label, EVAS_HINT_FILL, EVAS_HINT_FILL);
+		elm_label_line_wrap_set(label, ELM_WRAP_WORD);
+		sprintf(text_content, " ");
+		elm_object_text_set(label, text_content);
+		evas_object_show(label);
+		elm_box_pack_end(content_box, label);
+		sprintf(text_content, "<color=#000000FF><align=left><font_size=25>"
 				"<b>Font Size</b></font_size></align></color>");
 
 		label = elm_label_add(popup);
