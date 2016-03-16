@@ -2203,6 +2203,8 @@ collections {
                rel1.relative: 0.0 0.5;
                rel2.to: "base";
                rel2.relative: 1.0 0.5;
+               min: 416 0;
+               fixed: 1 0;
             }
          }
       }
@@ -2265,6 +2267,8 @@ collections {
                rel2.to_y: "elm.separator.padding.top";
                rel2.to_x: "base";
                rel2.relative: 1.0 0.0;
+               min: 416 0;
+               fixed: 1 0;
                align: 0.5 1.0;
             }
          }
@@ -2277,6 +2281,8 @@ collections {
                rel1.relative: 0.0 1.0;
                rel2.to: "base";
                rel2.relative: 1.0 1.0;
+               min: 416 0;
+               fixed: 1 0;
             }
          }
       }
