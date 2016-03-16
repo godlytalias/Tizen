@@ -307,6 +307,13 @@ static Eina_Bool
 _transit_start(void *transit)
 {
 	Elm_Transit *trans = (Elm_Transit*)transit;
+	Evas_Coord x, y;
+
+	const Eina_List *list = elm_transit_objects_get(trans);
+	Evas_Object *obj = eina_list_data_get(list);
+	evas_object_geometry_get(obj, &x, &y, NULL, NULL);
+
+	if (x == 0 || y == 0) return ECORE_CALLBACK_RENEW;
 	elm_transit_go(trans);
 	return ECORE_CALLBACK_CANCEL;
 }
