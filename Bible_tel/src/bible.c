@@ -289,19 +289,35 @@ _content_mouse_down(void *data,
 }
 
 static void
+_win_rotate_cb(void *data, Evas_Object *obj, void *event_info)
+{
+	appdata_s *ad = (appdata_s*)data;
+	if (elm_transit_progress_value_get(ad->transit) > 0)
+		elm_transit_del(ad->transit);
+	else
+		ad->rotate_flag = EINA_TRUE;
+}
+
+static void
 _del_genlist(void *data, Elm_Transit *transit)
 {
 	appdata_s *ad = (appdata_s*)data;
 	evas_object_del(ad->old_genlist);
 	evas_object_freeze_events_set(ad->genlist, EINA_FALSE);
+	evas_object_smart_callback_del(ad->win, "wm,rotation,changed", _win_rotate_cb);
+	ad->rotate_flag = EINA_FALSE;
+	ad->transit = NULL;
 	elm_object_focus_set(ad->genlist, EINA_TRUE);
 }
 
 static Eina_Bool
 _transit_idler(void *data)
 {
-	Elm_Transit *transit = (Elm_Transit*)data;
-	elm_transit_go(transit);
+	appdata_s *ad = (appdata_s*)data;
+	if (!ad->rotate_flag)
+		elm_transit_go(ad->transit);
+	else
+		elm_transit_del(ad->transit);
 	return ECORE_CALLBACK_CANCEL;
 }
 
@@ -329,6 +345,7 @@ _content_mouse_up(void *data,
 
 	evas_object_geometry_get(ad->genlist, NULL, NULL, &w, NULL);
 	preference_get_int("readmode", &readmode);
+	ad->rotate_flag = EINA_FALSE;
 	if (readmode == 1)
 	{
 		Eina_List *list = elm_genlist_realized_items_get(ad->genlist);
@@ -339,6 +356,13 @@ _content_mouse_up(void *data,
 		}
 		eina_list_free(list);
 	}
+	else
+	{
+		Elm_Object_Item *item = elm_genlist_at_xy_item_get(ad->genlist, ev->canvas.x, ev->canvas.y, NULL);
+		layout = elm_object_item_part_content_get(item, "elm.swallow.content");
+		elm_layout_signal_emit(layout, "elm,holy_bible,selection,fasthide", "elm");
+		elm_genlist_highlight_mode_set(ad->genlist, EINA_FALSE);
+	}
 	ad->old_genlist = elm_object_part_content_unset(ad->layout, "elm.swallow.content");
 	evas_object_freeze_events_set(ad->old_genlist, EINA_TRUE);
 	evas_object_repeat_events_set(ad->old_genlist, EINA_FALSE);
@@ -347,7 +371,7 @@ _content_mouse_up(void *data,
 	Elm_Transit *transit = elm_transit_add();
 	elm_transit_object_add(transit, ad->old_genlist);
 	elm_transit_tween_mode_set(transit, ELM_TRANSIT_TWEEN_MODE_DECELERATE);
-
+	ad->transit = transit;
 	if (x_del < 0)
 	{
 		_nxt_chapter(data, obj, NULL, NULL);
@@ -360,7 +384,8 @@ _content_mouse_up(void *data,
 	}
 	elm_transit_duration_set(transit, 0.3);
 	elm_transit_del_cb_set(transit, _del_genlist, ad);
-	ecore_idler_add(_transit_idler, transit);
+	evas_object_smart_callback_add(ad->win, "wm,rotation,changed", _win_rotate_cb, ad);
+	ecore_idler_add(_transit_idler, ad);
 }
 
 static void
@@ -438,7 +463,7 @@ gl_content_get_cb(void *data, Evas_Object *obj, const char *part)
 	else return NULL;
 }
 
-static void
+void
 _remove_bookmark_query(void *data, Evas_Object *obj, void *event_info)
 {
 	char query[256];
@@ -454,6 +479,15 @@ _remove_bookmark_query(void *data, Evas_Object *obj, void *event_info)
 	evas_object_show(toast);
 	elm_object_text_set(toast, BOOKMARK_REMOVED);
 	evas_object_smart_callback_add(toast, "timeout", eext_popup_back_cb, toast);
+
+	Evas_Object *layout = (Evas_Object*)evas_object_data_get(obj, "layout");
+	if (layout)
+	{
+		elm_layout_signal_emit(layout, "elm,holy_bible,labels,hide", "elm");
+		if (verse_item->bookmark) elm_layout_signal_emit(layout, "elm,holy_bible,bookmark,show", "elm");
+		if (verse_item->note) elm_layout_signal_emit(layout, "elm,holy_bible,note,show", "elm");
+	}
+
 	elm_ctxpopup_dismiss(obj);
 	elm_object_focus_set(verse_item->appdata->genlist, EINA_TRUE);
 	return;
@@ -478,6 +512,14 @@ _copy_verse_item_cb(void *data, Evas_Object *obj, void *event_info)
 }
 
 static void
+_verse_item_show_cb(void *data, Evas_Object *obj, void *event_info)
+{
+	bible_verse_item *verse_item = (bible_verse_item*)data;
+	_popup_del(obj, NULL, NULL);
+	_bible_verse_show(verse_item->appdata, verse_item->appdata->genlist, verse_item->it);
+}
+
+void
 _bookmark_verse_cb(void *data, Evas_Object *obj, void *event_info)
 {
 	bible_verse_item *verse_item = (bible_verse_item*)data;
@@ -495,6 +537,15 @@ _bookmark_verse_cb(void *data, Evas_Object *obj, void *event_info)
 		elm_genlist_item_update(verse_item->it);
 	}
 	else elm_object_text_set(toast, VERSE_ALREADY_BOOKMARKED);
+
+	Evas_Object *layout = (Evas_Object*)evas_object_data_get(obj, "layout");
+	if (layout)
+	{
+		elm_layout_signal_emit(layout, "elm,holy_bible,labels,hide", "elm");
+		if (verse_item->bookmark) elm_layout_signal_emit(layout, "elm,holy_bible,bookmark,show", "elm");
+		if (verse_item->note) elm_layout_signal_emit(layout, "elm,holy_bible,note,show", "elm");
+	}
+
 	elm_popup_timeout_set(toast, 2.0);
 	evas_object_show(toast);
 	evas_object_smart_callback_add(toast, "timeout", eext_popup_back_cb, toast);
@@ -535,6 +586,14 @@ _save_note_query(void *data, Evas_Object *obj, void *event_info)
 	evas_object_smart_callback_add(toast, "timeout", _popup_del, toast);
 	evas_object_show(toast);
 	elm_genlist_item_update(verse_item->it);
+
+	Evas_Object *layout = (Evas_Object*)evas_object_data_get(obj, "layout");
+	if (layout)
+	{
+		elm_layout_signal_emit(layout, "elm,holy_bible,labels,hide", "elm");
+		if (verse_item->bookmark) elm_layout_signal_emit(layout, "elm,holy_bible,bookmark,show", "elm");
+		if (verse_item->note) elm_layout_signal_emit(layout, "elm,holy_bible,note,show", "elm");
+	}
 }
 
 static void
@@ -558,8 +617,7 @@ _get_note(void *data, int argc, char **argv, char **azColName)
 	return 0;
 }
 
-static void
-_add_note_cb(void *data, Evas_Object *obj, void *event_info)
+void _add_note_cb(void *data, Evas_Object *obj, void *event_info)
 {
 	Evas_Object *note_entry;
 	bible_verse_item *verse_item = (bible_verse_item*)data;
@@ -580,6 +638,9 @@ _add_note_cb(void *data, Evas_Object *obj, void *event_info)
 		elm_object_text_set(save_btn, SAVE);
 		elm_object_part_content_set(note_popup, "button2", save_btn);
 		evas_object_smart_callback_add(save_btn, "clicked", _save_note_query, verse_item);
+
+		Evas_Object *layout = (Evas_Object*)evas_object_data_get(obj, "layout");
+		if (layout) evas_object_data_set(save_btn, "layout", layout);
 	}
 	else
 	{
@@ -615,6 +676,15 @@ _add_note_cb(void *data, Evas_Object *obj, void *event_info)
 }
 
 static void
+gl_doubleclick_cb(void *data, Evas_Object *obj, void *event_info)
+{
+	appdata_s *ad = (appdata_s*)data;
+	if (ad->share_copy_mode) return;
+
+	_bible_verse_show(data, obj, event_info);
+}
+
+static void
 gl_longpressed_cb(void *data, Evas_Object *obj, void *event_info)
 {
 	appdata_s *ad = (appdata_s*)data;
@@ -638,6 +708,7 @@ gl_longpressed_cb(void *data, Evas_Object *obj, void *event_info)
 		elm_ctxpopup_item_append(verse_popup, VIEW_NOTES, NULL, _add_note_cb, verse_item);
 	elm_ctxpopup_item_append(verse_popup, SHARE_VERSE, NULL, _share_verse_item_cb, verse_item);
 	elm_ctxpopup_item_append(verse_popup, COPY_VERSE, NULL, _copy_verse_item_cb, verse_item);
+	elm_ctxpopup_item_append(verse_popup, VERSE_VIEW, NULL, _verse_item_show_cb, verse_item);
 	evas_object_smart_callback_add(verse_popup, "dismissed", _popup_del, verse_popup);
 	eext_object_event_callback_add(verse_popup, EEXT_CALLBACK_BACK, eext_ctxpopup_back_cb, verse_popup);
 	eext_object_event_callback_add(verse_popup, EEXT_CALLBACK_MORE, eext_ctxpopup_back_cb, verse_popup);
@@ -747,7 +818,7 @@ _create_genlist(appdata_s *ad)
 	evas_object_smart_callback_add(ad->genlist, "highlighted", gl_highlighted_cb, ad);
 	evas_object_smart_callback_add(ad->genlist, "unhighlighted", gl_unhighlighted_cb, ad);
 	evas_object_smart_callback_add(ad->genlist, "longpressed", gl_longpressed_cb, ad);
-	evas_object_smart_callback_add(ad->genlist, "clicked,double", gl_longpressed_cb, ad);
+	evas_object_smart_callback_add(ad->genlist, "clicked,double", gl_doubleclick_cb, ad);
 	evas_object_event_callback_add(ad->genlist, EVAS_CALLBACK_MOUSE_DOWN, _content_mouse_down, ad);
 	evas_object_event_callback_add(ad->genlist, EVAS_CALLBACK_MOUSE_UP, _content_mouse_up, ad);
 }

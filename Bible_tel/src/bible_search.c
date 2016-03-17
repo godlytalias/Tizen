@@ -288,17 +288,9 @@ _bible_search_query(char* search_query, appdata_s *ad)
 	elm_object_focus_set(ad->search_result_genlist, EINA_TRUE);
 }
 
-static void
-_search_keyword(void *data,
-		Evas_Object *obj ,
-		void *event_info EINA_UNUSED)
+Eina_Bool
+_keyword_check(const char *keyword, appdata_s *ad)
 {
-	appdata_s *ad = (appdata_s*)data;
-	char *keyword = strdup(elm_entry_entry_get(ad->search_entry));
-	char *ch;
-	char keyword_query[2560];
-	char search_query[2560];
-	char condition_key[5];
 	if (keyword && (strlen(keyword) > 1024))
 	{
 		Evas_Object *toast_popup = elm_popup_add(ad->naviframe);
@@ -307,7 +299,7 @@ _search_keyword(void *data,
 		elm_object_text_set(toast_popup, SEARCH_KEYWORD_IS_TOO_LARGE);
 		evas_object_smart_callback_add(toast_popup, "timeout", _dismiss_verse_popup, toast_popup);
 		evas_object_show(toast_popup);
-		return;
+		return EINA_FALSE;
 	}
 	else if (keyword && (strlen(keyword) < 2))
 	{
@@ -317,8 +309,23 @@ _search_keyword(void *data,
 		elm_object_text_set(toast_popup, SEARCH_KEYWORD_IS_TOO_SMALL);
 		evas_object_smart_callback_add(toast_popup, "timeout", _dismiss_verse_popup, toast_popup);
 		evas_object_show(toast_popup);
-		return;
+		return EINA_FALSE;
 	}
+	else return EINA_TRUE;
+}
+
+static void
+_search_keyword(void *data,
+		Evas_Object *obj EINA_UNUSED,
+		void *event_info EINA_UNUSED)
+{
+	appdata_s *ad = (appdata_s*)data;
+	char *keyword = strdup(elm_entry_entry_get(ad->search_entry));
+	char *ch;
+	char keyword_query[2560];
+	char search_query[2560];
+	char condition_key[5];
+	if (!_keyword_check(keyword, ad)) return;
 
 	_loading_progress(ad->win);
 	evas_object_data_del(ad->search_result_genlist, "keyword");
@@ -756,6 +763,10 @@ _content_mouse_up(void *data,
 	ad->panel_mode = EINA_FALSE;
 	int x_del, y_del;
 	Evas_Event_Mouse_Up *ev = (Evas_Event_Mouse_Up*)event_info;
+	Evas_Coord x, y, w, h;
+
+	evas_object_geometry_get(ad->search_entry, &x, &y, &w, &h);
+	if (!ELM_RECTS_POINT_OUT(x, y, w, h, ad->mouse_x, ad->mouse_y)) return;
 	if ((ev->timestamp - ad->mouse_down_time) > 1000) return;
 	x_del = ev->canvas.x - ad->mouse_x;
 	y_del = ev->canvas.y - ad->mouse_y;
