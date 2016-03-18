@@ -580,16 +580,21 @@ static void
 _font_size_change_done(void *data, Evas_Object *obj, void *event_info)
 {
 	appdata_s *ad = (appdata_s*)data;
-	Elm_Object_Item *item;
+	Elm_Object_Item *item, *view_item;
+	Eina_List *list_items;
 	int value = (int)elm_slider_value_get(obj);
 	preference_set_int("fontsize", value);
 
+	list_items = elm_genlist_realized_items_get(ad->genlist);
+	view_item = (Elm_Object_Item*)eina_list_data_get(list_items);
 	item = elm_genlist_first_item_get(ad->genlist);
 	while(item)
 	{
 		elm_genlist_item_update(item);
 		item = elm_genlist_item_next_get(item);
 	}
+	elm_genlist_item_show(view_item, ELM_GENLIST_ITEM_SCROLLTO_IN);
+	eina_list_free(list_items);
 }
 
 static void
@@ -747,6 +752,15 @@ ctxpopup_item_select_cb(void *data, Evas_Object *obj, void *event_info)
 	if (!strcmp(title_label, SELECT_CHAPTER))
 	{
 		_change_book(data, ad->layout, NULL, NULL);
+		elm_ctxpopup_dismiss(obj);
+		return;
+	}
+
+	if (!strcmp(title_label, VERSE_VIEW))
+	{
+		Eina_List *list = elm_genlist_realized_items_get(ad->genlist);
+		_bible_verse_show(ad, ad->genlist, eina_list_data_get(list));
+		eina_list_free(list);
 		elm_ctxpopup_dismiss(obj);
 		return;
 	}
@@ -1155,6 +1169,42 @@ ctxpopup_item_select_cb(void *data, Evas_Object *obj, void *event_info)
 		evas_object_show(label);
 		elm_box_pack_end(content_box, label);
 		sprintf(text_content, "<color=#000000FF><align=left><font_size=25>"
+				"<b>Verse View</b></font_size></align></color>");
+
+		label = elm_label_add(popup);
+		evas_object_size_hint_weight_set(label, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
+		evas_object_size_hint_align_set(label, EVAS_HINT_FILL, EVAS_HINT_FILL);
+		elm_label_line_wrap_set(label, ELM_WRAP_WORD);
+		elm_object_text_set(label, text_content);
+		evas_object_show(label);
+		elm_box_pack_end(content_box, label);
+
+		sprintf(text_content, "<color=#000000FF><align=left><font_size=20>"
+				"This option allows users to read chapters verse vise. "
+				"This screen will show one verse at a time in an enlarged manner. "
+				"Users can change between verse either by swiping on screen to left / right or by "
+				"clicking the arrows in the bottom of the screen. "
+				"Users can go to verse view screen either through application menu "
+				"or by double tapping a verse or else by selecting the verse view option "
+				"in the menu shown on long pressing the verse.</font_size></align></color>");
+
+		label = elm_label_add(popup);
+		evas_object_size_hint_weight_set(label, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
+		evas_object_size_hint_align_set(label, EVAS_HINT_FILL, EVAS_HINT_FILL);
+		elm_label_line_wrap_set(label, ELM_WRAP_WORD);
+		elm_object_text_set(label, text_content);
+		evas_object_show(label);
+		elm_box_pack_end(content_box, label);
+
+		label = elm_label_add(popup);
+		evas_object_size_hint_weight_set(label, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
+		evas_object_size_hint_align_set(label, EVAS_HINT_FILL, EVAS_HINT_FILL);
+		elm_label_line_wrap_set(label, ELM_WRAP_WORD);
+		sprintf(text_content, " ");
+		elm_object_text_set(label, text_content);
+		evas_object_show(label);
+		elm_box_pack_end(content_box, label);
+		sprintf(text_content, "<color=#000000FF><align=left><font_size=25>"
 				"<b>Font Size</b></font_size></align></color>");
 
 		label = elm_label_add(popup);
@@ -1457,6 +1507,7 @@ create_ctxpopup_more_menu(void *data)
 	elm_ctxpopup_item_append(ctxpopup, SELECT_CHAPTER, NULL, ctxpopup_item_select_cb, ad);
 	elm_ctxpopup_item_append(ctxpopup, PARALLEL_READING, NULL, ctxpopup_item_select_cb, ad);
 	ad->readmode_item = elm_ctxpopup_item_append(ctxpopup, DAY_MODE, NULL, ctxpopup_item_select_cb, ad);
+	elm_ctxpopup_item_append(ctxpopup, VERSE_VIEW, NULL, ctxpopup_item_select_cb, ad);
 	elm_ctxpopup_item_append(ctxpopup, FONT_SIZE, NULL, ctxpopup_item_select_cb, ad);
 	elm_ctxpopup_item_append(ctxpopup, HELP, NULL, ctxpopup_item_select_cb, ad);
 	elm_ctxpopup_item_append(ctxpopup, ABOUT, NULL, ctxpopup_item_select_cb, ad);
