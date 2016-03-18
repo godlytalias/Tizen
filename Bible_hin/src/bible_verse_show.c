@@ -143,6 +143,7 @@ _create_verse_show_view(Evas_Object *layout, bible_verse_item *verse_item)
     	elm_layout_content_set(verse_layout, "elm.swallow.verse_s", entry_s);
     }
 
+    evas_object_smart_changed(verse_layout);
     elm_object_content_set(scroller, verse_layout);
     return scroller;
 }
