@@ -21,7 +21,7 @@
 #define SEARCH "Search"
 #define DAY_MODE "Day Mode Reading"
 #define NIGHT_MODE "Night Mode Reading"
-#define VERSE_VIEW "Verse View"
+#define VERSE_VIEW "Verse Mode"
 #define FONT_SIZE "Font Size"
 #define BOOKMARKS "Bookmarks"
 #define NOTES "Notes"

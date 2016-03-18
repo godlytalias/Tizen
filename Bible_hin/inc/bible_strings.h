@@ -21,7 +21,7 @@
 #define SEARCH "खोजें"
 #define DAY_MODE "दिन मोड"
 #define NIGHT_MODE "रात मोड"
-#define VERSE_VIEW "पद दर्शन"
+#define VERSE_VIEW "पद मोड"
 #define FONT_SIZE "फ़ॉन्ट आकार"
 #define BOOKMARKS "बुकमार्क"
 #define NOTES "नोट्स"
