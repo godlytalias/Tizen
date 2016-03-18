@@ -899,7 +899,7 @@ collections {
                rel2.relative: 0.0 1.0;
                rel2.offset: -24 0;
                min: 270 80;
-               fixed: 0 1;
+               fixed: 1 1;
                align: 0.5 0.0;
             }
          }
@@ -908,7 +908,7 @@ collections {
             scale: 1;
             description { state: "default" 0.0;
                min: 270 2;
-               fixed: 0 1;
+               fixed: 1 1;
                rel1.to: "elm.swallow.entry";
                rel1.relative: 0.0 1.0;
                rel2.to: "elm.swallow.entry";
