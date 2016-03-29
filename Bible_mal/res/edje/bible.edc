@@ -1263,6 +1263,7 @@ collections {
             description { state: "default" 0.0;
                min: 480 64;
                color: 0 0 0 0;
+               fixed: 1 0;
             }
             description { state: "night_mode" 0.0;
                inherit: "default" 0.0;
@@ -1503,6 +1504,37 @@ collections {
    group { name: "parallel_verse_layout";
       inherit: "verse_layout";
       parts{
+         part { name: "elm.verse.padding";
+            scale: 1;
+            type: SPACER;
+            description { state: "default" 0.0;
+               min: 16 0;
+               fixed: 1 0;
+               rel1.to: "base";
+               rel1.relative: 0.5 0.0;
+               rel2.to: "base";
+               rel2.relative: 0.5 1.0;
+            }
+         }
+         part { name: "elm.verse.separator";
+            scale: 1;
+            type: RECT;
+            description { state: "default" 0.0;
+               min: 2 0;
+               fixed: 1 0;
+               rel1.to_x: "elm.verse.padding";
+               rel1.to_y: "base";
+               rel1.relative: 0.5 0.0;
+               rel2.to_x: "elm.verse.padding";
+               rel2.to_y: "base";
+               rel2.relative: 0.5 1.0;
+               color: 0 0 0 100;
+            }
+            description { state: "night_mode" 0.0;
+               inherit: "default" 0.0;
+               color: 100 100 100 100;
+            }
+         }
          part{ name: "elm.text.verse";
             scale: 1;
             type: TEXTBLOCK;
@@ -1512,8 +1544,9 @@ collections {
                rel1.to: "left_top_padding";
                rel1.relative: 1.0 1.0;
                rel2.to_y: "right_bottom_padding";
-               rel2.to_x: "base";
-               rel2.relative: 0.5 0.0;
+               rel2.to_x: "elm.verse.padding";
+               rel2.relative: 0.0 0.0;
+               fixed: 1 0;
                text.min: 0 1;
                text.max: 0 1;
             }
@@ -1530,40 +1563,6 @@ collections {
                text.style: "bookmark_style_night_mode";
             }  
          }
-         part { name: "elm.verse.padding";
-            scale: 1;
-            type: SPACER;
-            description { state: "default" 0.0;
-               min: 16 16;
-               fixed: 1 0;
-               rel1.to_x: "elm.text.verse";
-               rel1.to_y: "left_top_padding";
-               rel1.relative: 1.0 1.0;
-               rel2.to_x: "elm.text.verse";
-               rel2.to_y: "right_bottom_padding";
-               rel2.relative: 1.0 0.0;
-               align: 0.0 0.5;
-            }
-         }
-         part { name: "elm.verse.separator";
-            scale: 1;
-            type: RECT;
-            description { state: "default" 0.0;
-               min: 2 0;
-               fixed: 1 0;
-               rel1.to_x: "elm.verse.padding";
-               rel1.to_y: "base";
-               rel1.relative: 0.3 0.0;
-               rel2.to_x: "elm.verse.padding";
-               rel2.to_y: "base";
-               rel2.relative: 0.3 1.0;
-               color: 0 0 0 100;
-            }
-            description { state: "night_mode" 0.0;
-               inherit: "default" 0.0;
-               color: 100 100 100 100;
-            }
-         }
          part{ name: "elm.text.verse_s";
             scale: 1;
             type: TEXTBLOCK;
@@ -1575,6 +1574,7 @@ collections {
                rel1.relative: 1.0 1.0;
                rel2.to: "right_bottom_padding";
                rel2.relative: 0.0 0.0;
+               fixed: 1 0;
                text.min: 0 1;
                text.max: 0 1;
             }
