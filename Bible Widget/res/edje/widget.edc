@@ -1,0 +1,47 @@
+collections {
+   base_scale: 1.8;
+   group { name: "main";
+      parts {
+         part { name: "base";
+            type: SPACER;
+            description { state: "default" 0.0;
+               min: 48 48;
+            }
+         }
+         part { name: "elm.padding.top.left";
+            type: SPACER;
+            description { state: "default" 0.0;
+               min: 24 24;
+               fixed: 1 1;
+               rel1.to: "base";
+               rel2.to: "base";
+               rel2.relative: 0.0 0.0;
+               align: 0.0 0.0;
+            }
+         }
+         part { name: "elm.padding.bottom.right";
+            type: SPACER;
+            description { state: "default" 0.0;
+               min: 24 24;
+               fixed: 1 1;
+               rel1.to: "base";
+               rel1.relative: 1.0 1.0;
+               rel2.to: "base";
+               align: 1.0 1.0;
+            }
+         }
+         part { name: "elm.swallow.verse";
+            type: SWALLOW;
+            description { state: "default" 0.0;
+               min: 0 0;
+               rel1.to_x: "elm.padding.top.left";
+               rel1.to_y: "base";
+               rel1.relative: 1.0 0.5;
+               rel2.to_x: "elm.padding.bottom.right";
+               rel2.to_y: "base";
+               rel2.relative: 0.0 0.5;
+            }
+         }
+      }
+   }
+}
