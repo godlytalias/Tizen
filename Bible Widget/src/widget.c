@@ -24,6 +24,7 @@ widget_instance_create(widget_context_h context, bundle *content, int w, int h, 
 	wid->verse_item_head = NULL;
 	_query_verse(wid,0,1,1);
 	_query_verse(wid,0,1,2);
+	_query_verse(wid,16,8,9);
 	/* Window */
 	ret = widget_app_get_elm_win(context, &wid->win);
 	if (ret != WIDGET_ERROR_NONE) {
@@ -33,7 +34,6 @@ widget_instance_create(widget_context_h context, bundle *content, int w, int h, 
 	widget_get_resource(EDJ_FILE, wid->edj_path, (int)PATH_MAX);
 
 	evas_object_resize(wid->win, w, h);
-	dlog_print(DLOG_ERROR,"godly","%s",app_get_shared_resource_path());
 
 	/* Conformant */
 	wid->conform = elm_conformant_add(wid->win);
@@ -42,7 +42,6 @@ widget_instance_create(widget_context_h context, bundle *content, int w, int h, 
 	elm_win_resize_object_add(wid->win, wid->conform);
 	evas_object_show(wid->conform);
 
-	/* Label*/
 	wid->layout = elm_layout_add(wid->conform);
 	elm_layout_file_set(wid->layout, wid->edj_path, GRP_MAIN);
 	evas_object_size_hint_weight_set(wid->layout, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
@@ -73,7 +72,6 @@ widget_instance_destroy(widget_context_h context, widget_app_destroy_type_e reas
 	if (wid->win)
 		evas_object_del(wid->win);
 
-	dlog_print(DLOG_ERROR,"godly","destroy");
 	free(wid);
 
 	return WIDGET_ERROR_NONE;
@@ -83,7 +81,6 @@ static int
 widget_instance_pause(widget_context_h context, void *user_data)
 {
 	/* Take necessary actions when widget instance becomes invisible. */
-	dlog_print(DLOG_ERROR,"godly","pause");
 	return WIDGET_ERROR_NONE;
 
 }
@@ -92,7 +89,6 @@ static int
 widget_instance_resume(widget_context_h context, void *user_data)
 {
 	/* Take necessary actions when widget instance becomes visible. */
-	dlog_print(DLOG_ERROR,"godly","resume");
 	return WIDGET_ERROR_NONE;
 }
 
