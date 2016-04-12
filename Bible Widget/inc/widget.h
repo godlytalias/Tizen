@@ -38,6 +38,7 @@ struct widget_instance_data {
 	Evas_Object *conform;
 	Evas_Object *entry;
 	Evas_Object *layout;
+	Evas_Object *scroller;
 	bible_verse_item *verse_item_head, *verse_item_tail;
 	char edj_path[PATH_MAX];
 	int cur_book, cur_chapter, cur_verse;

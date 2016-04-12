@@ -22,8 +22,6 @@ widget_instance_create(widget_context_h context, bundle *content, int w, int h, 
 
 	}
 	wid->verse_item_head = NULL;
-	_query_verse(wid,0,1,1);
-	_query_verse(wid,0,1,2);
 	_query_verse(wid,16,8,9);
 	/* Window */
 	ret = widget_app_get_elm_win(context, &wid->win);
@@ -42,7 +40,9 @@ widget_instance_create(widget_context_h context, bundle *content, int w, int h, 
 	elm_win_resize_object_add(wid->win, wid->conform);
 	evas_object_show(wid->conform);
 
-	wid->layout = elm_layout_add(wid->conform);
+	wid->scroller = elm_scroller_add(wid->conform);
+
+	wid->layout = elm_layout_add(wid->scroller);
 	elm_layout_file_set(wid->layout, wid->edj_path, GRP_MAIN);
 	evas_object_size_hint_weight_set(wid->layout, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
 	evas_object_size_hint_align_set(wid->layout, EVAS_HINT_FILL, EVAS_HINT_FILL);
@@ -56,7 +56,8 @@ widget_instance_create(widget_context_h context, bundle *content, int w, int h, 
 	elm_layout_content_set(wid->layout, "elm.swallow.verse", wid->entry);
 
 	/* Show window after base gui is set up */
-	elm_object_content_set(wid->conform, wid->layout);
+	elm_object_content_set(wid->scroller, wid->layout);
+	elm_object_content_set(wid->conform, wid->scroller);
 	evas_object_show(wid->win);
 
 	widget_app_context_set_tag(context, wid);
