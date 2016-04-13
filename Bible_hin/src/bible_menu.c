@@ -336,7 +336,8 @@ _get_chapter(void *data, Evas_Object *obj, void *event_info)
 	Evas_Object *popup = (Evas_Object*)data;
 	bible_verse_item *verse_item = (bible_verse_item*)evas_object_data_get(popup, "verse_item");
 	_query_chapter(verse_item->appdata, verse_item->bookcount, verse_item->chaptercount);
-	elm_naviframe_item_pop(verse_item->appdata->naviframe);
+	Elm_Object_Item *nf_item = elm_naviframe_bottom_item_get(verse_item->appdata->naviframe);
+	elm_naviframe_item_pop_to(nf_item);
 	_show_verse(verse_item->appdata, verse_item->versecount);
 	_get_chapter_count_query(verse_item->appdata, verse_item->bookcount);
 	_popup_del(popup, NULL, NULL);
