@@ -58,7 +58,7 @@
 #define VIEW_NOTES "View notes"
 #define SHARE_VERSE "Share Verse"
 #define COPY_VERSE "Copy Verse"
-#define COPYRIGHT "Copyright © 2015 Godly T Alias"
+#define COPYRIGHT "Copyright © 2016 Godly T Alias"
 #define VERSION "GTA v0.7"
 #define TITLE "పవిత్ర బైబిల్"
 #define LOADING_DATABASE "Loading Database..."
