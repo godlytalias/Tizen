@@ -1,5 +1,16 @@
 collections {
    base_scale: 1.8;
+   styles {
+      style {
+         name: "widget_verse_style";
+         base: "font=Tizen:style=Regular align=center font_size=30 color=#000000 wrap=mixed";
+         tag: "br" "\n";
+         tag: "ps" "ps";
+         tag: "hilight" "+ font_weight=Bold";
+         tag: "b" "+ font_weight=Bold";
+         tag: "tab" "\t";
+      }
+   }
    group { name: "main";
       parts {
          part { name: "base";
@@ -30,16 +41,16 @@ collections {
                align: 1.0 1.0;
             }
          }
-         part { name: "elm.swallow.verse";
-            type: SWALLOW;
+         part { name: "elm.text.verse";
+            type: TEXTBLOCK;
             description { state: "default" 0.0;
-               min: 0 0;
-               rel1.to_x: "elm.padding.top.left";
-               rel1.to_y: "base";
-               rel1.relative: 1.0 0.5;
-               rel2.to_x: "elm.padding.bottom.right";
-               rel2.to_y: "base";
-               rel2.relative: 0.0 0.5;
+               min: 416 0;
+               rel1.to: "elm.padding.top.left";
+               rel1.relative: 1.0 1.0;
+               rel2.to: "elm.padding.bottom.right";
+               rel2.relative: 0.0 0.0;
+               text.min: 0 1;
+               text.style: "widget_verse_style";
             }
          }
       }
