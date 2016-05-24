@@ -31,7 +31,7 @@ typedef struct _bible_verse_item {
 	int bookcount, chaptercount, versecount;
 	widget_instance_data_s *wid;
 	struct _bible_verse_item *next;
-} bible_verse_item;
+} bible_verse_item_w;
 
 struct widget_instance_data {
 	Evas_Object *win;
@@ -39,7 +39,7 @@ struct widget_instance_data {
 	Evas_Object *entry;
 	Evas_Object *layout;
 	Evas_Object *scroller;
-	bible_verse_item *verse_item_head, *verse_item_tail;
+	bible_verse_item_w *verse_item_head, *verse_item_tail;
 	char edj_path[PATH_MAX];
 	int cur_book, cur_chapter, cur_verse;
 };

@@ -55,6 +55,31 @@ _get_app_data(void *data, int argc, char **argv, char **azColName)
 }
 
 void
+_delete_widget_verse(int bookcount, int chaptercount, int versecount)
+{
+	char query[256];
+	sprintf(query, "delete from versewidget where bookcount=%d and chaptercount=%d and versecount=%d;",
+			bookcount, chaptercount, versecount);
+	_app_database_query(query, &_check, NULL);
+}
+
+void
+_insert_widget_verse(int bookcount, int chaptercount, int versecount, char* verse)
+{
+	char query[1024];
+	sprintf(query, "INSERT INTO versewidget VALUES(%d, %d, %d, '%s');", bookcount,
+			chaptercount, versecount, verse);
+	_app_database_query(query, &_check, NULL);
+}
+
+void _clear_table(char *table)
+{
+	char query[256];
+	sprintf(query, "delete from %s",table);
+	_app_database_query(query, &_check, NULL);
+}
+
+void
 _load_appdata(appdata_s *ad)
 {
 	char query[256];
@@ -66,6 +91,8 @@ _load_appdata(appdata_s *ad)
 	sprintf(query, "create table if not exists bookmark(bookcount INT, chaptercount INT, versecount INT, verse VARCHAR(1024));");
 	_app_database_query(query, &_check, ad);
 	sprintf(query, "create table if not exists notes(bookcount INT, chaptercount INT, versecount INT, note VARCHAR(8192));");
+	_app_database_query(query, &_check, ad);
+	sprintf(query, "create table if not exists versewidget(bookcount INT, chaptercount INT, versecount INT, verse VARCHAR(1024));");
 	_app_database_query(query, &_check, ad);
 	preference_is_existing("fontsize", &existing);
 	if (!existing)

@@ -3,7 +3,7 @@ collections {
    styles {
       style {
          name: "widget_verse_style";
-         base: "font=Tizen:style=Regular align=center font_size=30 color=#000000 wrap=mixed";
+         base: "font=Tizen:style=Regular align=left linerelsize=115% font_size=40 color=#000000 wrap=mixed";
          tag: "br" "\n";
          tag: "ps" "ps";
          tag: "hilight" "+ font_weight=Bold";

@@ -26,7 +26,7 @@ _get_verse(void *data, int argc, char **argv, char **azColName)
 	widget_instance_data_s *wid = (widget_instance_data_s*) data;
 	if (argv == NULL) return 0;
 
-	bible_verse_item *verse_item = malloc(sizeof(bible_verse_item));
+	bible_verse_item_w *verse_item = malloc(sizeof(bible_verse_item_w));
 	verse_item->verse = strdup(argv[0]);
 	verse_item->bookcount = wid->cur_book;
 	verse_item->chaptercount = wid->cur_chapter;

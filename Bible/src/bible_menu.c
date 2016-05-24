@@ -702,6 +702,13 @@ ctxpopup_item_select_cb(void *data, Evas_Object *obj, void *event_info)
 		return;
 	}
 
+	if (!strcmp(title_label, VERSE_DISPLAY_WIDGET))
+	{
+		_verse_display_widget_list(ad);
+		elm_ctxpopup_dismiss(obj);
+		return;
+	}
+
 	if (!strcmp(title_label, DAY_MODE))
 	{
 		_change_read_mode(ad, EINA_FALSE);
@@ -1509,6 +1516,7 @@ create_ctxpopup_more_menu(void *data)
 	elm_ctxpopup_item_append(ctxpopup, PARALLEL_READING, NULL, ctxpopup_item_select_cb, ad);
 	ad->readmode_item = elm_ctxpopup_item_append(ctxpopup, DAY_MODE, NULL, ctxpopup_item_select_cb, ad);
 	elm_ctxpopup_item_append(ctxpopup, VERSE_VIEW, NULL, ctxpopup_item_select_cb, ad);
+	elm_ctxpopup_item_append(ctxpopup, VERSE_DISPLAY_WIDGET, NULL, ctxpopup_item_select_cb, ad);
 	elm_ctxpopup_item_append(ctxpopup, FONT_SIZE, NULL, ctxpopup_item_select_cb, ad);
 	elm_ctxpopup_item_append(ctxpopup, HELP, NULL, ctxpopup_item_select_cb, ad);
 	elm_ctxpopup_item_append(ctxpopup, ABOUT, NULL, ctxpopup_item_select_cb, ad);

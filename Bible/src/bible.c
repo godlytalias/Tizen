@@ -690,6 +690,7 @@ gl_longpressed_cb(void *data, Evas_Object *obj, void *event_info)
 	elm_ctxpopup_item_append(verse_popup, SHARE_VERSE, NULL, _share_verse_item_cb, verse_item);
 	elm_ctxpopup_item_append(verse_popup, COPY_VERSE, NULL, _copy_verse_item_cb, verse_item);
 	elm_ctxpopup_item_append(verse_popup, VERSE_VIEW, NULL, _verse_item_show_cb, verse_item);
+	elm_ctxpopup_item_append(verse_popup, ADD_VERSE_WIDGET, NULL, _verse_item_widget_cb, verse_item);
 	evas_object_smart_callback_add(verse_popup, "dismissed", _popup_del, verse_popup);
 	eext_object_event_callback_add(verse_popup, EEXT_CALLBACK_BACK, eext_ctxpopup_back_cb, verse_popup);
 	eext_object_event_callback_add(verse_popup, EEXT_CALLBACK_MORE, eext_ctxpopup_back_cb, verse_popup);
