@@ -21,8 +21,8 @@ widget_instance_create(widget_context_h context, bundle *content, int w, int h, 
 	if (content != NULL) {
 		/* Recover the previous status with the bundle object. */
 	}
-	wid->verse_item_head = NULL;
-	_query_verse(wid,16,8,9);
+	wid->verse_order = 1;
+	_query_verse(wid);
 	/* Window */
 	ret = widget_app_get_elm_win(context, &wid->win);
 	if (ret != WIDGET_ERROR_NONE) {
@@ -48,7 +48,8 @@ widget_instance_create(widget_context_h context, bundle *content, int w, int h, 
 	evas_object_size_hint_align_set(wid->layout, EVAS_HINT_FILL, EVAS_HINT_FILL);
 	evas_object_size_hint_min_set(wid->layout, w, h);
 
-	sprintf(verse, "%s<br><align=right>%s</align>", wid->verse_item_tail->verse,"Psalms 23:1");
+	sprintf(verse, "%s<br><align=right>%s %d:%d</align>", wid->verse, Books[wid->cur_book], wid->cur_chapter, wid->cur_verse);
+	dlog_print(DLOG_ERROR,"godly","verse %s",verse);
 	elm_layout_text_set(wid->layout, "elm.text.verse", verse);
 
 	/* Show window after base gui is set up */

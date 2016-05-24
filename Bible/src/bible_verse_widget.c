@@ -1,5 +1,4 @@
 #include <tizen.h>
-#include <sqlite3.h>
 #include "bible.h"
 
 static void

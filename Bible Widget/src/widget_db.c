@@ -9,9 +9,9 @@ _database_query(char *query, int func(void*,int,char**,char**), void *data)
 	char *err_msg;
 
 	char *db_path = malloc(200);
-	char *res_path = app_get_shared_resource_path();
+	char *res_path = app_get_data_path();
 	sprintf(db_path, "%s%s", res_path, DB_NAME);
-	sqlite3_open(db_path, &(db));
+	sqlite3_open_v2(db_path, &db, SQLITE_OPEN_FULLMUTEX | SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE, NULL);
 	free(res_path);
 	free(db_path);
 	sqlite3_exec(db, query, func, data, &err_msg);
@@ -26,37 +26,20 @@ _get_verse(void *data, int argc, char **argv, char **azColName)
 	widget_instance_data_s *wid = (widget_instance_data_s*) data;
 	if (argv == NULL) return 0;
 
-	bible_verse_item_w *verse_item = malloc(sizeof(bible_verse_item_w));
-	verse_item->verse = strdup(argv[0]);
-	verse_item->bookcount = wid->cur_book;
-	verse_item->chaptercount = wid->cur_chapter;
-	verse_item->versecount = wid->cur_verse;
-	verse_item->wid = wid;
-	if (!wid->verse_item_head)
-	{
-		wid->verse_item_head = wid->verse_item_tail = verse_item;
-		verse_item->next = NULL;
-	}
-	else
-	{
-		wid->verse_item_tail->next = verse_item;
-		wid->verse_item_tail = verse_item;
-		verse_item->next = wid->verse_item_head;
-	}
-
+	wid->verse = strdup(argv[3]);
+	wid->cur_book = atoi(argv[0]);
+	wid->cur_chapter = atoi(argv[1]);
+	wid->cur_verse = atoi(argv[2]);
 	return 0;
 }
 
 void
-_query_verse(void *data, int book, int chapter, int verse)
+_query_verse(void *data)
 {
 	widget_instance_data_s *wid = (widget_instance_data_s*)data;
 	char query[512];
 
-	wid->cur_book = book;
-	wid->cur_chapter = chapter;
-	wid->cur_verse = verse;
-
-	sprintf(query, "select %s from %s where Book=%d and Chapter=%d and Versecount=%d", BIBLE_VERSE_COLUMN, BIBLE_TABLE_NAME, book, chapter, verse);
+	sprintf(query, "select * from %s where ROWID=%d;", WIDGET_TABLE_NAME, wid->verse_order);
+	dlog_print(DLOG_ERROR,"godly","%s",query);
 	_database_query(query, &_get_verse, data);
 }
