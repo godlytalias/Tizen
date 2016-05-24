@@ -16,13 +16,12 @@ widget_instance_create(widget_context_h context, bundle *content, int w, int h, 
 {
 	widget_instance_data_s *wid = (widget_instance_data_s*) malloc(sizeof(widget_instance_data_s));
 	int ret;
-	char verse[2048];
 
 	if (content != NULL) {
 		/* Recover the previous status with the bundle object. */
 	}
 	wid->verse_order = 1;
-	_query_verse(wid);
+	wid->verse = NULL;
 	/* Window */
 	ret = widget_app_get_elm_win(context, &wid->win);
 	if (ret != WIDGET_ERROR_NONE) {
@@ -48,14 +47,12 @@ widget_instance_create(widget_context_h context, bundle *content, int w, int h, 
 	evas_object_size_hint_align_set(wid->layout, EVAS_HINT_FILL, EVAS_HINT_FILL);
 	evas_object_size_hint_min_set(wid->layout, w, h);
 
-	sprintf(verse, "%s<br><align=right>%s %d:%d</align>", wid->verse, Books[wid->cur_book], wid->cur_chapter, wid->cur_verse);
-	elm_layout_text_set(wid->layout, "elm.text.verse", verse);
-
 	/* Show window after base gui is set up */
 	elm_object_content_set(wid->scroller, wid->layout);
 	elm_object_content_set(wid->conform, wid->scroller);
 	evas_object_show(wid->win);
 
+	_query_verse(wid);
 	widget_app_context_set_tag(context, wid);
 	return WIDGET_ERROR_NONE;
 }
