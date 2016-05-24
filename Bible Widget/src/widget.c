@@ -49,7 +49,6 @@ widget_instance_create(widget_context_h context, bundle *content, int w, int h, 
 	evas_object_size_hint_min_set(wid->layout, w, h);
 
 	sprintf(verse, "%s<br><align=right>%s %d:%d</align>", wid->verse, Books[wid->cur_book], wid->cur_chapter, wid->cur_verse);
-	dlog_print(DLOG_ERROR,"godly","verse %s",verse);
 	elm_layout_text_set(wid->layout, "elm.text.verse", verse);
 
 	/* Show window after base gui is set up */

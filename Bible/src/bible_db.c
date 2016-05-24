@@ -6,7 +6,7 @@ void
 _app_database_query(char *query, int func(void*,int,char**,char**), void *data)
 {
 	sqlite3 *db = NULL;
-	char *err_msg;
+	char *err_msg = NULL;
 
 	char *db_path = malloc(200);
 	char *res_path = app_get_data_path();
@@ -15,7 +15,7 @@ _app_database_query(char *query, int func(void*,int,char**,char**), void *data)
 	free(res_path);
 	free(db_path);
 	sqlite3_exec(db, query, func, data, &err_msg);
-	sqlite3_free(err_msg);
+	if (err_msg) sqlite3_free(err_msg);
 	sqlite3_close(db);
 	db = NULL;
 }
@@ -172,7 +172,7 @@ void
 _database_query(char *query, int func(void*,int,char**,char**), void *data)
 {
 	sqlite3 *db = NULL;
-	char *err_msg;
+	char *err_msg = NULL;
 
 	char *db_path = malloc(200);
 	char *res_path = app_get_shared_resource_path();
@@ -181,7 +181,7 @@ _database_query(char *query, int func(void*,int,char**,char**), void *data)
 	free(res_path);
 	free(db_path);
 	sqlite3_exec(db, query, func, data, &err_msg);
-	sqlite3_free(err_msg);
+	if (err_msg) sqlite3_free(err_msg);
 	sqlite3_close(db);
 	db = NULL;
 }
