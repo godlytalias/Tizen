@@ -27,6 +27,7 @@
 
 
 typedef struct widget_instance_data widget_instance_data_s;
+typedef struct _widget_bible_verse_item widget_bible_verse_item;
 
 const static char *Books[] = {
 						"Genesis", "Exodus", "Leviticus", "Numbers", "Deuteronomy", "Joshua",
@@ -46,10 +47,17 @@ struct widget_instance_data {
 	Evas_Object *entry;
 	Evas_Object *layout;
 	Evas_Object *scroller;
-	Evas_Object *settings_popup;
+	Evas_Object *settings_window;
 	char edj_path[PATH_MAX];
 	char *verse;
 	int cur_book, cur_chapter, cur_verse, verse_order;
+};
+
+struct _widget_bible_verse_item {
+	char *verse;
+	widget_instance_data_s *wid;
+	Elm_Object_Item *it;
+	int bookcount, chaptercount, versecount;
 };
 
 void _query_verse(void *data);

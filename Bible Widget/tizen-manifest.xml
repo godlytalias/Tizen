@@ -2,7 +2,7 @@
 <manifest xmlns="http://tizen.org/ns/packages" api-version="2.4" package="org.widget.gtaholybible" version="1.0.0">
     <author email="godlytalias@yahoo.co.in" href="godlytalias.blogspot.com">Godly T.Alias</author>
     <profile name="mobile"/>
-    <widget-application appid="org.widget.gtaholybible" exec="widget" main="true" update-period="0">
+    <widget-application appid="org.widget.gtaholybible" exec="widget" main="true" update-period="1800">
         <label>widget</label>
         <icon>Bible.png</icon>
         <support-size preview="preview_4x4.png">4x4</support-size>
