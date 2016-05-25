@@ -58,6 +58,7 @@ _verse_item_widget_cb(void *data, Evas_Object *obj, void *event_info)
 			verse_item->chaptercount, verse_item->versecount, verse_item->verse);
 	Evas_Object *toast = elm_popup_add(verse_item->appdata->naviframe);
 	elm_object_style_set(toast, "toast");
+	elm_popup_allow_events_set(toast, EINA_TRUE);
 	elm_object_text_set(toast, VERSE_ADDED_TO_WIDGET);
 	elm_popup_timeout_set(toast, 2.0);
 	evas_object_show(toast);

@@ -53,6 +53,19 @@ collections {
                text.style: "widget_verse_style";
             }
          }
+         part { name: "events";
+            type: RECT;
+            description { state: "default" 0.0;
+               color: 0 0 0 0;
+            }
+         }
+      }
+      programs {
+         program { name: "clicked";
+            signal: "mouse,clicked,1";
+            source: "events";
+            action: SIGNAL_EMIT "elm,action,clicked" "elm";         
+         }
       }
    }
 }

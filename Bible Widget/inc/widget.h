@@ -4,6 +4,7 @@
 #include <widget_app.h>
 #include <widget_app_efl.h>
 #include <Elementary.h>
+#include <efl_extension.h>
 #include <dlog.h>
 
 #define DB_NAME "appdata.db"
@@ -24,6 +25,9 @@
 
 #endif /* __widget_H__ */
 
+
+typedef struct widget_instance_data widget_instance_data_s;
+
 const static char *Books[] = {
 						"Genesis", "Exodus", "Leviticus", "Numbers", "Deuteronomy", "Joshua",
 						"Judges", "Ruth", "1 Samuel", "2 Samuel", "1 Kings", "2 Kings", "1 Chronicles",
@@ -35,7 +39,6 @@ const static char *Books[] = {
 						"1 Thessalonians", "2 Thessalonians", "1 Timothy", "2 Timothy", "Titus", "Philemon",
 						"Hebrews", "James", "1 Peter", "2 Peter", "1 John", "2 John", "3 John", "Jude", "Revelation"};
 
-typedef struct widget_instance_data widget_instance_data_s;
 
 struct widget_instance_data {
 	Evas_Object *win;
@@ -43,9 +46,11 @@ struct widget_instance_data {
 	Evas_Object *entry;
 	Evas_Object *layout;
 	Evas_Object *scroller;
+	Evas_Object *settings_popup;
 	char edj_path[PATH_MAX];
 	char *verse;
 	int cur_book, cur_chapter, cur_verse, verse_order;
 };
 
 void _query_verse(void *data);
+void _widget_settings(widget_instance_data_s *wid);

@@ -11,6 +11,13 @@ widget_get_resource(const char *edj_file_in, char *edj_path_out, int edj_path_ma
 	}
 }
 
+static void
+_widget_clicked_cb(void *data, Evas_Object *obj, const char *emission, const char *source)
+{
+	widget_instance_data_s *wid = (widget_instance_data_s*)data;
+	_widget_settings(wid);
+}
+
 static int
 widget_instance_create(widget_context_h context, bundle *content, int w, int h, void *user_data)
 {
@@ -46,6 +53,7 @@ widget_instance_create(widget_context_h context, bundle *content, int w, int h, 
 	evas_object_size_hint_weight_set(wid->layout, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
 	evas_object_size_hint_align_set(wid->layout, EVAS_HINT_FILL, EVAS_HINT_FILL);
 	evas_object_size_hint_min_set(wid->layout, w, h);
+	elm_layout_signal_callback_add(wid->layout, "elm,action,clicked", "elm", _widget_clicked_cb, wid);
 
 	/* Show window after base gui is set up */
 	elm_object_content_set(wid->scroller, wid->layout);
