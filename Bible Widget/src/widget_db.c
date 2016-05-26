@@ -50,6 +50,14 @@ _query_verse(void *data)
 		wid->verse_order = 1;
 		goto verse_query;
 	}
+	else if (!wid->verse)
+	{
+		wid->verse = (char*)malloc(sizeof(char*) * 512);
+		strcpy(wid->verse, DEFAULT_WIDGET_VERSE);
+		wid->cur_book = 43;
+		wid->cur_chapter = 4;
+		wid->cur_verse = 12;
+	}
 
 	sprintf(verse, "%s<br><align=right>%s %d:%d</align>", wid->verse, Books[wid->cur_book], wid->cur_chapter, wid->cur_verse);
 	elm_layout_text_set(wid->layout, "elm.text.verse", verse);

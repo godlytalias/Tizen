@@ -18,6 +18,45 @@ _widget_clicked_cb(void *data, Evas_Object *obj, const char *emission, const cha
 	_widget_settings(wid);
 }
 
+static void
+_load_prefs(widget_instance_data_s *wid)
+{
+	bool exist;
+
+	preference_is_existing("font_size", &exist);
+	if (exist)
+		preference_get_int("font_size", &(wid->font_size));
+	else
+	{
+		wid->font_size = 25;
+		preference_set_int("font_size", 25);
+	}
+/*
+	preference_is_existing("font_color", &exist);
+	if (exist)
+		preference_get_string("font_color", &(wid->font_color));
+	else
+	{
+		strcpy(wid->font_color, "black");
+		preference_set_string("font_color", "black");
+	}
+
+	preference_is_existing("bg_color", &exist);
+	if (exist)
+		preference_get_string("bg_color", &(wid->bg_color));
+	else
+	{
+		strcpy(wid->bg_color, "transparent");
+		preference_set_string("bg_color", "transparent");
+	}*/
+	wid->text_r = wid->text_g = wid->text_b = 0;
+	wid->text_a = 255;
+	wid->bg_r = wid->bg_g = wid->bg_b = wid->bg_a = 0;
+	edje_text_class_set("GTAwidget", "Tizen:style=Regular", wid->font_size);
+	edje_color_class_set("GTAwidget", wid->text_r, wid->text_g, wid->text_b, wid->text_a, 0, 0, 0, 0, 0, 0, 0, 0);
+	edje_color_class_set("GTAwidgetbg", wid->bg_r, wid->bg_g, wid->bg_b, wid->bg_a, 0, 0, 0, 0, 0, 0, 0, 0);
+}
+
 static int
 widget_instance_create(widget_context_h context, bundle *content, int w, int h, void *user_data)
 {
@@ -36,6 +75,7 @@ widget_instance_create(widget_context_h context, bundle *content, int w, int h, 
 		return WIDGET_ERROR_FAULT;
 	}
 	widget_get_resource(EDJ_FILE, wid->edj_path, (int)PATH_MAX);
+	_load_prefs(wid);
 
 	evas_object_resize(wid->win, w, h);
 
@@ -74,6 +114,7 @@ widget_instance_destroy(widget_context_h context, widget_app_destroy_type_e reas
 	if (wid->win)
 		evas_object_del(wid->win);
 
+	if (wid->verse) free(wid->verse);
 	free(wid);
 
 	return WIDGET_ERROR_NONE;

@@ -4,6 +4,7 @@
 #include <widget_app.h>
 #include <widget_app_efl.h>
 #include <Elementary.h>
+#include <app_preference.h>
 #include <efl_extension.h>
 #include <dlog.h>
 
@@ -22,6 +23,7 @@
 
 #define EDJ_FILE "edje/widget.edj"
 #define GRP_MAIN "main"
+#define DEFAULT_WIDGET_VERSE "And there is salvation in no other One; for there is no other name under Heaven given among men by which we must be saved." //Acts 4:12
 
 #endif /* __widget_H__ */
 
@@ -47,10 +49,12 @@ struct widget_instance_data {
 	Evas_Object *entry;
 	Evas_Object *layout;
 	Evas_Object *scroller;
-	Evas_Object *settings_window;
+	Evas_Object *settings_window, *settings_nf;
 	char edj_path[PATH_MAX];
 	char *verse;
-	int cur_book, cur_chapter, cur_verse, verse_order;
+	int cur_book, cur_chapter, cur_verse, verse_order, font_size;
+	int text_r, text_g, text_b, text_a;
+	int bg_r, bg_g, bg_b, bg_a;
 };
 
 struct _widget_bible_verse_item {

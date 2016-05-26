@@ -3,7 +3,7 @@ collections {
    styles {
       style {
          name: "widget_verse_style";
-         base: "font=Tizen:style=Regular align=left linerelsize=115% font_size=40 color=#000000 wrap=mixed";
+         base: "font=Tizen:style=Regular align=left text_class=GTAwidget linerelsize=115% font_size=40 color=#000000 wrap=mixed";
          tag: "br" "\n";
          tag: "ps" "ps";
          tag: "hilight" "+ font_weight=Bold";
@@ -14,9 +14,10 @@ collections {
    group { name: "main";
       parts {
          part { name: "base";
-            type: SPACER;
+            type: RECT;
             description { state: "default" 0.0;
                min: 48 48;
+               color_class: "GTAwidgetbg";
             }
          }
          part { name: "elm.padding.top.left";
@@ -51,6 +52,7 @@ collections {
                rel2.relative: 0.0 0.0;
                text.min: 0 1;
                text.style: "widget_verse_style";
+               color_class: "GTAwidget";
             }
          }
          part { name: "events";
