@@ -24,6 +24,17 @@
 #define EDJ_FILE "edje/widget.edj"
 #define GRP_MAIN "main"
 #define DEFAULT_WIDGET_VERSE "And there is salvation in no other One; for there is no other name under Heaven given among men by which we must be saved." //Acts 4:12
+#define RED "Red"
+#define GREEN "Green"
+#define BLUE "Blue"
+#define ALPHA "Alpha"
+#define CLOSE "Close"
+#define DISPLAYED_VERSE "Displayed Verse"
+#define FONT_SIZE "Font size"
+#define FONT_COLOR "Font color"
+#define BG_COLOR "Background Color"
+#define NEXT "Next"
+#define PREVIOUS "Previous"
 
 #endif /* __widget_H__ */
 

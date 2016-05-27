@@ -31,24 +31,7 @@ _load_prefs(widget_instance_data_s *wid)
 		wid->font_size = 25;
 		preference_set_int("font_size", 25);
 	}
-/*
-	preference_is_existing("font_color", &exist);
-	if (exist)
-		preference_get_string("font_color", &(wid->font_color));
-	else
-	{
-		strcpy(wid->font_color, "black");
-		preference_set_string("font_color", "black");
-	}
 
-	preference_is_existing("bg_color", &exist);
-	if (exist)
-		preference_get_string("bg_color", &(wid->bg_color));
-	else
-	{
-		strcpy(wid->bg_color, "transparent");
-		preference_set_string("bg_color", "transparent");
-	}*/
 	wid->text_r = wid->text_g = wid->text_b = 0;
 	wid->text_a = 255;
 	wid->bg_r = wid->bg_g = wid->bg_b = wid->bg_a = 0;
