@@ -32,9 +32,78 @@ _load_prefs(widget_instance_data_s *wid)
 		preference_set_int("font_size", 25);
 	}
 
-	wid->text_r = wid->text_g = wid->text_b = 0;
-	wid->text_a = 255;
-	wid->bg_r = wid->bg_g = wid->bg_b = wid->bg_a = 0;
+	preference_is_existing("text_r", &exist);
+	if (exist)
+		preference_get_int("text_r", &(wid->text_r));
+	else
+	{
+		wid->text_r = 0;
+		preference_set_int("text_r", 0);
+	}
+
+	preference_is_existing("text_g", &exist);
+	if (exist)
+		preference_get_int("text_g", &(wid->text_g));
+	else
+	{
+		wid->text_g = 0;
+		preference_set_int("text_g", 0);
+	}
+
+	preference_is_existing("text_b", &exist);
+	if (exist)
+		preference_get_int("text_b", &(wid->text_b));
+	else
+	{
+		wid->text_b = 0;
+		preference_set_int("text_b", 0);
+	}
+
+	preference_is_existing("text_a", &exist);
+	if (exist)
+		preference_get_int("text_a", &(wid->text_a));
+	else
+	{
+		wid->text_a = 255;
+		preference_set_int("text_a", 255);
+	}
+
+	preference_is_existing("bg_r", &exist);
+	if (exist)
+		preference_get_int("bg_r", &(wid->bg_r));
+	else
+	{
+		wid->bg_r = 0;
+		preference_set_int("bg_r", 0);
+	}
+
+	preference_is_existing("bg_g", &exist);
+	if (exist)
+		preference_get_int("bg_g", &(wid->bg_g));
+	else
+	{
+		wid->bg_g = 0;
+		preference_set_int("bg_g", 0);
+	}
+
+	preference_is_existing("bg_b", &exist);
+	if (exist)
+		preference_get_int("bg_b", &(wid->bg_b));
+	else
+	{
+		wid->bg_b = 0;
+		preference_set_int("bg_b", 0);
+	}
+
+	preference_is_existing("bg_a", &exist);
+	if (exist)
+		preference_get_int("bg_a", &(wid->bg_a));
+	else
+	{
+		wid->bg_a = 0;
+		preference_set_int("bg_a", 0);
+	}
+
 	edje_text_class_set("GTAwidget", "Tizen:style=Regular", wid->font_size);
 	edje_color_class_set("GTAwidget", wid->text_r, wid->text_g, wid->text_b, wid->text_a, 0, 0, 0, 0, 0, 0, 0, 0);
 	edje_color_class_set("GTAwidgetbg", wid->bg_r, wid->bg_g, wid->bg_b, wid->bg_a, 0, 0, 0, 0, 0, 0, 0, 0);

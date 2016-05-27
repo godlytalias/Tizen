@@ -36,6 +36,7 @@ _font_r_changed(void *data, Evas_Object *obj, void *event_info)
 {
 	widget_instance_data_s *wid = (widget_instance_data_s*)data;
 	wid->text_r = elm_slider_value_get(obj);
+	preference_set_int("text_r", wid->text_r);
 	edje_color_class_set("GTAcolor", wid->text_r, wid->text_g, wid->text_b, wid->text_a, 0, 0, 0, 0, 0, 0, 0, 0);
 }
 
@@ -44,6 +45,7 @@ _font_g_changed(void *data, Evas_Object *obj, void *event_info)
 {
 	widget_instance_data_s *wid = (widget_instance_data_s*)data;
 	wid->text_g = elm_slider_value_get(obj);
+	preference_set_int("text_g", wid->text_g);
 	edje_color_class_set("GTAcolor", wid->text_r, wid->text_g, wid->text_b, wid->text_a, 0, 0, 0, 0, 0, 0, 0, 0);
 }
 
@@ -52,6 +54,7 @@ _font_b_changed(void *data, Evas_Object *obj, void *event_info)
 {
 	widget_instance_data_s *wid = (widget_instance_data_s*)data;
 	wid->text_b = elm_slider_value_get(obj);
+	preference_set_int("text_b", wid->text_b);
 	edje_color_class_set("GTAcolor", wid->text_r, wid->text_g, wid->text_b, wid->text_a, 0, 0, 0, 0, 0, 0, 0, 0);
 }
 
@@ -60,6 +63,7 @@ _font_a_changed(void *data, Evas_Object *obj, void *event_info)
 {
 	widget_instance_data_s *wid = (widget_instance_data_s*)data;
 	wid->text_a = elm_slider_value_get(obj);
+	preference_set_int("text_a", wid->text_a);
 	edje_color_class_set("GTAcolor", wid->text_r, wid->text_g, wid->text_b, wid->text_a, 0, 0, 0, 0, 0, 0, 0, 0);
 }
 
@@ -68,6 +72,7 @@ _bg_r_changed(void *data, Evas_Object *obj, void *event_info)
 {
 	widget_instance_data_s *wid = (widget_instance_data_s*)data;
 	wid->bg_r = elm_slider_value_get(obj);
+	preference_set_int("bg_r", wid->bg_r);
 	edje_color_class_set("GTAcolor", wid->bg_r, wid->bg_g, wid->bg_b, wid->bg_a, 0, 0, 0, 0, 0, 0, 0, 0);
 }
 
@@ -76,6 +81,7 @@ _bg_g_changed(void *data, Evas_Object *obj, void *event_info)
 {
 	widget_instance_data_s *wid = (widget_instance_data_s*)data;
 	wid->bg_g = elm_slider_value_get(obj);
+	preference_set_int("bg_g", wid->bg_g);
 	edje_color_class_set("GTAcolor", wid->bg_r, wid->bg_g, wid->bg_b, wid->bg_a, 0, 0, 0, 0, 0, 0, 0, 0);
 }
 
@@ -84,6 +90,7 @@ _bg_b_changed(void *data, Evas_Object *obj, void *event_info)
 {
 	widget_instance_data_s *wid = (widget_instance_data_s*)data;
 	wid->bg_b = elm_slider_value_get(obj);
+	preference_set_int("bg_b", wid->bg_b);
 	edje_color_class_set("GTAcolor", wid->bg_r, wid->bg_g, wid->bg_b, wid->bg_a, 0, 0, 0, 0, 0, 0, 0, 0);
 }
 
@@ -92,6 +99,7 @@ _bg_a_changed(void *data, Evas_Object *obj, void *event_info)
 {
 	widget_instance_data_s *wid = (widget_instance_data_s*)data;
 	wid->bg_a = elm_slider_value_get(obj);
+	preference_set_int("bg_a", wid->bg_a);
 	edje_color_class_set("GTAcolor", wid->bg_r, wid->bg_g, wid->bg_b, wid->bg_a, 0, 0, 0, 0, 0, 0, 0, 0);
 }
 
