@@ -35,6 +35,7 @@
 #define BG_COLOR "Background Color"
 #define NEXT "Next"
 #define PREVIOUS "Previous"
+#define YOUR_COLOR_HERE "YOUR COLOR HERE"
 
 #endif /* __widget_H__ */
 

@@ -19,6 +19,15 @@ collections {
          tag: "b" "+ font_weight=Bold";
          tag: "tab" "\t";
       }
+      style {
+         name: "widget_center_style";
+         base: "font=Tizen:style=Bold align=center font_size=15 color=#000000 wrap=mixed";
+         tag: "br" "\n";
+         tag: "ps" "ps";
+         tag: "hilight" "+ font_weight=Bold";
+         tag: "b" "+ font_weight=Bold";
+         tag: "tab" "\t";
+      }
    }
    group { name: "main";
       parts {
@@ -81,13 +90,14 @@ collections {
    }
    
    group { name: "color_change_layout";
+      images.image: "box_outline.png" COMP;
       parts {
          part { name: "base";
             type: SPACER;
             scale: 1;
             description { state: "default" 0.0;               
-    	        min: 480 448;
-   	            fixed: 1 1;
+    	        min: 480 528;
+   	            fixed: 1 0;
    	        }
    	     }
    	     part { name: "elm.padding.left.top";
@@ -227,20 +237,41 @@ collections {
                rel2.to_x: "elm.padding.right.bottom";
                rel2.to_y: "elm.text.alpha";
                rel2.relative: 0.0 1.0;
+               align: 0.5 0.0;
+            }
+         }
+         part { name: "elm.text.color";
+            type: TEXTBLOCK;
+            scale: 1;
+            description { state: "default" 0.0;
+               min: 432 20;
+               fixed: 1 1;
+               rel1.to: "elm.color.rect";
+               rel2.to: "elm.color.rect";
+               text.style: "widget_center_style";
             }
          }
          part { name: "elm.color.rect";
             type: RECT;
             scale: 1;
             description { state: "default" 0.0;
-               min: 80 0;
-               fixed: 1 0;
+               min: 80 80;
+               fixed: 0 1;
                rel1.to: "elm.swallow.alpha";
                rel1.relative: 0.0 1.0;
                rel2.to: "elm.padding.right.bottom";
                rel2.relative: 0.0 0.0;
-               align: 0.5 0.0;
                color_class: "GTAcolor";
+            }
+         }
+         part { name: "outline";
+            type: IMAGE;
+            scale: 1;
+            description { state: "default" 0.0;
+               rel1.to: "elm.color.rect";
+               rel2.to: "elm.color.rect";
+               image.normal: "box_outline.png";
+               image.border: 4 4 4 4;
             }
          }
       }

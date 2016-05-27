@@ -246,7 +246,7 @@ _settings_option_selected_cb(void *data, Evas_Object *obj, void *event_info)
 		edje_color_class_set("GTAcolor", wid->text_r, wid->text_g, wid->text_b, wid->text_a, 0, 0, 0, 0, 0, 0, 0, 0);
 		evas_object_size_hint_weight_set(layout, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
 		evas_object_size_hint_align_set(layout, EVAS_HINT_FILL, EVAS_HINT_FILL);
-		elm_popup_align_set(popup, ELM_NOTIFY_ALIGN_FILL, -1.0);
+		elm_popup_align_set(popup, ELM_NOTIFY_ALIGN_FILL, 1.0);
 
 		elm_layout_text_set(layout, "elm.text.red", RED);
 		slider = elm_slider_add(popup);
@@ -299,7 +299,7 @@ _settings_option_selected_cb(void *data, Evas_Object *obj, void *event_info)
 		edje_color_class_set("GTAcolor", wid->bg_r, wid->bg_g, wid->bg_b, wid->bg_a, 0, 0, 0, 0, 0, 0, 0, 0);
 		evas_object_size_hint_weight_set(layout, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
 		evas_object_size_hint_align_set(layout, EVAS_HINT_FILL, EVAS_HINT_FILL);
-		elm_popup_align_set(popup, ELM_NOTIFY_ALIGN_FILL, -1.0);
+		elm_popup_align_set(popup, ELM_NOTIFY_ALIGN_FILL, 1.0);
 
 		elm_layout_text_set(layout, "elm.text.red", RED);
 		slider = elm_slider_add(popup);
@@ -340,9 +340,8 @@ _settings_option_selected_cb(void *data, Evas_Object *obj, void *event_info)
 		elm_slider_value_set(slider, (double)wid->bg_a);
 		evas_object_smart_callback_add(slider, "changed", _bg_a_changed, wid);
 		elm_layout_content_set(layout, "elm.swallow.alpha", slider);
-		evas_object_show(slider);
 
-		evas_object_show(layout);
+		elm_layout_text_set(layout, "elm.text.color", YOUR_COLOR_HERE);
 		elm_object_content_set(popup, layout);
 		break;
 	default: break;
@@ -373,7 +372,11 @@ void
 _widget_settings(widget_instance_data_s *wid)
 {
 	wid->settings_window = elm_win_util_standard_add("Bible Widget", "Bible Widget");
-	wid->settings_nf = elm_naviframe_add(wid->settings_window);
+	elm_win_indicator_mode_set(wid->settings_window, ELM_WIN_INDICATOR_SHOW);
+	elm_win_indicator_opacity_set(wid->settings_window, ELM_WIN_INDICATOR_OPAQUE);
+	Evas_Object *conformant = elm_conformant_add(wid->settings_window);
+	wid->settings_nf = elm_naviframe_add(conformant);
+	elm_object_content_set(conformant, wid->settings_nf);
 	Evas_Object *genlist = elm_genlist_add(wid->settings_nf);
 	elm_genlist_mode_set(genlist, ELM_LIST_COMPRESS);
 	evas_object_data_set(genlist, "widget_data", wid);
