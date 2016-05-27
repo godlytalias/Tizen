@@ -28,7 +28,7 @@
 #define GREEN "Green"
 #define BLUE "Blue"
 #define ALPHA "Alpha"
-#define CLOSE "Close"
+#define DONE "Done"
 #define DISPLAYED_VERSE "Displayed Verse"
 #define FONT_SIZE "Font size"
 #define FONT_COLOR "Font color"
@@ -72,9 +72,9 @@ struct widget_instance_data {
 struct _widget_bible_verse_item {
 	char *verse;
 	widget_instance_data_s *wid;
-	Elm_Object_Item *it;
 	int bookcount, chaptercount, versecount;
 };
 
 void _query_verse(void *data);
 void _widget_settings(widget_instance_data_s *wid);
+void _database_query(char *query, int func(void*,int,char**,char**), void *data);

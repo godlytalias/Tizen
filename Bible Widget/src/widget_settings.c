@@ -24,37 +24,6 @@ _popup_del(void *data, Evas_Object *obj, void *event_info)
 }
 
 static void
-_update_entry(Evas_Object *entry, widget_instance_data_s *wid)
-{
-	char buf[1024];
-	sprintf(buf, "%s %d : %d<br> %s",Books[wid->cur_book], wid->cur_chapter, wid->cur_verse, wid->verse);
-	elm_entry_entry_set(entry, buf);
-}
-
-static void
-_next_verse_cb(void *data, Evas_Object *obj, void *event_info)
-{
-	widget_instance_data_s *wid = (widget_instance_data_s*)data;
-	Evas_Object *entry = (Evas_Object*)evas_object_data_get(obj, "entry");
-	wid->verse_order++;
-	_query_verse(wid);
-	_update_entry(entry, wid);
-}
-
-static void
-_prev_verse_cb(void *data, Evas_Object *obj, void *event_info)
-{
-	widget_instance_data_s *wid = (widget_instance_data_s*)data;
-	Evas_Object *entry = (Evas_Object*)evas_object_data_get(obj, "entry");
-	wid->verse_order--;
-	if (wid->verse_order > 0)
-	{
-		_query_verse(wid);
-		_update_entry(entry, wid);
-	}
-}
-
-static void
 _font_size_changed(void *data, Evas_Object *obj, void *event_info)
 {
 	widget_instance_data_s *wid = (widget_instance_data_s*)data;
@@ -149,7 +118,6 @@ _settings_option_text_get(void *data, Evas_Object *obj, const char *part)
 			return strdup(FONT_SIZE);
 		if (!strcmp(part, "elm.text.multiline"))
 		{
-			int val;
 			char value[8];
 			sprintf(value, "%d", wid->font_size);
 			return strdup(value);
@@ -185,6 +153,66 @@ _settings_option_text_get(void *data, Evas_Object *obj, const char *part)
 	return NULL;
 }
 
+static char*
+_genlist_item_text_get_cb(void *data, Evas_Object *obj, const char *part)
+{
+	widget_bible_verse_item *verse_item = (widget_bible_verse_item*)data;
+	if (!strcmp(part, "elm.text.multiline"))
+		return strdup(verse_item->verse);
+	else if (!strcmp(part, "elm.text"))
+	{
+		char buf[1024];
+		sprintf(buf, "%s %d : %d", Books[verse_item->bookcount], verse_item->chaptercount, verse_item->versecount);
+		return strdup(buf);
+	}
+	else return NULL;
+}
+
+static void
+_genlist_item_del_cb(void *data, Evas_Object *obj)
+{
+	widget_bible_verse_item *verse_item = (widget_bible_verse_item*)data;
+	if (verse_item->verse) free(verse_item->verse);
+	if (verse_item) free(verse_item);
+}
+
+static void
+_genlist_item_sel_cb(void *data, Evas_Object *obj, void *event_info)
+{
+	Elm_Object_Item *it = (Elm_Object_Item*)event_info;
+	widget_bible_verse_item *verse_item = (widget_bible_verse_item*)elm_object_item_data_get(it);
+	if(!elm_genlist_item_selected_get(it))
+		elm_genlist_item_selected_set(it, EINA_TRUE);
+	verse_item->wid->verse_order = elm_genlist_item_index_get(it);
+	_query_verse(verse_item->wid);
+}
+
+static int
+_get_verse(void *data, int argc, char **argv, char **azColName)
+{
+	Evas_Object *genlist = (Evas_Object*)data;
+	if (argv == NULL) return 0;
+	Elm_Object_Item *it;
+
+	widget_bible_verse_item *verse_item = (widget_bible_verse_item*)malloc(sizeof(widget_bible_verse_item));
+	Elm_Genlist_Item_Class *itc = (Elm_Genlist_Item_Class*)evas_object_data_get(genlist, "itc");
+	widget_instance_data_s *wid = (widget_instance_data_s*)evas_object_data_get(genlist, "wid");
+	verse_item->verse = strdup(argv[3]);
+	verse_item->bookcount = atoi(argv[0]);
+	verse_item->chaptercount = atoi(argv[1]);
+	verse_item->versecount = atoi(argv[2]) + 1;
+	verse_item->wid = wid;
+	it = elm_genlist_item_append(genlist, itc, verse_item, NULL, ELM_GENLIST_ITEM_NONE, _genlist_item_sel_cb, verse_item);
+	if ((verse_item->bookcount == wid->cur_book) &&
+			(verse_item->chaptercount == wid->cur_chapter) &&
+			(verse_item->versecount == wid->cur_verse))
+	{
+		elm_genlist_item_selected_set(it, EINA_TRUE);
+		elm_genlist_item_show(it, ELM_GENLIST_ITEM_SCROLLTO_IN);
+	}
+	return 0;
+}
+
 static void
 _settings_option_selected_cb(void *data, Evas_Object *obj, void *event_info)
 {
@@ -202,27 +230,31 @@ _settings_option_selected_cb(void *data, Evas_Object *obj, void *event_info)
 	{
 	case 1:
 		elm_object_part_text_set(popup, "title,text", DISPLAYED_VERSE);
-		layout = elm_layout_add(popup);
-		elm_layout_file_set(layout, wid->edj_path, "standard_layout");
-		Evas_Object *entry = elm_entry_add(layout);
-		elm_entry_editable_set(entry, EINA_FALSE);
-		elm_entry_single_line_set(entry, EINA_FALSE);
-		sprintf(buf, "%s %d : %d<br> %s",Books[wid->cur_book], wid->cur_chapter, wid->cur_verse, wid->verse);
-		elm_entry_entry_set(entry, buf);
-		elm_layout_content_set(layout, "elm.swallow.content", entry);
-
-		button = elm_button_add(popup);
-		elm_object_text_set(button, PREVIOUS);
-		elm_object_part_content_set(popup, "button1", button);
-		evas_object_data_set(button, "entry", entry);
-		evas_object_smart_callback_add(button, "clicked", _prev_verse_cb, wid);
-		button = elm_button_add(popup);
-		elm_object_text_set(button, NEXT);
-		elm_object_part_content_set(popup, "button2", button);
-		evas_object_data_set(button, "entry", entry);
-		evas_object_smart_callback_add(button, "clicked", _next_verse_cb, wid);
-		evas_object_show(layout);
-		elm_object_content_set(popup, layout);
+		Evas_Object *genlist = elm_genlist_add(popup);
+		elm_genlist_mode_set(genlist, ELM_LIST_COMPRESS);
+		elm_genlist_highlight_mode_set(genlist, EINA_TRUE);
+		elm_genlist_select_mode_set(genlist, ELM_OBJECT_SELECT_MODE_ALWAYS);
+		sprintf(buf, "select * from %s;", WIDGET_TABLE_NAME);
+		Elm_Genlist_Item_Class *itc = elm_genlist_item_class_new();
+		itc->item_style = "multiline";
+		itc->func.text_get = _genlist_item_text_get_cb;
+		itc->func.del = _genlist_item_del_cb;
+		evas_object_data_set(genlist, "wid", wid);
+		evas_object_data_set(genlist, "itc", itc);
+		_database_query(buf, &_get_verse, genlist);
+		if (elm_genlist_items_count(genlist) == 0)
+		{
+			widget_bible_verse_item *verse_item = (widget_bible_verse_item*)malloc(sizeof(widget_bible_verse_item));
+			verse_item->verse = strdup(DEFAULT_WIDGET_VERSE);
+			verse_item->bookcount = 43;
+			verse_item->chaptercount = 4;
+			verse_item->versecount = 12;
+			verse_item->wid = wid;
+			Elm_Object_Item *it = elm_genlist_item_append(genlist, itc, verse_item, NULL, ELM_GENLIST_ITEM_NONE, _genlist_item_sel_cb, verse_item);
+			elm_genlist_item_selected_set(it, EINA_TRUE);
+		}
+		elm_object_content_set(popup, genlist);
+		elm_genlist_item_class_free(itc);
 		break;
 	case 2:
 		elm_object_part_text_set(popup, "title,text", FONT_SIZE);
@@ -348,10 +380,10 @@ _settings_option_selected_cb(void *data, Evas_Object *obj, void *event_info)
 	}
 
 	button = elm_button_add(popup);
-	elm_object_text_set(button, CLOSE);
-	elm_object_part_content_set(popup, "button3", button);
+	elm_object_text_set(button, DONE);
+	elm_object_part_content_set(popup, "button1", button);
 	evas_object_smart_callback_add(button, "clicked", _popup_del, popup);
-	eext_object_event_callback_add(popup, EEXT_CALLBACK_BACK, _popup_del, popup);
+	eext_object_event_callback_add(popup, EEXT_CALLBACK_BACK, eext_popup_back_cb, popup);
 	evas_object_show(popup);
 }
 

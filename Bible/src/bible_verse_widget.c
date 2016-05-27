@@ -13,6 +13,12 @@ static void
 _verse_widget_del_item(void *data, Evas_Object *obj, void *event_info)
 {
 	bible_verse_item *verse_item = (bible_verse_item*)data;
+	Evas_Object *genlist = (Evas_Object*)evas_object_data_get(obj, "genlist");
+	if (elm_genlist_items_count(genlist) == 1)
+	{
+		Evas_Object *layout = elm_object_parent_widget_get(genlist);
+		elm_layout_signal_emit(layout, "elm,holy_bible,bg,show", "elm");
+	}
 	_delete_widget_verse(verse_item->bookcount, verse_item->chaptercount, verse_item->versecount);
 	elm_object_item_del(verse_item->it);
 }
@@ -23,7 +29,8 @@ _verse_widget_content_get_cb(void *data, Evas_Object *obj, const char *part)
 	if (!strcmp(part, "elm.swallow.end"))
 	{
 		Evas_Object *ic_cancel = elm_button_add(obj);
-		elm_object_style_set(ic_cancel, "ic/cancel");
+		elm_object_style_set(ic_cancel, "naviframe/title_cancel");
+		evas_object_data_set(ic_cancel, "genlist", obj);
 		evas_object_smart_callback_add(ic_cancel, "clicked", _verse_widget_del_item, data);
 		return ic_cancel;
 	}
@@ -98,7 +105,9 @@ void
 _verse_display_widget_list(appdata_s *ad)
 {
 	char query[128];
-	Evas_Object *genlist = elm_genlist_add(ad->naviframe);
+	Evas_Object *layout = elm_layout_add(ad->naviframe);
+	elm_layout_file_set(layout, ad->edj_path, "bookmarks_layout");
+	Evas_Object *genlist = elm_genlist_add(layout);
 	elm_genlist_mode_set(genlist, ELM_LIST_COMPRESS);
 	elm_genlist_select_mode_set(genlist, ELM_OBJECT_SELECT_MODE_NONE);
 	elm_genlist_reorder_mode_set(genlist, EINA_TRUE);
@@ -111,6 +120,9 @@ _verse_display_widget_list(appdata_s *ad)
 	evas_object_data_set(genlist, "itc", itc);
 	sprintf(query, "select * from versewidget;");
 	_app_database_query(query, &_get_verse, genlist);
-	elm_naviframe_item_push(ad->naviframe, "Verse Widget", NULL, NULL, genlist, NULL);
+	elm_layout_content_set(layout, "elm.swallow.content", genlist);
+	if (elm_genlist_items_count(genlist) > 0)
+		elm_layout_signal_emit(layout, "elm,holy_bible,bg,hide", "elm");
+	elm_naviframe_item_push(ad->naviframe, "Verse Widget", NULL, NULL, layout, NULL);
 	elm_genlist_item_class_free(itc);
 }
