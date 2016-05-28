@@ -22,6 +22,8 @@ static void
 _load_prefs(widget_instance_data_s *wid)
 {
 	bool exist;
+	int type;
+	char style[64];
 
 	preference_is_existing("font_size", &exist);
 	if (exist)
@@ -104,8 +106,21 @@ _load_prefs(widget_instance_data_s *wid)
 		preference_set_int("bg_a", 0);
 	}
 
-	edje_text_class_set("GTAwidget", "Tizen:style=Regular", wid->font_size);
-	edje_color_class_set("GTAwidget", wid->text_r, wid->text_g, wid->text_b, wid->text_a, 0, 0, 0, 0, 0, 0, 0, 0);
+	preference_is_existing("font_type", &exist);
+	if (exist)
+	{
+		preference_get_int("font_type", &type);
+		wid->font_style = Font_Style[type];
+	}
+	else
+	{
+		wid->font_style = Font_Style[1];
+		preference_set_int("font_type", 1);
+	}
+
+	sprintf(style, "Tizen:style=%s", wid->font_style);
+	edje_text_class_set("GTAwidget", style, wid->font_size);
+	edje_color_class_set("GTAwidget", 255, 255, 255, 255, 0, 0, 0, 0, 0, 0, 0, 0);
 	edje_color_class_set("GTAwidgetbg", wid->bg_r, wid->bg_g, wid->bg_b, wid->bg_a, 0, 0, 0, 0, 0, 0, 0, 0);
 }
 

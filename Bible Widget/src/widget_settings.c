@@ -4,8 +4,10 @@
 static Eina_Bool
 _window_close(void *data, Elm_Object_Item *it)
 {
+	char style[64];
 	widget_instance_data_s *wid = (widget_instance_data_s*)data;
-	edje_text_class_set("GTAwidget", "Tizen:style=Regular", wid->font_size);
+	sprintf(style, "Tizen:style=%s", wid->font_style);
+	edje_text_class_set("GTAwidget", style, wid->font_size);
 	edje_color_class_set("GTAwidget", wid->text_r, wid->text_g, wid->text_b, wid->text_a, 0, 0, 0, 0, 0, 0, 0, 0);
 	edje_color_class_set("GTAwidgetbg", wid->bg_r, wid->bg_g, wid->bg_b, wid->bg_a, 0, 0, 0, 0, 0, 0, 0, 0);
 	evas_object_del(wid->settings_window);
@@ -195,6 +197,15 @@ _genlist_item_sel_cb(void *data, Evas_Object *obj, void *event_info)
 	_query_verse(verse_item->wid);
 }
 
+static void
+_type_change_cb(void *data, Evas_Object *obj, void *event_info)
+{
+	widget_instance_data_s *wid = (widget_instance_data_s*)data;
+	int val = elm_radio_value_get(obj);
+	wid->font_style = Font_Style[val];
+	preference_set_int("font_type", val);
+}
+
 static int
 _get_verse(void *data, int argc, char **argv, char **azColName)
 {
@@ -229,7 +240,7 @@ _settings_option_selected_cb(void *data, Evas_Object *obj, void *event_info)
 	Elm_Object_Item *it = (Elm_Object_Item*)event_info;
 	widget_instance_data_s *wid = (widget_instance_data_s*)data;
 	int option_id = atoi((char*)elm_object_item_data_get(it));
-	Evas_Object *popup, *layout;
+	Evas_Object *popup, *layout, *box, *check, *radio_group;
 	popup = elm_popup_add(wid->settings_nf);
 	evas_object_data_set(popup, "genlist", obj);
 	evas_object_size_hint_weight_set(popup, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
@@ -275,7 +286,36 @@ _settings_option_selected_cb(void *data, Evas_Object *obj, void *event_info)
 		elm_slider_indicator_format_set(slider, "%1.0f");
 		elm_slider_value_set(slider, (double)wid->font_size);
 		evas_object_smart_callback_add(slider, "changed", _font_size_changed, wid);
+		box = elm_box_add(popup);
+		elm_box_horizontal_set(box, EINA_TRUE);
+		elm_box_padding_set(box, ELM_SCALE_SIZE(32), ELM_SCALE_SIZE(32));
+		check = elm_radio_add(box);
+		elm_radio_state_value_set(check, 0);
+		radio_group = check;
+		elm_object_text_set(check, BOLD);
+		evas_object_smart_callback_add(check, "changed", _type_change_cb, wid);
+		elm_box_pack_end(box, check);
+		evas_object_show(check);
+		check = elm_radio_add(box);
+		elm_radio_state_value_set(check, 1);
+		elm_radio_group_add(check, radio_group);
+		elm_object_text_set(check, REGULAR);
+		evas_object_smart_callback_add(check, "changed", _type_change_cb, wid);
+		elm_box_pack_end(box, check);
+		evas_object_show(check);
+		check = elm_radio_add(box);
+		elm_radio_state_value_set(check, 2);
+		elm_radio_group_add(check, radio_group);
+		elm_object_text_set(check, LIGHT);
+		evas_object_smart_callback_add(check, "changed", _type_change_cb, wid);
+		elm_box_pack_end(box, check);
+		int type = 1;
+		preference_get_int("font_type", &type);
+		elm_radio_value_set(radio_group, type);
+		evas_object_show(check);
+		evas_object_show(box);
 		elm_layout_content_set(layout, "elm.swallow.content", slider);
+		elm_layout_content_set(layout, "elm.swallow.content2", box);
 		evas_object_show(layout);
 		elm_object_content_set(popup, layout);
 		break;

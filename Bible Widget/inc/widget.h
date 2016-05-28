@@ -33,9 +33,10 @@
 #define FONT_SIZE "Font size"
 #define FONT_COLOR "Font color"
 #define BG_COLOR "Background Color"
-#define NEXT "Next"
-#define PREVIOUS "Previous"
 #define YOUR_COLOR_HERE "YOUR COLOR HERE"
+#define BOLD "Bold"
+#define REGULAR "Regular"
+#define LIGHT "Light"
 
 #endif /* __widget_H__ */
 
@@ -55,6 +56,10 @@ const static char *Books[] = {
 						"Hebrews", "James", "1 Peter", "2 Peter", "1 John", "2 John", "3 John", "Jude", "Revelation"};
 
 
+static char *Font_Style[] = {
+		"Bold", "Regular", "Light", NULL
+};
+
 struct widget_instance_data {
 	Evas_Object *win;
 	Evas_Object *conform;
@@ -63,7 +68,7 @@ struct widget_instance_data {
 	Evas_Object *scroller;
 	Evas_Object *settings_window, *settings_nf;
 	char edj_path[PATH_MAX];
-	char *verse;
+	char *verse, *font_style;
 	int cur_book, cur_chapter, cur_verse, verse_order, font_size;
 	int text_r, text_g, text_b, text_a;
 	int bg_r, bg_g, bg_b, bg_a;
