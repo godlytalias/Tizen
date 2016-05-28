@@ -28,7 +28,7 @@
 #define GREEN "Green"
 #define BLUE "Blue"
 #define ALPHA "Alpha"
-#define DONE "Done"
+#define CLOSE "Close"
 #define DISPLAYED_VERSE "Displayed Verse"
 #define FONT_SIZE "Font size"
 #define FONT_COLOR "Font color"

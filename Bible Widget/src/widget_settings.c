@@ -428,10 +428,10 @@ _settings_option_selected_cb(void *data, Evas_Object *obj, void *event_info)
 	}
 
 	button = elm_button_add(popup);
-	elm_object_text_set(button, DONE);
+	elm_object_text_set(button, CLOSE);
 	elm_object_part_content_set(popup, "button1", button);
 	evas_object_smart_callback_add(button, "clicked", _popup_del, popup);
-	eext_object_event_callback_add(popup, EEXT_CALLBACK_BACK, eext_popup_back_cb, popup);
+	eext_object_event_callback_add(popup, EEXT_CALLBACK_BACK, _popup_del, popup);
 	evas_object_show(popup);
 }
 
