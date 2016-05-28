@@ -120,7 +120,7 @@ _load_prefs(widget_instance_data_s *wid)
 
 	sprintf(style, "Tizen:style=%s", wid->font_style);
 	edje_text_class_set("GTAwidget", style, wid->font_size);
-	edje_color_class_set("GTAwidget", 255, 255, 255, 255, 0, 0, 0, 0, 0, 0, 0, 0);
+	edje_color_class_set("GTAwidget", wid->text_r, wid->text_g, wid->text_b, wid->text_a, 0, 0, 0, 0, 0, 0, 0, 0);
 	edje_color_class_set("GTAwidgetbg", wid->bg_r, wid->bg_g, wid->bg_b, wid->bg_a, 0, 0, 0, 0, 0, 0, 0, 0);
 }
 
