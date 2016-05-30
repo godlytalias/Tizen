@@ -11,6 +11,24 @@ collections {
          tag: "tab" "\t";
       }
       style {
+         name: "widget_center_verse_style";
+         base: "font=Tizen:style=Regular align=center text_class=GTAwidget linerelsize=115% font_size=40 color=#ffffff wrap=mixed";
+         tag: "br" "\n";
+         tag: "ps" "ps";
+         tag: "hilight" "+ font_weight=Bold";
+         tag: "b" "+ font_weight=Bold";
+         tag: "tab" "\t";
+      }
+      style {
+         name: "widget_right_verse_style";
+         base: "font=Tizen:style=Regular align=right text_class=GTAwidget linerelsize=115% font_size=40 color=#ffffff wrap=mixed";
+         tag: "br" "\n";
+         tag: "ps" "ps";
+         tag: "hilight" "+ font_weight=Bold";
+         tag: "b" "+ font_weight=Bold";
+         tag: "tab" "\t";
+      }
+      style {
          name: "widget_normal_style";
          base: "font=Tizen:style=Regular align=left font_size=15 color=#000000 wrap=mixed";
          tag: "br" "\n";
@@ -72,6 +90,14 @@ collections {
                text.style: "widget_verse_style";
                color_class: "GTAwidget";
             }
+            description { state: "center" 0.0;
+               inherit: "default" 0.0;
+               text.style: "widget_center_verse_style";
+            }
+            description { state: "right" 0.0;
+               inherit: "default" 0.0;
+               text.style: "widget_right_verse_style";
+            }
          }
          part { name: "events";
             type: RECT;
@@ -85,6 +111,24 @@ collections {
             signal: "mouse,clicked,1";
             source: "events";
             action: SIGNAL_EMIT "elm,action,clicked" "elm";         
+         }
+         program { name: "align_left";
+            signal: "elm,widget,holy_bible,align,left";
+            source: "elm";
+            action: STATE_SET "default" 0.0;
+            target: "elm.text.verse";         
+         }
+         program { name: "align_center";
+            signal: "elm,widget,holy_bible,align,center";
+            source: "elm";
+            action: STATE_SET "center" 0.0;
+            target: "elm.text.verse";         
+         }
+         program { name: "align_right";
+            signal: "elm,widget,holy_bible,align,right";
+            source: "elm";
+            action: STATE_SET "right" 0.0;
+            target: "elm.text.verse";         
          }
       }
    }

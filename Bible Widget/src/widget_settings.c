@@ -156,6 +156,17 @@ _settings_option_text_get(void *data, Evas_Object *obj, const char *part)
 		}
 		else return NULL;
 		break;
+	case 5:
+		if (!strcmp(part, "elm.text"))
+			return strdup(VERSE_ALIGN);
+		if (!strcmp(part, "elm.text.multiline"))
+		{
+			char color[64];
+			sprintf(color, VERSE_ALIGN_DESCRIPTION);
+			return strdup(color);
+		}
+		else return NULL;
+		break;
 	default:
 		return NULL;
 		break;
@@ -204,6 +215,15 @@ _type_change_cb(void *data, Evas_Object *obj, void *event_info)
 	int val = elm_radio_value_get(obj);
 	wid->font_style = Font_Style[val];
 	preference_set_int("font_type", val);
+}
+
+static void
+_align_change_cb(void *data, Evas_Object *obj, void *event_info)
+{
+	widget_instance_data_s *wid = (widget_instance_data_s*)data;
+	wid->align = elm_radio_value_get(obj);
+	preference_set_int("align", wid->align);
+	_query_verse(wid);
 }
 
 static int
@@ -424,6 +444,39 @@ _settings_option_selected_cb(void *data, Evas_Object *obj, void *event_info)
 		elm_layout_text_set(layout, "elm.text.color", YOUR_COLOR_HERE);
 		elm_object_content_set(popup, layout);
 		break;
+	case 5:
+		elm_object_part_text_set(popup, "title,text", VERSE_ALIGN);
+		layout = elm_layout_add(popup);
+		elm_layout_file_set(layout, wid->edj_path, "standard_layout");
+		box = elm_box_add(layout);
+		elm_box_horizontal_set(box, EINA_TRUE);
+		elm_box_padding_set(box, ELM_SCALE_SIZE(32), ELM_SCALE_SIZE(32));
+		check = elm_radio_add(box);
+		elm_radio_state_value_set(check, 0);
+		radio_group = check;
+		elm_object_text_set(check, LEFT);
+		evas_object_smart_callback_add(check, "changed", _align_change_cb, wid);
+		elm_box_pack_end(box, check);
+		evas_object_show(check);
+		check = elm_radio_add(box);
+		elm_radio_state_value_set(check, 1);
+		elm_radio_group_add(check, radio_group);
+		elm_object_text_set(check, CENTER);
+		evas_object_smart_callback_add(check, "changed", _align_change_cb, wid);
+		elm_box_pack_end(box, check);
+		evas_object_show(check);
+		check = elm_radio_add(box);
+		elm_radio_state_value_set(check, 2);
+		elm_radio_group_add(check, radio_group);
+		elm_object_text_set(check, RIGHT);
+		evas_object_smart_callback_add(check, "changed", _align_change_cb, wid);
+		elm_box_pack_end(box, check);
+		elm_radio_value_set(radio_group, wid->align);
+		evas_object_show(check);
+		evas_object_show(box);
+		elm_layout_content_set(layout, "elm.swallow.content2", box);
+		elm_object_content_set(popup, layout);
+		break;
 	default: break;
 	}
 
@@ -445,6 +498,7 @@ _add_option_items(Evas_Object *genlist, widget_instance_data_s *wid)
 	elm_genlist_item_append(genlist, itc, "2", NULL, ELM_GENLIST_ITEM_NONE, _settings_option_selected_cb, wid);
 	elm_genlist_item_append(genlist, itc, "3", NULL, ELM_GENLIST_ITEM_NONE, _settings_option_selected_cb, wid);
 	elm_genlist_item_append(genlist, itc, "4", NULL, ELM_GENLIST_ITEM_NONE, _settings_option_selected_cb, wid);
+	elm_genlist_item_append(genlist, itc, "5", NULL, ELM_GENLIST_ITEM_NONE, _settings_option_selected_cb, wid);
 	elm_genlist_item_class_free(itc);
 }
 

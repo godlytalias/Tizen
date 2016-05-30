@@ -59,6 +59,9 @@ _query_verse(void *data)
 		wid->cur_verse = 12;
 	}
 
-	sprintf(verse, "%s<br><align=right>%s %d:%d</align>", wid->verse, Books[wid->cur_book], wid->cur_chapter, wid->cur_verse);
+	sprintf(verse, "elm,widget,holy_bible,align,%s", Font_Align[wid->align]);
+	elm_layout_signal_emit(wid->layout, verse, "elm");
+	sprintf(verse, "%s<br><align=%s>%s %d:%d</align>", wid->verse, Font_Align[2 - wid->align], Books[wid->cur_book], wid->cur_chapter, wid->cur_verse);
+
 	elm_layout_text_set(wid->layout, "elm.text.verse", verse);
 }

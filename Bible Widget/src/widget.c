@@ -118,6 +118,15 @@ _load_prefs(widget_instance_data_s *wid)
 		preference_set_int("font_type", 1);
 	}
 
+	preference_is_existing("align", &exist);
+	if (exist)
+		preference_get_int("align", &(wid->align));
+	else
+	{
+		wid->align = 0;
+		preference_set_int("align", 0);
+	}
+
 	sprintf(style, "Tizen:style=%s", wid->font_style);
 	edje_text_class_set("GTAwidget", style, wid->font_size);
 	edje_color_class_set("GTAwidget", wid->text_r, wid->text_g, wid->text_b, wid->text_a, 0, 0, 0, 0, 0, 0, 0, 0);

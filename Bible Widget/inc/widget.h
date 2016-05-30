@@ -37,6 +37,11 @@
 #define BOLD "Bold"
 #define REGULAR "Regular"
 #define LIGHT "Light"
+#define LEFT "Left"
+#define CENTER "Center"
+#define RIGHT "Right"
+#define VERSE_ALIGN "Verse Alignment"
+#define VERSE_ALIGN_DESCRIPTION "Sets the alignment of verses displayed in widget"
 
 #endif /* __widget_H__ */
 
@@ -59,6 +64,9 @@ const static char *Books[] = {
 static char *Font_Style[] = {
 		"Bold", "Regular", "Light", NULL
 };
+static char *Font_Align[] = {
+		"left", "center", "right", NULL
+};
 
 struct widget_instance_data {
 	Evas_Object *win;
@@ -72,6 +80,7 @@ struct widget_instance_data {
 	int cur_book, cur_chapter, cur_verse, verse_order, font_size;
 	int text_r, text_g, text_b, text_a;
 	int bg_r, bg_g, bg_b, bg_a;
+	int align;
 };
 
 struct _widget_bible_verse_item {
