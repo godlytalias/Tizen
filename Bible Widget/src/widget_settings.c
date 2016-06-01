@@ -204,7 +204,7 @@ _genlist_item_sel_cb(void *data, Evas_Object *obj, void *event_info)
 	widget_bible_verse_item *verse_item = (widget_bible_verse_item*)elm_object_item_data_get(it);
 	if(!elm_genlist_item_selected_get(it))
 		elm_genlist_item_selected_set(it, EINA_TRUE);
-	verse_item->wid->verse_order = elm_genlist_item_index_get(it) + 1;
+	verse_item->wid->verse_order = elm_genlist_item_index_get(it);
 	_query_verse(verse_item->wid);
 }
 

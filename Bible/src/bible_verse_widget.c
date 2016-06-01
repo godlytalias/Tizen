@@ -2,6 +2,19 @@
 #include "bible.h"
 
 static void
+_reset_verse_widget_db(Evas_Object *obj, bible_verse_item *verse_item)
+{
+	_clear_table("versewidget");
+	Elm_Object_Item *it = elm_genlist_first_item_get(obj);
+	while(it)
+	{
+		bible_verse_item *verse_item = (bible_verse_item*)elm_object_item_data_get(it);
+		_insert_widget_verse(verse_item->bookcount, verse_item->chaptercount, verse_item->versecount, verse_item->verse);
+		it = elm_genlist_item_next_get(it);
+	}
+}
+
+static void
 _verse_widget_item_del_cb(void *data, Evas_Object *obj)
 {
 	bible_verse_item *verse_item = (bible_verse_item*)data;
@@ -19,8 +32,8 @@ _verse_widget_del_item(void *data, Evas_Object *obj, void *event_info)
 		Evas_Object *layout = elm_object_parent_widget_get(genlist);
 		elm_layout_signal_emit(layout, "elm,holy_bible,bg,show", "elm");
 	}
-	_delete_widget_verse(verse_item->bookcount, verse_item->chaptercount, verse_item->versecount);
 	elm_object_item_del(verse_item->it);
+	_reset_verse_widget_db(genlist, verse_item);
 }
 
 Evas_Object*
@@ -98,14 +111,10 @@ _get_verse(void *data, int argc, char **argv, char **azColName)
 static void
 _genlist_item_reorder_cb(void *data, Evas_Object *obj, void *event_info)
 {
+	Elm_Object_Item *it = (Elm_Object_Item*)event_info;
+	bible_verse_item *verse_item = (bible_verse_item*)elm_object_item_data_get(it);
 	_clear_table("versewidget");
-	Elm_Object_Item *it = elm_genlist_first_item_get(obj);
-	while(it)
-	{
-		bible_verse_item *verse_item = (bible_verse_item*)elm_object_item_data_get(it);
-		_insert_widget_verse(verse_item->bookcount, verse_item->chaptercount, verse_item->versecount, verse_item->verse);
-		it = elm_genlist_item_next_get(it);
-	}
+	_reset_verse_widget_db(obj, verse_item);
 }
 
 void
