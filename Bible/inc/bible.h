@@ -49,7 +49,7 @@ typedef struct appdata{
 	char *parallel_db_path;
 	int search_from, search_to;
 	int count, versecount, chaptercount;
-	int cur_chapter, cur_book;
+	int cur_chapter, cur_book, cur_verse;
 	int nxt_chapter, nxt_book;
 	Evas_Coord mouse_x, mouse_y;
 	uint mouse_down_time;

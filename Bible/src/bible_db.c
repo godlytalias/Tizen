@@ -51,6 +51,8 @@ _get_app_data(void *data, int argc, char **argv, char **azColName)
 		ad->cur_book = atoi(argv[0]);
 	if (!strcmp(azColName[1], "chaptercount"))
 		ad->cur_chapter = atoi(argv[1]);
+	if (!strcmp(azColName[2], "versecount"))
+		ad->cur_verse = atoi(argv[2]);
 	return 0;
 }
 
@@ -88,7 +90,7 @@ _load_appdata(appdata_s *ad)
 
 	if (!ad->app_control_mode)
 	{
-		sprintf(query, "SELECT bookcount,chaptercount FROM appinitdata;");
+		sprintf(query, "SELECT bookcount, chaptercount, versecount FROM appinitdata;");
 		_app_database_query(query, &_get_app_data, ad);
 	}
 	sprintf(query, "create table if not exists bookmark(bookcount INT, chaptercount INT, versecount INT, verse VARCHAR(1024));");
@@ -165,9 +167,12 @@ _save_appdata(appdata_s *ad)
 {
 	char query[256];
 	_drop_table("appinitdata", ad);
-	sprintf(query, "CREATE TABLE appinitdata(bookcount int, chaptercount int);");
+	sprintf(query, "CREATE TABLE appinitdata(bookcount int, chaptercount int, versecount int);");
 	_app_database_query(query, &_check, ad);
-	sprintf(query, "INSERT INTO appinitdata VALUES(%d, %d);", ad->cur_book, ad->cur_chapter);
+	Eina_List *r_item = elm_genlist_realized_items_get(ad->genlist);
+	ad->cur_verse = elm_genlist_item_index_get(eina_list_data_get(r_item));
+	eina_list_free(r_item);
+	sprintf(query, "INSERT INTO appinitdata VALUES(%d, %d, %d);", ad->cur_book, ad->cur_chapter, ad->cur_verse);
 	_app_database_query(query, &_check, ad);
 }
 
