@@ -21,6 +21,7 @@
 #define PACKAGE "org.widget.gtaholybible"
 #endif
 
+#define APP_ID "org.tizen.gta_holy_bible"
 #define EDJ_FILE "edje/widget.edj"
 #define GRP_MAIN "main"
 #define DEFAULT_WIDGET_VERSE "And there is salvation in no other One; for there is no other name under Heaven given among men by which we must be saved." //Acts 4:12
@@ -42,6 +43,7 @@
 #define RIGHT "Right"
 #define VERSE_ALIGN "Verse Alignment"
 #define VERSE_ALIGN_DESCRIPTION "Sets the alignment of verses displayed in widget"
+#define OPEN_BIBLE "Open Bible"
 
 #endif /* __widget_H__ */
 

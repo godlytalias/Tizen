@@ -60,6 +60,7 @@ typedef struct appdata{
 	Eina_Bool long_pressed:1;
 	Eina_Bool panel_mode:1;
 	Eina_Bool rotate_flag:1;
+	Eina_Bool app_control_mode:1;
 } appdata_s;
 
 #define PARALLEL_READING_SUPPORT_VERSION 0.5

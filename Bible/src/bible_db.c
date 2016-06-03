@@ -86,8 +86,11 @@ _load_appdata(appdata_s *ad)
 	bool existing = false;
 	ad->parallel_db_path = NULL;
 
-	sprintf(query, "SELECT bookcount,chaptercount FROM appinitdata;");
-	_app_database_query(query, &_get_app_data, ad);
+	if (!ad->app_control_mode)
+	{
+		sprintf(query, "SELECT bookcount,chaptercount FROM appinitdata;");
+		_app_database_query(query, &_get_app_data, ad);
+	}
 	sprintf(query, "create table if not exists bookmark(bookcount INT, chaptercount INT, versecount INT, verse VARCHAR(1024));");
 	_app_database_query(query, &_check, ad);
 	sprintf(query, "create table if not exists notes(bookcount INT, chaptercount INT, versecount INT, note VARCHAR(8192));");

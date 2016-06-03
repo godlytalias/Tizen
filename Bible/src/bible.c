@@ -781,7 +781,10 @@ _load_chapter(void *data)
 	appdata_s *ad = (appdata_s*)data;
 	_query_chapter(data, ad->cur_book, ad->cur_chapter);
 	_get_chapter_count_query(data, ad->cur_book);
-	ecore_timer_add(0.03, _progress_show, ad);
+	if (!ad->app_control_mode)
+		ecore_timer_add(0.03, _progress_show, ad);
+	else
+		elm_layout_signal_emit(ad->layout, "elm,holy_bible,loading,done", "elm");
 	return ECORE_CALLBACK_CANCEL;
 }
 
@@ -1026,6 +1029,7 @@ app_create(void *data)
 	ad->app_list_tail = NULL;
 	ad->long_timer = NULL;
 	ad->search_result_genlist = NULL;
+	ad->app_control_mode = EINA_FALSE;
 
 	create_base_gui(ad);
 
@@ -1036,6 +1040,27 @@ static void
 app_control(app_control_h app_control, void *data)
 {
 	/* Handle the launch request. */
+	char* buf = (char*)malloc(sizeof(char) * 64);
+	app_control_get_operation(app_control, &buf);
+	if (!strcmp(buf, APP_CONTROL_OPERATION_VIEW))
+	{
+		appdata_s *ad = data;
+		app_control_get_extra_data(app_control, "book", &buf);
+		ad->cur_book = atoi(buf);
+		app_control_get_extra_data(app_control, "chapter", &buf);
+		ad->cur_chapter = atoi(buf);
+		app_control_get_extra_data(app_control, "verse", &buf);
+		ad->count = 0;
+		ad->exit_mode = EINA_FALSE;
+		ad->menu_ctxpopup = NULL;
+		ad->app_list_head = NULL;
+		ad->app_list_tail = NULL;
+		ad->long_timer = NULL;
+		ad->search_result_genlist = NULL;
+		ad->app_control_mode = EINA_TRUE;
+	}
+	free(buf);
+	return;
 }
 
 static void

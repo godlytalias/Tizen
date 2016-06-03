@@ -167,6 +167,11 @@ _settings_option_text_get(void *data, Evas_Object *obj, const char *part)
 		}
 		else return NULL;
 		break;
+	case 6:
+		if (!strcmp(part, "elm.text"))
+			return strdup(OPEN_BIBLE);
+		else return NULL;
+		break;
 	default:
 		return NULL;
 		break;
@@ -261,6 +266,24 @@ _settings_option_selected_cb(void *data, Evas_Object *obj, void *event_info)
 	widget_instance_data_s *wid = (widget_instance_data_s*)data;
 	int option_id = atoi((char*)elm_object_item_data_get(it));
 	Evas_Object *popup, *layout, *box, *check, *radio_group;
+	if (option_id == 6)
+	{
+		char book[5], chapter[5], verse[5];
+		app_control_h handler;
+		app_control_create(&handler);
+		app_control_set_app_id(handler, APP_ID);
+		app_control_set_operation(handler, APP_CONTROL_OPERATION_VIEW);
+		sprintf(book, "%d", wid->cur_book);
+		sprintf(chapter, "%d", wid->cur_chapter);
+		sprintf(verse, "%d", wid->cur_verse);
+		app_control_add_extra_data(handler, "book", book);
+		app_control_add_extra_data(handler, "chapter", chapter);
+		app_control_add_extra_data(handler, "verse", verse);
+		app_control_send_launch_request(handler, NULL, NULL);
+		app_control_destroy(handler);
+		_window_close(wid, NULL);
+		return;
+	}
 	popup = elm_popup_add(wid->settings_nf);
 	evas_object_data_set(popup, "genlist", obj);
 	evas_object_size_hint_weight_set(popup, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
@@ -499,6 +522,7 @@ _add_option_items(Evas_Object *genlist, widget_instance_data_s *wid)
 	elm_genlist_item_append(genlist, itc, "3", NULL, ELM_GENLIST_ITEM_NONE, _settings_option_selected_cb, wid);
 	elm_genlist_item_append(genlist, itc, "4", NULL, ELM_GENLIST_ITEM_NONE, _settings_option_selected_cb, wid);
 	elm_genlist_item_append(genlist, itc, "5", NULL, ELM_GENLIST_ITEM_NONE, _settings_option_selected_cb, wid);
+	elm_genlist_item_append(genlist, itc, "6", NULL, ELM_GENLIST_ITEM_NONE, _settings_option_selected_cb, wid);
 	elm_genlist_item_class_free(itc);
 }
 
