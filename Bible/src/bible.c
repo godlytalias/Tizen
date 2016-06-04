@@ -780,7 +780,7 @@ _load_chapter(void *data)
 {
 	appdata_s *ad = (appdata_s*)data;
 	_query_chapter(data, ad->cur_book, ad->cur_chapter);
-	elm_genlist_item_show(elm_genlist_nth_item_get(ad->genlist, ad->cur_verse), ELM_GENLIST_ITEM_SCROLLTO_IN);
+	elm_genlist_item_show(elm_genlist_nth_item_get(ad->genlist, ad->cur_verse), ELM_GENLIST_ITEM_SCROLLTO_TOP);
 	_get_chapter_count_query(data, ad->cur_book);
 	if (!ad->app_control_mode)
 		ecore_timer_add(0.03, _progress_show, ad);
