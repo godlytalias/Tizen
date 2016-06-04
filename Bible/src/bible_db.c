@@ -165,14 +165,15 @@ _load_appdata(appdata_s *ad)
 void
 _save_appdata(appdata_s *ad)
 {
+	bible_verse_item *verse_item;
 	char query[256];
 	_drop_table("appinitdata", ad);
 	sprintf(query, "CREATE TABLE appinitdata(bookcount int, chaptercount int, versecount int);");
 	_app_database_query(query, &_check, ad);
 	Eina_List *r_item = elm_genlist_realized_items_get(ad->genlist);
-	ad->cur_verse = elm_genlist_item_index_get(eina_list_data_get(r_item));
+	verse_item = (bible_verse_item*)elm_object_item_data_get(eina_list_data_get(r_item));
 	eina_list_free(r_item);
-	sprintf(query, "INSERT INTO appinitdata VALUES(%d, %d, %d);", ad->cur_book, ad->cur_chapter, ad->cur_verse);
+	sprintf(query, "INSERT INTO appinitdata VALUES(%d, %d, %d);", ad->cur_book, ad->cur_chapter, verse_item->versecount);
 	_app_database_query(query, &_check, ad);
 }
 
