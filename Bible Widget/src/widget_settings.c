@@ -288,6 +288,7 @@ _settings_option_selected_cb(void *data, Evas_Object *obj, void *event_info)
 	evas_object_data_set(popup, "genlist", obj);
 	evas_object_size_hint_weight_set(popup, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
 	evas_object_size_hint_align_set(popup, EVAS_HINT_FILL, EVAS_HINT_FILL);
+	elm_popup_align_set(popup, ELM_NOTIFY_ALIGN_FILL, 1.0);
 	switch(option_id)
 	{
 	case 1:
@@ -369,7 +370,6 @@ _settings_option_selected_cb(void *data, Evas_Object *obj, void *event_info)
 		edje_color_class_set("GTAcolor", wid->text_r, wid->text_g, wid->text_b, wid->text_a, 0, 0, 0, 0, 0, 0, 0, 0);
 		evas_object_size_hint_weight_set(layout, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
 		evas_object_size_hint_align_set(layout, EVAS_HINT_FILL, EVAS_HINT_FILL);
-		elm_popup_align_set(popup, ELM_NOTIFY_ALIGN_FILL, 1.0);
 
 		elm_layout_text_set(layout, "elm.text.red", RED);
 		slider = elm_slider_add(popup);
@@ -422,7 +422,6 @@ _settings_option_selected_cb(void *data, Evas_Object *obj, void *event_info)
 		edje_color_class_set("GTAcolor", wid->bg_r, wid->bg_g, wid->bg_b, wid->bg_a, 0, 0, 0, 0, 0, 0, 0, 0);
 		evas_object_size_hint_weight_set(layout, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
 		evas_object_size_hint_align_set(layout, EVAS_HINT_FILL, EVAS_HINT_FILL);
-		elm_popup_align_set(popup, ELM_NOTIFY_ALIGN_FILL, 1.0);
 
 		elm_layout_text_set(layout, "elm.text.red", RED);
 		slider = elm_slider_add(popup);
