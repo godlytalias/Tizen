@@ -43,11 +43,11 @@ _verse_widget_content_get_cb(void *data, Evas_Object *obj, const char *part)
 	{
 		Evas_Object *ic_cancel = elm_button_add(obj);
 		elm_object_style_set(ic_cancel, "circle");
-		evas_object_size_hint_min_set(ic_cancel, ELM_SCALE_SIZE(48), ELM_SCALE_SIZE(48));
+		evas_object_size_hint_min_set(ic_cancel, ELM_SCALE_SIZE(32), ELM_SCALE_SIZE(32));
 		Evas_Object *icon = elm_icon_add(obj);
 		elm_icon_order_lookup_set(icon, ELM_ICON_LOOKUP_THEME_FDO);
-		elm_icon_standard_set(icon, "delete");
-		evas_object_size_hint_min_set(icon, ELM_SCALE_SIZE(32), ELM_SCALE_SIZE(32));
+		elm_icon_standard_set(icon, "close");
+		evas_object_size_hint_min_set(icon, ELM_SCALE_SIZE(24), ELM_SCALE_SIZE(24));
 		evas_object_show(icon);
 		elm_object_content_set(ic_cancel, icon);
 		evas_object_data_set(ic_cancel, "genlist", obj);
