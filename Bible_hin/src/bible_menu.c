@@ -702,6 +702,13 @@ ctxpopup_item_select_cb(void *data, Evas_Object *obj, void *event_info)
 		return;
 	}
 
+	if (!strcmp(title_label, VERSE_DISPLAY_WIDGET))
+	{
+		_verse_display_widget_list(ad);
+		elm_ctxpopup_dismiss(obj);
+		return;
+	}
+
 	if (!strcmp(title_label, DAY_MODE))
 	{
 		_change_read_mode(ad, EINA_FALSE);
@@ -1206,6 +1213,43 @@ ctxpopup_item_select_cb(void *data, Evas_Object *obj, void *event_info)
 		evas_object_show(label);
 		elm_box_pack_end(content_box, label);
 		sprintf(text_content, "<color=#000000FF><align=left><font_size=25>"
+				"<b>Verse Wallpaper Widget</b></font_size></align></color>");
+
+		label = elm_label_add(popup);
+		evas_object_size_hint_weight_set(label, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
+		evas_object_size_hint_align_set(label, EVAS_HINT_FILL, EVAS_HINT_FILL);
+		elm_label_line_wrap_set(label, ELM_WRAP_WORD);
+		elm_object_text_set(label, text_content);
+		evas_object_show(label);
+		elm_box_pack_end(content_box, label);
+
+		sprintf(text_content, "<color=#000000FF><align=left><font_size=20>"
+				"This feature enables users to put verses on wallpaper. "
+				"Users can add verses to the list by long pressing on the "
+				"verse and then clicking on the option 'Add to verse widget'. "
+				"Then users have to add the Verse widget in the homescreen "
+				"which will display the added verses. Users can change the order "
+				"long pressing and dragging the verses to the needed order. "
+				"If there are more than one verse in the list, widget will update "
+				"verse every 30 minutes and will go to the next verse in the list.</font_size></align></color>");
+
+		label = elm_label_add(popup);
+		evas_object_size_hint_weight_set(label, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
+		evas_object_size_hint_align_set(label, EVAS_HINT_FILL, EVAS_HINT_FILL);
+		elm_label_line_wrap_set(label, ELM_WRAP_WORD);
+		elm_object_text_set(label, text_content);
+		evas_object_show(label);
+		elm_box_pack_end(content_box, label);
+
+		label = elm_label_add(popup);
+		evas_object_size_hint_weight_set(label, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
+		evas_object_size_hint_align_set(label, EVAS_HINT_FILL, EVAS_HINT_FILL);
+		elm_label_line_wrap_set(label, ELM_WRAP_WORD);
+		sprintf(text_content, " ");
+		elm_object_text_set(label, text_content);
+		evas_object_show(label);
+		elm_box_pack_end(content_box, label);
+		sprintf(text_content, "<color=#000000FF><align=left><font_size=25>"
 				"<b>Font Size</b></font_size></align></color>");
 
 		label = elm_label_add(popup);
@@ -1509,6 +1553,7 @@ create_ctxpopup_more_menu(void *data)
 	elm_ctxpopup_item_append(ctxpopup, PARALLEL_READING, NULL, ctxpopup_item_select_cb, ad);
 	ad->readmode_item = elm_ctxpopup_item_append(ctxpopup, DAY_MODE, NULL, ctxpopup_item_select_cb, ad);
 	elm_ctxpopup_item_append(ctxpopup, VERSE_VIEW, NULL, ctxpopup_item_select_cb, ad);
+	elm_ctxpopup_item_append(ctxpopup, VERSE_DISPLAY_WIDGET, NULL, ctxpopup_item_select_cb, ad);
 	elm_ctxpopup_item_append(ctxpopup, FONT_SIZE, NULL, ctxpopup_item_select_cb, ad);
 	elm_ctxpopup_item_append(ctxpopup, HELP, NULL, ctxpopup_item_select_cb, ad);
 	elm_ctxpopup_item_append(ctxpopup, ABOUT, NULL, ctxpopup_item_select_cb, ad);

@@ -49,7 +49,7 @@ typedef struct appdata{
 	char *parallel_db_path;
 	int search_from, search_to;
 	int count, versecount, chaptercount;
-	int cur_chapter, cur_book;
+	int cur_chapter, cur_book, cur_verse;
 	int nxt_chapter, nxt_book;
 	Evas_Coord mouse_x, mouse_y;
 	uint mouse_down_time;
@@ -60,6 +60,7 @@ typedef struct appdata{
 	Eina_Bool long_pressed:1;
 	Eina_Bool panel_mode:1;
 	Eina_Bool rotate_flag:1;
+	Eina_Bool app_control_mode:1;
 } appdata_s;
 
 #define PARALLEL_READING_SUPPORT_VERSION 0.5
@@ -102,6 +103,7 @@ void _app_database_query(char*, int func(void*,int,char**,char**), void*);
 void _database_query(char*, int func(void*,int,char**,char**), void*);
 void _change_book(void *, Evas_Object*, const char*, const char*);
 void _search_word(void *, Evas_Object*,void*);
+void _clear_table(char *table);
 Eina_Bool _keyword_check(const char *keyword, appdata_s *ad);
 void create_ctxpopup_more_menu(void*);
 void show_ctxpopup_more_button_cb(void*, Evas_Object*, void*);
@@ -132,3 +134,7 @@ void _app_no_memory(appdata_s *);
 void _change_read_mode(appdata_s *, Eina_Bool);
 void _search_genlist_free(appdata_s*);
 void _bible_verse_show(void *data, Evas_Object *obj, void *event_info);
+void _verse_display_widget_list(appdata_s *);
+void _verse_item_widget_cb(void *data, Evas_Object *obj, void *event_info);
+void _insert_widget_verse(int bookcount, int chaptercount, int versecount, char *verse);
+void _delete_widget_verse(int bookcount, int chaptercount, int versecount);
