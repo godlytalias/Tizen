@@ -60,7 +60,7 @@
 #define SHARE_VERSE "Share Verse"
 #define COPY_VERSE "Copy Verse"
 #define COPYRIGHT "Copyright © 2016 Godly T Alias"
-#define VERSION "GTA v0.7"
+#define VERSION "GTA v0.8"
 #define TITLE "HOLY BIBLE"
 #define LOADING_DATABASE "Loading Database..."
 #define RATE_APP "Rate Application"

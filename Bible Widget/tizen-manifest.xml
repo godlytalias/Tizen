@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<manifest xmlns="http://tizen.org/ns/packages" api-version="2.4" package="org.widget.gta_holy_bible" version="0.7.3">
+<manifest xmlns="http://tizen.org/ns/packages" api-version="2.4" package="org.widget.gta_holy_bible" version="0.8.3">
     <author email="godlytalias@yahoo.co.in" href="godlytalias.blogspot.com">Godly T.Alias</author>
+    <description>This is a wallpaper widget packed along with GTA Holy Bible apps.</description>
     <profile name="mobile"/>
     <widget-application appid="org.widget.gta_holy_bible" exec="gta_holy_bible_widget" main="true" update-period="1800">
         <label>English Verse</label>
@@ -8,4 +9,10 @@
         <support-size preview="preview_4x4.png">4x4</support-size>
         <support-size preview="preview_4x2.png">4x2</support-size>
     </widget-application>
+    <privileges>
+        <privilege>http://tizen.org/privilege/appmanager.launch</privilege>
+    </privileges>
+    <feature name="http://tizen.org/feature/screen.size.normal.480.800">true</feature>
+    <feature name="http://tizen.org/feature/screen.size.normal">true</feature>
+    <feature name="http://tizen.org/feature/screen.size.normal.720.1280">true</feature>
 </manifest>

@@ -1231,7 +1231,7 @@ ctxpopup_item_select_cb(void *data, Evas_Object *obj, void *event_info)
 				"which will display the added verses. Users can change the order "
 				"long pressing and dragging the verses to the needed order. "
 				"If there are more than one verse in the list, widget will update "
-				"verse every 30 minutes and will go to the next one</font_size></align></color>");
+				"verse every 30 minutes and will go to the next verse in the list.</font_size></align></color>");
 
 		label = elm_label_add(popup);
 		evas_object_size_hint_weight_set(label, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
