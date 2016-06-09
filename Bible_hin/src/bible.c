@@ -1073,6 +1073,12 @@ app_control(app_control_h app_control, void *data)
 		ad->cur_chapter = atoi(buf);
 		app_control_get_extra_data(app_control, "verse", &buf);
 		ad->cur_verse = atoi(buf) - 1; //standardizing
+		if (ad->cur_book < 0 || ad->cur_book > 65)
+			ad->cur_book = 0;
+		if (ad->cur_chapter < 1)
+			ad->cur_chapter = 1;
+		if (ad->cur_verse < 0)
+			ad->cur_verse = 0;
 		ad->count = 0;
 		ad->exit_mode = EINA_FALSE;
 		ad->menu_ctxpopup = NULL;
