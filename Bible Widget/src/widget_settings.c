@@ -412,6 +412,7 @@ _settings_option_selected_cb(void *data, Evas_Object *obj, void *event_info)
 		elm_layout_content_set(layout, "elm.swallow.alpha", slider);
 		evas_object_show(slider);
 
+		elm_layout_text_set(layout, "elm.text.color", YOUR_COLOR_HERE);
 		evas_object_show(layout);
 		elm_object_content_set(popup, layout);
 		break;
