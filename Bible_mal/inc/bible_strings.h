@@ -22,6 +22,7 @@
 #define DAY_MODE "പകൽ മോഡ്"
 #define NIGHT_MODE "രാത്രി മോഡ്"
 #define VERSE_VIEW "വാക്യം മോഡ്"
+#define VERSE_DISPLAY_WIDGET "വാൾപേപ്പർ വിഡ്ജറ്റ്"
 #define FONT_SIZE "അക്ഷര വലിപ്പം"
 #define BOOKMARKS "ബുക്ക്മാർക്കുകൾ"
 #define NOTES "കുറിപ്പുകൾ"
@@ -74,3 +75,5 @@
 #define BIBLE_NAME_STRING "Malayalam Bible"
 #define LANGUAGE_SUPPORT_STRING "This application requires Malayalam language support!"
 #define PRESS_BACK_AGAIN_TO_EXIT "അടയ്ക്കുന്നതിന് വീണ്ടും ബാക്ക് അമർത്തുക"
+#define ADD_VERSE_WIDGET "വിഡ്ജെറ്റിലേക്ക് വാക്യം ചേർക്കുക"
+#define VERSE_ADDED_TO_WIDGET "വിഡ്ജെറ്റിലേക്ക് വാക്യം ചേർത്തു"

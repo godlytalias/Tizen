@@ -6,7 +6,7 @@ void
 _app_database_query(char *query, int func(void*,int,char**,char**), void *data)
 {
 	sqlite3 *db = NULL;
-	char *err_msg;
+	char *err_msg = NULL;
 
 	char *db_path = malloc(200);
 	char *res_path = app_get_data_path();
@@ -15,7 +15,7 @@ _app_database_query(char *query, int func(void*,int,char**,char**), void *data)
 	free(res_path);
 	free(db_path);
 	sqlite3_exec(db, query, func, data, &err_msg);
-	sqlite3_free(err_msg);
+	if (err_msg) sqlite3_free(err_msg);
 	sqlite3_close(db);
 	db = NULL;
 }
@@ -51,7 +51,34 @@ _get_app_data(void *data, int argc, char **argv, char **azColName)
 		ad->cur_book = atoi(argv[0]);
 	if (!strcmp(azColName[1], "chaptercount"))
 		ad->cur_chapter = atoi(argv[1]);
+	if (!strcmp(azColName[2], "versecount"))
+		ad->cur_verse = atoi(argv[2]);
 	return 0;
+}
+
+void
+_delete_widget_verse(int bookcount, int chaptercount, int versecount)
+{
+	char query[256];
+	sprintf(query, "delete from versewidget where bookcount=%d and chaptercount=%d and versecount=%d;",
+			bookcount, chaptercount, versecount);
+	_app_database_query(query, &_check, NULL);
+}
+
+void
+_insert_widget_verse(int bookcount, int chaptercount, int versecount, char* verse)
+{
+	char query[1024];
+	sprintf(query, "INSERT INTO versewidget VALUES(%d, %d, %d, '%s');", bookcount,
+			chaptercount, versecount, verse);
+	_app_database_query(query, &_check, NULL);
+}
+
+void _clear_table(char *table)
+{
+	char query[256];
+	sprintf(query, "delete from %s",table);
+	_app_database_query(query, &_check, NULL);
 }
 
 void
@@ -61,11 +88,16 @@ _load_appdata(appdata_s *ad)
 	bool existing = false;
 	ad->parallel_db_path = NULL;
 
-	sprintf(query, "SELECT bookcount,chaptercount FROM appinitdata;");
-	_app_database_query(query, &_get_app_data, ad);
+	if (!ad->app_control_mode)
+	{
+		sprintf(query, "SELECT bookcount, chaptercount, versecount FROM appinitdata;");
+		_app_database_query(query, &_get_app_data, ad);
+	}
 	sprintf(query, "create table if not exists bookmark(bookcount INT, chaptercount INT, versecount INT, verse VARCHAR(1024));");
 	_app_database_query(query, &_check, ad);
 	sprintf(query, "create table if not exists notes(bookcount INT, chaptercount INT, versecount INT, note VARCHAR(8192));");
+	_app_database_query(query, &_check, ad);
+	sprintf(query, "create table if not exists versewidget(bookcount INT, chaptercount INT, versecount INT, verse VARCHAR(1024));");
 	_app_database_query(query, &_check, ad);
 	preference_is_existing("fontsize", &existing);
 	if (!existing)
@@ -133,11 +165,15 @@ _load_appdata(appdata_s *ad)
 void
 _save_appdata(appdata_s *ad)
 {
+	bible_verse_item *verse_item;
 	char query[256];
 	_drop_table("appinitdata", ad);
-	sprintf(query, "CREATE TABLE appinitdata(bookcount int, chaptercount int);");
+	sprintf(query, "CREATE TABLE appinitdata(bookcount int, chaptercount int, versecount int);");
 	_app_database_query(query, &_check, ad);
-	sprintf(query, "INSERT INTO appinitdata VALUES(%d, %d);", ad->cur_book, ad->cur_chapter);
+	Eina_List *r_item = elm_genlist_realized_items_get(ad->genlist);
+	verse_item = (bible_verse_item*)elm_object_item_data_get(eina_list_data_get(r_item));
+	eina_list_free(r_item);
+	sprintf(query, "INSERT INTO appinitdata VALUES(%d, %d, %d);", ad->cur_book, ad->cur_chapter, verse_item->versecount);
 	_app_database_query(query, &_check, ad);
 }
 
@@ -145,7 +181,7 @@ void
 _database_query(char *query, int func(void*,int,char**,char**), void *data)
 {
 	sqlite3 *db = NULL;
-	char *err_msg;
+	char *err_msg = NULL;
 
 	char *db_path = malloc(200);
 	char *res_path = app_get_shared_resource_path();
@@ -154,7 +190,7 @@ _database_query(char *query, int func(void*,int,char**,char**), void *data)
 	free(res_path);
 	free(db_path);
 	sqlite3_exec(db, query, func, data, &err_msg);
-	sqlite3_free(err_msg);
+	if (err_msg) sqlite3_free(err_msg);
 	sqlite3_close(db);
 	db = NULL;
 }
