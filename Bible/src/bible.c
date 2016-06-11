@@ -785,7 +785,7 @@ _load_chapter(void *data)
 	if (!ad->app_control_mode)
 		ecore_timer_add(0.03, _progress_show, ad);
 	else
-		elm_layout_signal_emit(ad->layout, "elm,holy_bible,loading,done", "elm");
+		ecore_timer_add(0.01, _progress_show, ad);
 	return ECORE_CALLBACK_CANCEL;
 }
 
