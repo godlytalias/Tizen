@@ -324,7 +324,7 @@ _settings_option_selected_cb(void *data, Evas_Object *obj, void *event_info)
 		layout = elm_layout_add(popup);
 		elm_layout_file_set(layout, wid->edj_path, "standard_layout");
 		slider = elm_slider_add(layout);
-		elm_slider_min_max_set(slider, 15, 42);
+		elm_slider_min_max_set(slider, 15, 60);
 		elm_slider_step_set(slider, 1.0);
 		elm_slider_indicator_show_set(slider, EINA_TRUE);
 		elm_slider_indicator_format_set(slider, "%1.0f");
