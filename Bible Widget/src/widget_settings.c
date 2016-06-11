@@ -179,19 +179,17 @@ _settings_option_text_get(void *data, Evas_Object *obj, const char *part)
 	return NULL;
 }
 
-static char*
-_genlist_item_text_get_cb(void *data, Evas_Object *obj, const char *part)
+static Evas_Object*
+_genlist_item_content_get_cb(void *data, Evas_Object *obj, const char *part)
 {
+	char buf[1024];
 	widget_bible_verse_item *verse_item = (widget_bible_verse_item*)data;
-	if (!strcmp(part, "elm.text.multiline"))
-		return strdup(verse_item->verse);
-	else if (!strcmp(part, "elm.text"))
-	{
-		char buf[1024];
-		sprintf(buf, "%s %d : %d", Books[verse_item->bookcount], verse_item->chaptercount, verse_item->versecount);
-		return strdup(buf);
-	}
-	else return NULL;
+	Evas_Object *layout = elm_layout_add(obj);
+	elm_layout_file_set(layout, verse_item->wid->edj_path, "widget_verse_layout");
+	elm_layout_text_set(layout, "elm.text.verse", verse_item->verse);
+	sprintf(buf, "%s %d : %d", Books[verse_item->bookcount], verse_item->chaptercount, verse_item->versecount);
+	elm_layout_text_set(layout, "elm.text.reference", buf);
+	return layout;
 }
 
 static void
@@ -299,8 +297,8 @@ _settings_option_selected_cb(void *data, Evas_Object *obj, void *event_info)
 		elm_genlist_select_mode_set(genlist, ELM_OBJECT_SELECT_MODE_ALWAYS);
 		sprintf(buf, "select * from %s;", WIDGET_TABLE_NAME);
 		Elm_Genlist_Item_Class *itc = elm_genlist_item_class_new();
-		itc->item_style = "multiline";
-		itc->func.text_get = _genlist_item_text_get_cb;
+		itc->item_style = "full";
+		itc->func.content_get = _genlist_item_content_get_cb;
 		itc->func.del = _genlist_item_del_cb;
 		evas_object_data_set(genlist, "wid", wid);
 		evas_object_data_set(genlist, "itc", itc);

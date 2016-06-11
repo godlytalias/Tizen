@@ -46,6 +46,24 @@ collections {
          tag: "b" "+ font_weight=Bold";
          tag: "tab" "\t";
       }
+      style {
+         name: "main_verse_style";
+         base: "font=Tizen:style=Regular align=left text_class=GTA1 font_size=25 linerelsize=115% color=#000000 wrap=mixed";
+         tag: "br" "\n";
+         tag: "ps" "ps";
+         tag: "hilight" "+ font_weight=Bold";
+         tag: "b" "+ font_weight=Bold";
+         tag: "tab" "\t";
+      }
+      style {
+         name: "verse_reference_style";
+         base: "font=Tizen:style=Light align=left font_size=20 color=#000000 wrap=mixed";
+         tag: "br" "\n";
+         tag: "ps" "ps";
+         tag: "hilight" "+ font_weight=Bold";
+         tag: "b" "+ font_weight=Bold";
+         tag: "tab" "\t";
+      }
    }
    group { name: "main";
       parts {
@@ -319,6 +337,75 @@ collections {
             }
          }
       }
+   }
+   
+   group{ name: "widget_verse_layout";
+      parts {
+         part{ name: "base";
+            type: RECT;
+            scale: 1;
+            description { state: "default" 0.0;
+               min: 480 98;
+               color: 0 0 0 0;
+               fixed: 1 0;
+            }
+         }
+         part{ name: "left_top_padding";
+            type: SPACER;
+            scale: 1;
+            description { state: "default" 0.0;
+               min: 32 24;
+               fixed: 1 1;
+               rel1.to: "base";
+               rel2.to: "base";
+               rel2.relative: 0.0 0.0;
+               align: 0.0 0.0;
+            }
+         }
+         part{ name: "right_bottom_padding";
+            type: SPACER;
+            scale: 1;
+            description { state: "default" 0.0;
+               min: 32 24;
+               fixed: 1 1;
+               rel1.to: "base";
+               rel1.relative: 1.0 1.0;
+               rel2.to: "base";
+               align: 1.0 1.0;
+            }
+         }
+         part {name: "elm.text.reference";
+            type: TEXTBLOCK;
+            scale: 1;
+            description {state: "default" 0.0;
+               rel1.to: "left_top_padding";
+               rel1.relative: 1.0 1.0;
+               rel2.to_x: "right_bottom_padding";
+               rel2.to_y: "left_top_padding";
+               rel2.relative: 0.0 1.0;
+               text.style: "verse_reference_style";
+               fixed: 1 1;
+               min: 416 50;
+               align: 0.0 0.0;
+            }
+        }
+         part{ name: "elm.text.verse";
+            type: TEXTBLOCK;
+            scale: 1;
+            description { state: "default" 0.0;
+               rel1.to_y: "elm.text.reference";
+               rel1.to_x: "left_top_padding";
+               rel1.relative: 1.0 1.0;
+               rel2.to: "right_bottom_padding";
+               rel2.relative: 0.0 0.0;
+               text.style: "main_verse_style";
+               fixed: 1 0;
+               text.min: 0 1;
+               min: 416 0;
+               align: 0.0 0.0;
+            }         
+         }
+     }
    }
 
    group { name: "standard_layout";
