@@ -1748,6 +1748,58 @@ collections {
       }
    }
    
+   group { name: "widget_verse_item_layout";
+      inherit: "bookmark_verse_layout";
+      parts{
+      	 part { name: "elm.icon";
+      	 	type: SWALLOW;
+      	 	scale: 1;
+      	 	description { state: "default" 0.0;
+      	 		fixed: 1 1;
+      	 		rel1.to_x: "right_bottom_padding";
+      	 		rel1.to_y: "left_top_padding";
+      	 		rel1.relative: 0.0 1.0;
+      	 		rel2.to: "right_bottom_padding";
+      	 		rel2.relative: 0.0 0.0;
+      	 		align: 1.0 0.5;
+      	 		min: 32 32;
+      	 	}
+      	 }
+         part {name: "elm.text.reference";
+            type: TEXTBLOCK;
+            scale: 1;
+            description {state: "default" 0.0;
+               rel1.to: "left_top_padding";
+               rel1.relative: 1.0 1.0;
+               rel2.to_x: "elm.icon";
+               rel2.to_y: "left_top_padding";
+               rel2.relative: 0.0 1.0;
+               text.style: "verse_reference_style";
+               fixed: 1 1;
+               min: 380 50;
+               align: 0.0 0.0;
+            }
+        }
+         part{ name: "elm.text.verse";
+            type: TEXTBLOCK;
+            scale: 1;
+            description { state: "default" 0.0;
+               rel1.to_y: "elm.text.reference";
+               rel1.to_x: "left_top_padding";
+               rel1.relative: 1.0 1.0;
+               rel2.to_y: "right_bottom_padding";
+               rel2.to_x: "elm.icon";
+               rel2.relative: 0.0 0.0;
+               text.style: "main_verse_style";
+               fixed: 1 0;
+               text.min: 0 1;
+               min: 380 0;
+               align: 0.0 0.0;
+            }         
+         }
+      }
+   }
+   
    group{ name: "search_verse_layout";
       parts {
          part{ name: "base";
