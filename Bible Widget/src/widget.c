@@ -207,6 +207,17 @@ static int
 widget_instance_resume(widget_context_h context, void *user_data)
 {
 	/* Take necessary actions when widget instance becomes visible. */
+	void *tag;
+	widget_app_context_get_tag(context, &tag);
+	widget_instance_data_s *wid = (widget_instance_data_s*)tag;
+	double cur_time, prev_time;
+	cur_time = ecore_time_unix_get();
+	preference_get_double("versechangetime", &prev_time);
+	if ((cur_time - prev_time) > 1800)
+	{
+		wid->verse_order++;
+		_query_verse(wid);
+	}
 	return WIDGET_ERROR_NONE;
 }
 
