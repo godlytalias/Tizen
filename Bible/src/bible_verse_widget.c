@@ -42,16 +42,22 @@ _verse_widget_content_get_cb(void *data, Evas_Object *obj, const char *part)
 	if (!strcmp(part, "elm.swallow.content"))
 	{
 		char text[1024];
+		char *path = NULL;
 		bible_verse_item *verse_item = (bible_verse_item*)data;
 		Evas_Object *layout = elm_layout_add(obj);
 		elm_layout_file_set(layout, verse_item->appdata->edj_path, "widget_verse_item_layout");
 		Evas_Object *ic_cancel = elm_button_add(layout);
 		elm_object_style_set(ic_cancel, "circle");
-		evas_object_size_hint_min_set(ic_cancel, ELM_SCALE_SIZE(32), ELM_SCALE_SIZE(32));
-		Evas_Object *icon = elm_icon_add(obj);
-		elm_icon_order_lookup_set(icon, ELM_ICON_LOOKUP_THEME_FDO);
-		elm_icon_standard_set(icon, "close");
-		evas_object_size_hint_min_set(icon, ELM_SCALE_SIZE(24), ELM_SCALE_SIZE(24));
+		evas_object_size_hint_min_set(ic_cancel, ELM_SCALE_SIZE(24), ELM_SCALE_SIZE(24));
+		Evas_Object *icon = elm_image_add(obj);
+		path = app_get_resource_path();
+		if (path)
+		{
+			sprintf(text, "%s%s", path, "edje/images/delete.png");
+			elm_image_file_set(icon, text, NULL);
+			free(path);
+		}
+		evas_object_size_hint_min_set(icon, ELM_SCALE_SIZE(12), ELM_SCALE_SIZE(12));
 		evas_object_show(icon);
 		elm_object_content_set(ic_cancel, icon);
 		evas_object_data_set(ic_cancel, "genlist", obj);
