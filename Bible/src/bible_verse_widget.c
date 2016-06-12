@@ -23,10 +23,11 @@ _verse_widget_item_del_cb(void *data, Evas_Object *obj)
 }
 
 static void
-_verse_widget_del_item(void *data, Evas_Object *obj, void *event_info)
+_delete_widget_verse_cb(void *data, Evas_Object *obj, void *event_info)
 {
 	bible_verse_item *verse_item = (bible_verse_item*)data;
 	Evas_Object *genlist = (Evas_Object*)evas_object_data_get(obj, "genlist");
+	Evas_Object *popup = (Evas_Object*)evas_object_data_get(obj, "popup");
 	if (elm_genlist_items_count(genlist) == 1)
 	{
 		Evas_Object *layout = elm_object_parent_widget_get(genlist);
@@ -34,6 +35,32 @@ _verse_widget_del_item(void *data, Evas_Object *obj, void *event_info)
 	}
 	elm_object_item_del(verse_item->it);
 	_reset_verse_widget_db(genlist, verse_item);
+	_popup_del(popup, popup, NULL);
+}
+
+static void
+_verse_widget_del_item(void *data, Evas_Object *obj, void *event_info)
+{
+	char text[128];
+	Evas_Object *button;
+	bible_verse_item *verse_item = (bible_verse_item*)data;
+	Evas_Object *popup = elm_popup_add(verse_item->appdata->naviframe);
+	elm_popup_align_set(popup, ELM_NOTIFY_ALIGN_FILL, 1.0);
+	elm_object_part_text_set(popup, "title,text", DELETE);
+	sprintf(text, "%s %s %d : %d ?", REMOVE, Books[verse_item->bookcount], verse_item->chaptercount, verse_item->versecount + 1);
+	elm_object_text_set(popup, text);
+	button = elm_button_add(popup);
+	elm_object_text_set(button, YES);
+	evas_object_smart_callback_add(button, "clicked", _delete_widget_verse_cb, data);
+	evas_object_data_set(button, "genlist", evas_object_data_get(obj, "genlist"));
+	evas_object_data_set(button, "popup", popup);
+	elm_object_part_content_set(popup, "button2", button);
+	button = elm_button_add(popup);
+	elm_object_text_set(button, NO);
+	evas_object_smart_callback_add(button, "clicked", _popup_del, popup);
+	elm_object_part_content_set(popup, "button1", button);
+	eext_object_event_callback_add(popup, EEXT_CALLBACK_BACK, _popup_del, popup);
+	evas_object_show(popup);
 }
 
 Evas_Object*
@@ -46,9 +73,6 @@ _verse_widget_content_get_cb(void *data, Evas_Object *obj, const char *part)
 		bible_verse_item *verse_item = (bible_verse_item*)data;
 		Evas_Object *layout = elm_layout_add(obj);
 		elm_layout_file_set(layout, verse_item->appdata->edj_path, "widget_verse_item_layout");
-		Evas_Object *ic_cancel = elm_button_add(layout);
-		elm_object_style_set(ic_cancel, "circle");
-		evas_object_size_hint_min_set(ic_cancel, ELM_SCALE_SIZE(24), ELM_SCALE_SIZE(24));
 		Evas_Object *icon = elm_image_add(obj);
 		path = app_get_resource_path();
 		if (path)
@@ -57,15 +81,14 @@ _verse_widget_content_get_cb(void *data, Evas_Object *obj, const char *part)
 			elm_image_file_set(icon, text, NULL);
 			free(path);
 		}
-		evas_object_size_hint_min_set(icon, ELM_SCALE_SIZE(12), ELM_SCALE_SIZE(12));
+		evas_object_size_hint_min_set(icon, ELM_SCALE_SIZE(24), ELM_SCALE_SIZE(24));
 		evas_object_show(icon);
-		elm_object_content_set(ic_cancel, icon);
-		evas_object_data_set(ic_cancel, "genlist", obj);
-		evas_object_smart_callback_add(ic_cancel, "clicked", _verse_widget_del_item, data);
+		evas_object_data_set(icon, "genlist", obj);
+		evas_object_smart_callback_add(icon, "clicked", _verse_widget_del_item, data);
 		sprintf(text, "%s %d:%d", Books[verse_item->bookcount], verse_item->chaptercount, verse_item->versecount + 1);
 		elm_layout_text_set(layout, "elm.text.reference", text);
 		elm_layout_text_set(layout, "elm.text.verse", verse_item->verse);
-		elm_layout_content_set(layout, "elm.icon", ic_cancel);
+		elm_layout_content_set(layout, "elm.icon", icon);
 		elm_layout_sizing_eval(layout);
 		evas_object_show(layout);
 		return layout;
