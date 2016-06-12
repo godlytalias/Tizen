@@ -74,4 +74,4 @@
 #define PARALLEL_READING_FAILED "Parallel reading failed!. Please re-install the required application."
 #define PRESS_BACK_AGAIN_TO_EXIT "Press back again to exit!"
 #define ADD_VERSE_WIDGET "Add verse to widget"
-#define VERSE_ADDED_TO_WIDGET "Verse added to widget list"
+#define VERSE_ADDED_TO_WIDGET "Verse added to widget list. Click on the widget for more settings."
