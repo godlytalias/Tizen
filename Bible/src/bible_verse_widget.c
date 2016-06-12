@@ -166,4 +166,11 @@ _verse_display_widget_list(appdata_s *ad)
 		elm_layout_signal_emit(layout, "elm,holy_bible,bg,hide", "elm");
 	elm_naviframe_item_push(ad->naviframe, "Verse Widget", NULL, NULL, layout, NULL);
 	elm_genlist_item_class_free(itc);
+	Evas_Object *popup = elm_popup_add(ad->naviframe);
+	elm_object_style_set(popup, "toast");
+	elm_object_text_set(popup, VERSE_REORDER);
+	elm_popup_align_set(popup, 0.5, 1.0);
+	elm_popup_timeout_set(popup, 2.0);
+	evas_object_smart_callback_add(popup, "timeout", _popup_del, popup);
+	evas_object_show(popup);
 }
