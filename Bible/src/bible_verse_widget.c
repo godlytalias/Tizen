@@ -171,6 +171,7 @@ _verse_display_widget_list(appdata_s *ad)
 	elm_object_text_set(popup, VERSE_REORDER);
 	elm_popup_align_set(popup, 0.5, 1.0);
 	elm_popup_timeout_set(popup, 2.0);
+	elm_popup_allow_events_set(popup, EINA_TRUE);
 	evas_object_smart_callback_add(popup, "timeout", _popup_del, popup);
 	evas_object_show(popup);
 }
