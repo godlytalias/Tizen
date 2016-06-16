@@ -60,7 +60,7 @@
 #define SHARE_VERSE "വാക്യം പങ്കിടുക"
 #define COPY_VERSE "വാക്യം പകർത്തുക"
 #define COPYRIGHT "Copyright © 2016 Godly T Alias"
-#define VERSION "GTA v0.7"
+#define VERSION "GTA v0.8"
 #define TITLE "സത്യവേദപുസ്തകം"
 #define LOADING_DATABASE "ഡാറ്റാബേസ് ലോഡ് ചെയ്യുന്നു..."
 #define RATE_APP "വിലയിരുത്തുക"
@@ -77,3 +77,4 @@
 #define PRESS_BACK_AGAIN_TO_EXIT "അടയ്ക്കുന്നതിന് വീണ്ടും ബാക്ക് അമർത്തുക"
 #define ADD_VERSE_WIDGET "വിഡ്ജെറ്റിലേക്ക് വാക്യം ചേർക്കുക"
 #define VERSE_ADDED_TO_WIDGET "വിഡ്ജെറ്റിലേക്ക് വാക്യം ചേർത്തു"
+#define VERSE_REORDER "പുനഃക്രമീകരിക്കാൻ അമർത്തിപ്പിടിച്ച് ഡ്രാഗ് ചെയ്യുക"

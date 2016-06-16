@@ -709,6 +709,7 @@ gl_longpressed_cb(void *data, Evas_Object *obj, void *event_info)
 	elm_ctxpopup_item_append(verse_popup, SHARE_VERSE, NULL, _share_verse_item_cb, verse_item);
 	elm_ctxpopup_item_append(verse_popup, COPY_VERSE, NULL, _copy_verse_item_cb, verse_item);
 	elm_ctxpopup_item_append(verse_popup, VERSE_VIEW, NULL, _verse_item_show_cb, verse_item);
+	elm_ctxpopup_item_append(verse_popup, ADD_VERSE_WIDGET, NULL, _verse_item_widget_cb, verse_item);
 	evas_object_smart_callback_add(verse_popup, "dismissed", _popup_del, verse_popup);
 	eext_object_event_callback_add(verse_popup, EEXT_CALLBACK_BACK, eext_ctxpopup_back_cb, verse_popup);
 	eext_object_event_callback_add(verse_popup, EEXT_CALLBACK_MORE, eext_ctxpopup_back_cb, verse_popup);
@@ -798,8 +799,12 @@ _load_chapter(void *data)
 {
 	appdata_s *ad = (appdata_s*)data;
 	_query_chapter(data, ad->cur_book, ad->cur_chapter);
+	_show_verse(data, ad->cur_verse);
 	_get_chapter_count_query(data, ad->cur_book);
-	ecore_timer_add(0.03, _progress_show, ad);
+	if (!ad->app_control_mode)
+		ecore_timer_add(0.03, _progress_show, ad);
+	else
+		ecore_timer_add(0.01, _progress_show, ad);
 	return ECORE_CALLBACK_CANCEL;
 }
 
@@ -1037,6 +1042,7 @@ app_create(void *data)
 	appdata_s *ad = data;
 	ad->cur_book = 0;
 	ad->cur_chapter = 1;
+	ad->cur_verse = 0;
 	ad->count = 0;
 	ad->exit_mode = EINA_FALSE;
 	ad->menu_ctxpopup = NULL;
@@ -1044,6 +1050,7 @@ app_create(void *data)
 	ad->app_list_tail = NULL;
 	ad->long_timer = NULL;
 	ad->search_result_genlist = NULL;
+	ad->app_control_mode = EINA_FALSE;
 
 	create_base_gui(ad);
 
@@ -1054,6 +1061,34 @@ static void
 app_control(app_control_h app_control, void *data)
 {
 	/* Handle the launch request. */
+	char* buf = (char*)malloc(sizeof(char) * 64);
+	app_control_get_operation(app_control, &buf);
+	if (!strcmp(buf, APP_CONTROL_OPERATION_VIEW))
+	{
+		appdata_s *ad = data;
+		app_control_get_extra_data(app_control, "book", &buf);
+		ad->cur_book = atoi(buf);
+		app_control_get_extra_data(app_control, "chapter", &buf);
+		ad->cur_chapter = atoi(buf);
+		app_control_get_extra_data(app_control, "verse", &buf);
+		ad->cur_verse = atoi(buf) - 1; //standardizing
+		if (ad->cur_book < 0 || ad->cur_book > 65)
+			ad->cur_book = 0;
+		if (ad->cur_chapter < 1)
+			ad->cur_chapter = 1;
+		if (ad->cur_verse < 0)
+			ad->cur_verse = 0;
+		ad->count = 0;
+		ad->exit_mode = EINA_FALSE;
+		ad->menu_ctxpopup = NULL;
+		ad->app_list_head = NULL;
+		ad->app_list_tail = NULL;
+		ad->long_timer = NULL;
+		ad->search_result_genlist = NULL;
+		ad->app_control_mode = EINA_TRUE;
+	}
+	free(buf);
+	return;
 }
 
 static void

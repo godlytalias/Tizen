@@ -47,7 +47,7 @@ _verse_widget_del_item(void *data, Evas_Object *obj, void *event_info)
 	Evas_Object *popup = elm_popup_add(verse_item->appdata->naviframe);
 	elm_popup_align_set(popup, ELM_NOTIFY_ALIGN_FILL, 1.0);
 	elm_object_part_text_set(popup, "title,text", DELETE);
-	sprintf(text, "%s %d : %d %s ?", Books[verse_item->bookcount], verse_item->chaptercount, verse_item->versecount + 1, REMOVE);
+	sprintf(text, "%s %s %d : %d ?", REMOVE, Books[verse_item->bookcount], verse_item->chaptercount, verse_item->versecount + 1);
 	elm_object_text_set(popup, text);
 	button = elm_button_add(popup);
 	elm_object_text_set(button, YES);

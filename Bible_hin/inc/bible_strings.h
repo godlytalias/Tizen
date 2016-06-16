@@ -76,4 +76,5 @@
 #define LANGUAGE_SUPPORT_STRING "This application requires Hindi language support!"
 #define PRESS_BACK_AGAIN_TO_EXIT "बाहर निकलने के लिए फिर से बाक दबाएं"
 #define ADD_VERSE_WIDGET "पद विजेट में जोड़े"
-#define VERSE_ADDED_TO_WIDGET "पद विजेट में जोड़ किया"
+#define VERSE_ADDED_TO_WIDGET "पद विजेट में जोड़ किया।अधिक सेटिंग्स के लिए विजेट पर क्लिक करें"
+#define VERSE_REORDER "पुन: व्यवस्थित करने के लिए लंबे प्रेस और खींचें"
