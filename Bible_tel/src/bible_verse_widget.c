@@ -164,7 +164,7 @@ _verse_display_widget_list(appdata_s *ad)
 	elm_layout_content_set(layout, "elm.swallow.content", genlist);
 	if (elm_genlist_items_count(genlist) > 0)
 		elm_layout_signal_emit(layout, "elm,holy_bible,bg,hide", "elm");
-	elm_naviframe_item_push(ad->naviframe, "Verse Widget", NULL, NULL, layout, NULL);
+	elm_naviframe_item_push(ad->naviframe, VERSE_DISPLAY_WIDGET, NULL, NULL, layout, NULL);
 	elm_genlist_item_class_free(itc);
 	Evas_Object *popup = elm_popup_add(ad->naviframe);
 	elm_object_style_set(popup, "toast");
