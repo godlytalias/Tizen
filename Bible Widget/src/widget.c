@@ -144,6 +144,7 @@ widget_instance_create(widget_context_h context, bundle *content, int w, int h, 
 	}
 	wid->verse_order = 1;
 	wid->verse = NULL;
+	wid->settings_window = NULL;
 	/* Window */
 	ret = widget_app_get_elm_win(context, &wid->win);
 	if (ret != WIDGET_ERROR_NONE) {

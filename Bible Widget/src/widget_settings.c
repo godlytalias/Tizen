@@ -11,6 +11,7 @@ _window_close(void *data, Elm_Object_Item *it)
 	edje_color_class_set("GTAwidget", wid->text_r, wid->text_g, wid->text_b, wid->text_a, 0, 0, 0, 0, 0, 0, 0, 0);
 	edje_color_class_set("GTAwidgetbg", wid->bg_r, wid->bg_g, wid->bg_b, wid->bg_a, 0, 0, 0, 0, 0, 0, 0, 0);
 	evas_object_del(wid->settings_window);
+	wid->settings_window = NULL;
 	return EINA_TRUE;
 }
 
@@ -328,7 +329,13 @@ _settings_option_selected_cb(void *data, Evas_Object *obj, void *event_info)
 		elm_slider_indicator_format_set(slider, "%1.0f");
 		elm_slider_value_set(slider, (double)wid->font_size);
 		evas_object_smart_callback_add(slider, "changed", _font_size_changed, wid);
-		box = elm_box_add(popup);
+		Evas_Object *scroller = elm_scroller_add(popup);
+		elm_scroller_policy_set(scroller, ELM_SCROLLER_POLICY_OFF, ELM_SCROLLER_POLICY_OFF);
+		evas_object_size_hint_weight_set(scroller, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
+		evas_object_size_hint_align_set(scroller, EVAS_HINT_FILL, EVAS_HINT_FILL);
+		box = elm_box_add(scroller);
+		evas_object_size_hint_weight_set(box, EVAS_HINT_EXPAND, EVAS_HINT_EXPAND);
+		evas_object_size_hint_align_set(box, EVAS_HINT_FILL, EVAS_HINT_FILL);
 		elm_box_horizontal_set(box, EINA_TRUE);
 		elm_box_padding_set(box, ELM_SCALE_SIZE(32), ELM_SCALE_SIZE(32));
 		check = elm_radio_add(box);
@@ -356,8 +363,9 @@ _settings_option_selected_cb(void *data, Evas_Object *obj, void *event_info)
 		elm_radio_value_set(radio_group, type);
 		evas_object_show(check);
 		evas_object_show(box);
+		elm_object_content_set(scroller, box);
 		elm_layout_content_set(layout, "elm.swallow.content", slider);
-		elm_layout_content_set(layout, "elm.swallow.content2", box);
+		elm_layout_content_set(layout, "elm.swallow.content2", scroller);
 		evas_object_show(layout);
 		elm_object_content_set(popup, layout);
 		break;
@@ -527,6 +535,10 @@ _add_option_items(Evas_Object *genlist, widget_instance_data_s *wid)
 void
 _widget_settings(widget_instance_data_s *wid)
 {
+	if (wid->settings_window) {
+		evas_object_del(wid->settings_window);
+		wid->settings_window = NULL;
+	}
 	wid->settings_window = elm_win_util_standard_add("Bible Widget", "Bible Widget");
 	elm_win_indicator_mode_set(wid->settings_window, ELM_WIN_INDICATOR_SHOW);
 	elm_win_indicator_opacity_set(wid->settings_window, ELM_WIN_INDICATOR_OPAQUE);
