@@ -140,8 +140,8 @@ _settings_option_text_get(void *data, Evas_Object *obj, const char *part)
 			return strdup(FONT_COLOR);
 		if (!strcmp(part, "elm.text.multiline"))
 		{
-			char color[64];
-			sprintf(color, "Red: %d<br>Green: %d<br>Blue: %d<br>Alpha: %d", wid->text_r, wid->text_g, wid->text_b, wid->text_a);
+			char color[128];
+			sprintf(color, "%s: %d<br>%s: %d<br>%s: %d<br>%s: %d", RED, wid->text_r, GREEN, wid->text_g, BLUE, wid->text_b, ALPHA, wid->text_a);
 			return strdup(color);
 		}
 		else return NULL;
@@ -151,8 +151,8 @@ _settings_option_text_get(void *data, Evas_Object *obj, const char *part)
 			return strdup(BG_COLOR);
 		if (!strcmp(part, "elm.text.multiline"))
 		{
-			char color[64];
-			sprintf(color, "Red: %d<br>Green: %d<br>Blue: %d<br>Alpha: %d", wid->bg_r, wid->bg_g, wid->bg_b, wid->bg_a);
+			char color[128];
+			sprintf(color, "%s: %d<br>%s: %d<br>%s: %d<br>%s: %d", RED, wid->text_r, GREEN, wid->text_g, BLUE, wid->text_b, ALPHA, wid->text_a);
 			return strdup(color);
 		}
 		else return NULL;
