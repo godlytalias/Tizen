@@ -805,6 +805,7 @@ _load_chapter(void *data)
 		ecore_timer_add(0.03, _progress_show, ad);
 	else
 		ecore_timer_add(0.01, _progress_show, ad);
+	ad->app_control_mode = EINA_FALSE;
 	return ECORE_CALLBACK_CANCEL;
 }
 
@@ -1061,17 +1062,31 @@ static void
 app_control(app_control_h app_control, void *data)
 {
 	/* Handle the launch request. */
-	char* buf = (char*)malloc(sizeof(char) * 64);
+	char* buf = NULL;
 	app_control_get_operation(app_control, &buf);
-	if (!strcmp(buf, APP_CONTROL_OPERATION_VIEW))
+	if (buf && !strcmp(buf, APP_CONTROL_OPERATION_VIEW))
 	{
 		appdata_s *ad = data;
+		free(buf);
+		buf = NULL;
 		app_control_get_extra_data(app_control, "book", &buf);
-		ad->cur_book = atoi(buf);
+		if (buf) {
+			ad->cur_book = atoi(buf);
+			free(buf);
+			buf = NULL;
+		}
 		app_control_get_extra_data(app_control, "chapter", &buf);
-		ad->cur_chapter = atoi(buf);
+		if (buf) {
+			ad->cur_chapter = atoi(buf);
+			free(buf);
+			buf = NULL;
+		}
 		app_control_get_extra_data(app_control, "verse", &buf);
-		ad->cur_verse = atoi(buf) - 1; //standardizing
+		if (buf) {
+			ad->cur_verse = atoi(buf) - 1; //standardizing
+			free(buf);
+			buf = NULL;
+		}
 		if (ad->cur_book < 0 || ad->cur_book > 65)
 			ad->cur_book = 0;
 		if (ad->cur_chapter < 1)
@@ -1087,7 +1102,8 @@ app_control(app_control_h app_control, void *data)
 		ad->search_result_genlist = NULL;
 		ad->app_control_mode = EINA_TRUE;
 	}
-	free(buf);
+	else if (buf)
+		free(buf);
 	return;
 }
 
@@ -1101,6 +1117,12 @@ static void
 app_resume(void *data)
 {
 	/* Take necessary actions when application becomes visible. */
+	appdata_s *ad = (appdata_s*)data;
+	if (ad->app_control_mode) {
+		_query_chapter(data, ad->cur_book, ad->cur_chapter);
+		_show_verse(data, ad->cur_verse);
+		ad->app_control_mode = EINA_FALSE;
+	}
 }
 
 static void
