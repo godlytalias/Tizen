@@ -188,6 +188,9 @@ widget_instance_destroy(widget_context_h context, widget_app_destroy_type_e reas
 	widget_instance_data_s *wid = NULL;
 	widget_app_context_get_tag(context,(void**)&wid);
 
+	if (wid->settings_window)
+		evas_object_del(wid->settings_window);
+
 	if (wid->win)
 		evas_object_del(wid->win);
 
