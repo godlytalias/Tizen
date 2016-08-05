@@ -45,6 +45,30 @@
 #define VERSE_ALIGN_DESCRIPTION "Sets the alignment of verses displayed in widget"
 #define OPEN_BIBLE "Open Bible"
 
+/*
+#define APP_ID "org.tizen.gtaholybiblemal"
+#define DEFAULT_WIDGET_VERSE "മറ്റൊരുത്തനിലും രക്ഷ ഇല്ല; നാം രക്ഷിക്കപ്പെടുവാൻ ആകാശത്തിൻ കീഴിൽ മനുഷ്യരുടെ ഇടയിൽ നല്കപ്പെട്ട വേറൊരു നാമവും ഇല്ല." //Acts 4:12
+#define RED "ചുവപ്പു"
+#define GREEN "പച്ച"
+#define BLUE "നീല"
+#define ALPHA "സുതാര്യത"
+#define CLOSE "അടയ്ക്കുക"
+#define DISPLAYED_VERSE "പ്രദർശിപ്പിച്ച വാക്യം"
+#define FONT_SIZE "അക്ഷര വലിപ്പം"
+#define FONT_COLOR "ഫോണ്ട് നിറം"
+#define BG_COLOR "പശ്ചാത്തല നിറം"
+#define YOUR_COLOR_HERE "നിങ്ങൾ തിരഞ്ഞെടുത്ത നിറം"
+#define BOLD "ബോൾഡ്"
+#define REGULAR "സാധാരണ"
+#define LIGHT "കനംകുറഞ്ഞ"
+#define LEFT "ഇടത്"
+#define CENTER "മധ്യം"
+#define RIGHT "വലത്"
+#define VERSE_ALIGN "വിന്യാസം"
+#define VERSE_ALIGN_DESCRIPTION "വാക്യത്തിൻറെ വിന്യാസം സജ്ജമാക്കാൻ"
+#define OPEN_BIBLE "ബൈബിൾ തുറക്കുക"
+*/
+
 #endif /* __widget_H__ */
 
 
