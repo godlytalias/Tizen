@@ -69,6 +69,30 @@
 #define OPEN_BIBLE "ബൈബിൾ തുറക്കുക"
 */
 
+/*
+#define APP_ID "org.tizen.gtaholybiblehindi"
+#define DEFAULT_WIDGET_VERSE "और किसी दूसरे के द्वारा उद्धार नहीं; क्योंकि स्वर्ग के नीचे मनुष्यों में और कोई दूसरा नाम नहीं दिया गया, जिस के द्वारा हम उद्धार पा सकें॥" //Acts 4:12
+#define RED "लाल"
+#define GREEN "हरा"
+#define BLUE "नीला"
+#define ALPHA "अपारदर्शिता"
+#define CLOSE "बंद करें"
+#define DISPLAYED_VERSE "प्रदर्शित कविता"
+#define FONT_SIZE "फ़ॉन्ट आकार"
+#define FONT_COLOR "फ़ॉन्ट के रंग"
+#define BG_COLOR "पीछे का रंग"
+#define YOUR_COLOR_HERE "आपके चयनित रंग"
+#define BOLD "मोटा"
+#define REGULAR "साधारण"
+#define LIGHT "पतला"
+#define LEFT "वाम"
+#define CENTER "मध्य"
+#define RIGHT "दाहिने"
+#define VERSE_ALIGN "संरेखण"
+#define VERSE_ALIGN_DESCRIPTION "कविता के संरेखण समायोजित करें।"
+#define OPEN_BIBLE "बाइबिल खोलना"
+*/
+
 #endif /* __widget_H__ */
 
 
