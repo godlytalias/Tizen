@@ -5,6 +5,7 @@
     <profile name="mobile"/>
     <ui-application appid="org.tizen.gtaholybiblehindi" exec="gtaholybiblehindi" multiple="false" nodisplay="false" taskmanage="true" type="capp">
         <label>Hindi Bible</label>
+        <label xml:lang="hi-in">पवित्र बाइबिल</label>
         <icon>Bible.png</icon>
     </ui-application>
     <privileges>
