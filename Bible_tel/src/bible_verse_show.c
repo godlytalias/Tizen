@@ -83,7 +83,9 @@ _search_selection_cb(void *data,
 		void *event_info EINA_UNUSED)
 {
 	appdata_s *ad = (appdata_s*)data;
-	char *keyword = strdup(elm_entry_selection_get(obj));
+	const char *selection = elm_entry_selection_get(obj);
+	if (!selection) return;
+	char *keyword = strdup(selection);
 	if (!_keyword_check(keyword, ad)) return;
 	_search_word(ad, NULL, NULL);
 	elm_entry_entry_set(ad->search_entry, keyword);
