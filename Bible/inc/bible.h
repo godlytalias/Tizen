@@ -31,9 +31,16 @@
 
 typedef struct _bible_verse_item bible_verse_item;
 typedef struct app_struct_list app_struct;
+typedef struct _word_list word_list;
+
+struct _word_list{
+	char *word;
+	word_list *nxt;
+};
 
 typedef struct appdata{
 	struct app_struct_list *app_list_head, *app_list_tail;
+	word_list *search_query_tokens;
 	Evas_Object* win;
 	Evas_Object* layout, *search_layout, *bookmark_note_layout;
 	Evas_Object* label, *naviframe, *select_all_check;
@@ -91,6 +98,7 @@ struct _bible_verse_item
    int bookcount, chaptercount, versecount;
    Eina_Bool bookmark : 1;
    Eina_Bool note : 1;
+   Eina_Bool tagged : 1;
 };
 
 void _query_chapter(void*, int, int);

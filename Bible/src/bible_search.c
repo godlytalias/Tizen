@@ -112,6 +112,51 @@ _go_bottom_down(void *data, Evas_Object *obj, const char *emission, const char *
 	ad->long_timer = ecore_timer_add(LONGPRESS_TIMEOUT, _longpress_cb, data);
 }
 
+static char*
+_get_tagged_verse(char *verse, const char *keyword, Eina_Bool whole)
+{
+	char **words = (char**)malloc(sizeof(char*) * 128);
+	int start, c, len, count;
+	bool comp_flag;
+	char *tagged_verse = (char*)malloc(sizeof(char) * 1024);
+	strcpy(tagged_verse, "");
+	for(start = 0, count = 0, c = 0; verse[c] != '\0'; c++) {
+	   if (verse[c] == ' ') {
+	      len = c - start;
+	      words[count] = (char*)malloc(sizeof(char) * 128);
+	      strncpy(words[count], verse + start, len);
+	      words[count][len] = '\0';
+	      count++;
+	      start = c + 1;
+	   }
+	}
+	len = c - start;
+	words[count] = (char*)malloc(sizeof(char) * 128);
+	strncpy(words[count], verse + start, len);
+	words[count][len] = '\0';
+	count++;
+	for (c = 0; c < count; c++) {
+	   if (whole && !strcmp(words[c], keyword))
+	      comp_flag = true;
+	   else if (!whole && strstr(words[c], keyword))
+		  comp_flag = true;
+	   else
+	      comp_flag = false;
+       if (comp_flag)
+	      strcat(tagged_verse, "<color=#ff0000>");
+	   strcat(tagged_verse, words[c]);
+	   if (comp_flag)
+	      strcat(tagged_verse, "</color>");
+	   if (c != (count - 1)) strcat(tagged_verse, " ");
+	}
+	for (c = 0; c < count; c++) {
+	   if (words[c]) free(words[c]);
+	}
+	free(words);
+	free(verse);
+	return tagged_verse;
+}
+
 Evas_Object*
 search_gl_content_get_cb(void *data, Evas_Object *obj, const char *part)
 {
@@ -125,6 +170,16 @@ search_gl_content_get_cb(void *data, Evas_Object *obj, const char *part)
 		evas_object_size_hint_align_set(layout, EVAS_HINT_FILL, EVAS_HINT_FILL);
 		sprintf(reference, "%s %d : %d", Books[verse_item->bookcount], verse_item->chaptercount, verse_item->versecount+1);
 		elm_object_part_text_set(layout, "elm.text.reference", reference);
+		if (!verse_item->tagged) {
+			word_list *query_token = verse_item->appdata->search_query_tokens;
+			while (query_token) {
+				const char *search_keyword = query_token->word;
+				verse_item->verse = _get_tagged_verse(verse_item->verse, search_keyword,
+												  elm_check_state_get(verse_item->appdata->check_whole));
+				query_token = query_token->nxt;
+			}
+			verse_item->tagged = EINA_TRUE;
+		}
 		elm_object_part_text_set(layout, "elm.text.verse", verse_item->verse);
 		evas_object_show(layout);
 		return layout;
@@ -245,6 +300,7 @@ _get_search_results(void *data, int argc, char **argv, char **azColName)
 	Elm_Object_Item *gl_item;
 	int i;
 	bible_verse_item *verse_item = malloc(sizeof(bible_verse_item));
+	verse_item->tagged = EINA_FALSE;
 	for (i = 0; i < argc; i++)
 	{
 		if (!strcmp(azColName[i], "Book"))
@@ -328,10 +384,26 @@ _search_keyword(void *data,
 	if (!_keyword_check(keyword, ad)) return;
 
 	_loading_progress(ad->win);
-	evas_object_data_del(ad->search_result_genlist, "keyword");
+	ch = evas_object_data_del(ad->search_result_genlist, "keyword");
+	if (ch) free(ch);
+	if (ad->search_query_tokens) {
+		word_list *cur = ad->search_query_tokens;
+		word_list *nxt = cur;
+		do {
+		   cur = nxt;
+		   free(cur->word);
+		   nxt = cur->nxt;
+		   free(cur);
+		} while (nxt);
+		ad->search_query_tokens = NULL;
+	}
 	evas_object_data_set(ad->search_result_genlist, "keyword", strdup(keyword));
+	ad->search_query_tokens = (word_list*)malloc(sizeof(word_list));
+	word_list *query_list = ad->search_query_tokens;
 	if (keyword) {
 		ch = strtok(keyword, " ");
+		query_list->word = strdup(ch);
+		query_list->nxt = NULL;
 		if (elm_check_state_get(ad->check_whole))
 			sprintf(keyword_query, "( %s LIKE '%% %s %%'", BIBLE_VERSE_COLUMN, ch);
 		else
@@ -344,6 +416,10 @@ _search_keyword(void *data,
 		strcpy(condition_key, "OR");
 	while (ch)
 	{
+		query_list->nxt = (word_list*)malloc(sizeof(word_list));
+		query_list = query_list->nxt;
+		query_list->word = strdup(ch);
+		query_list->nxt = NULL;
 		if (elm_check_state_get(ad->check_whole))
 			sprintf(keyword_query, "%s %s %s LIKE '%% %s %%'", keyword_query, condition_key, BIBLE_VERSE_COLUMN, ch);
 		else

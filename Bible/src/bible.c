@@ -1032,6 +1032,7 @@ app_create(void *data)
 	ad->app_list_tail = NULL;
 	ad->long_timer = NULL;
 	ad->search_result_genlist = NULL;
+	ad->search_query_tokens = NULL;
 	ad->app_control_mode = EINA_FALSE;
 
 	create_base_gui(ad);
@@ -1125,6 +1126,18 @@ app_terminate(void *data)
 			free(ad->app_list_head);
 			ad->app_list_head = temp;
 		}
+	}
+
+	if (ad->search_query_tokens) {
+		word_list *cur = ad->search_query_tokens;
+		word_list *nxt = cur;
+		do {
+		   cur = nxt;
+		   free(cur->word);
+		   nxt = cur->nxt;
+		   free(cur);
+		} while (nxt);
+		ad->search_query_tokens = NULL;
 	}
 	evas_object_data_del(ad->search_result_genlist, "keyword");
 	if (ad->search_result_genlist)
