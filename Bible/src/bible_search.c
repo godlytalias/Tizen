@@ -1,3 +1,4 @@
+#define _GNU_SOURCE
 #include <tizen.h>
 #include <sqlite3.h>
 #include "bible.h"
@@ -112,22 +113,60 @@ _go_bottom_down(void *data, Evas_Object *obj, const char *emission, const char *
 	ad->long_timer = ecore_timer_add(LONGPRESS_TIMEOUT, _longpress_cb, data);
 }
 
-static char*
-_get_tagged_verse(char *verse, const char *keyword, Eina_Bool whole)
+static void
+_tagged_notify(void *data, Ecore_Thread *thread, void *msg_data)
 {
-	char **words = (char**)malloc(sizeof(char*) * 128);
+	bible_verse_item *verse_item = (bible_verse_item*)data;
+	if (!verse_item) return;
+	if (!strcmp(msg_data, "done")) {
+		free(verse_item->verse);
+		verse_item->verse = verse_item->tagged_verse;
+		elm_genlist_item_update(verse_item->it);
+	}
+	return;
+}
+
+static void
+_thread_done(void *data, Ecore_Thread *thread)
+{
+	bible_verse_item *verse_item = (bible_verse_item*)data;
+	if (!verse_item) return;
+	verse_item->tag_thread = NULL;
+	return;
+}
+
+static void
+_thread_cancel(void *data, Ecore_Thread *thread)
+{
+	bible_verse_item *verse_item = (bible_verse_item*)data;
+	if (!verse_item) return;
+	if (verse_item->tagged_verse)
+		free(verse_item->tagged_verse);
+	verse_item->tagged = EINA_FALSE;
+	verse_item->tag_thread = NULL;
+	return;
+}
+
+static void
+_get_tagged_verse(void *data, Ecore_Thread *thread)
+{
+	bible_verse_item *verse_item = (bible_verse_item*)data;
+	char *verse = verse_item->verse;
+	Eina_Bool whole = verse_item->appdata->search_whole;
+	char *tagged_verse = NULL, **words = NULL;
+
+	words = (char**)malloc(sizeof(char*) * 128);
+	if (!words) return;
 	int start, c, len, count;
 	bool comp_flag;
-	char *tagged_verse = (char*)malloc(sizeof(char) * 1024);
-	strcpy(tagged_verse, "");
 	for(start = 0, count = 0, c = 0; verse[c] != '\0'; c++) {
 	   if (verse[c] == ' ') {
-	      len = c - start;
-	      words[count] = (char*)malloc(sizeof(char) * 128);
-	      strncpy(words[count], verse + start, len);
-	      words[count][len] = '\0';
-	      count++;
-	      start = c + 1;
+		  len = c - start;
+		  words[count] = (char*)malloc(sizeof(char) * 128);
+		  strncpy(words[count], verse + start, len);
+		  words[count][len] = '\0';
+		  count++;
+		  start = c + 1;
 	   }
 	}
 	len = c - start;
@@ -135,26 +174,43 @@ _get_tagged_verse(char *verse, const char *keyword, Eina_Bool whole)
 	strncpy(words[count], verse + start, len);
 	words[count][len] = '\0';
 	count++;
+	tagged_verse = (char*)malloc(sizeof(char) * (strlen(verse) + count * 64));
+	if (!tagged_verse) {
+		for (c = 0; c < count; c++) {
+		   if (words[c]) free(words[c]);
+		}
+		free(words);
+		ecore_thread_feedback(thread, "cancelled");
+		return;
+	}
+	strcpy(tagged_verse, "");
 	for (c = 0; c < count; c++) {
-	   if (whole && !strcmp(words[c], keyword))
-	      comp_flag = true;
-	   else if (!whole && strstr(words[c], keyword))
-		  comp_flag = true;
-	   else
-	      comp_flag = false;
-       if (comp_flag)
-	      strcat(tagged_verse, "<color=#ff0000>");
+		word_list *query_token = verse_item->appdata->search_query_tokens;
+		while (query_token) {
+			const char *search_keyword = query_token->word;
+			if (whole && !strcasecmp(words[c], search_keyword))
+				comp_flag = true;
+			else if (!whole && strcasestr(words[c], search_keyword))
+				comp_flag = true;
+			else
+				comp_flag = false;
+			if (comp_flag) break;
+			query_token = query_token->nxt;
+		}
+	   if (comp_flag)
+		  strcat(tagged_verse, "<color=#ff0000>");
 	   strcat(tagged_verse, words[c]);
 	   if (comp_flag)
-	      strcat(tagged_verse, "</color>");
+		  strcat(tagged_verse, "</color>");
 	   if (c != (count - 1)) strcat(tagged_verse, " ");
 	}
 	for (c = 0; c < count; c++) {
 	   if (words[c]) free(words[c]);
 	}
 	free(words);
-	free(verse);
-	return tagged_verse;
+	verse_item->tagged_verse = tagged_verse;
+	ecore_thread_feedback(thread, "done");
+	return;
 }
 
 Evas_Object*
@@ -171,13 +227,8 @@ search_gl_content_get_cb(void *data, Evas_Object *obj, const char *part)
 		sprintf(reference, "%s %d : %d", Books[verse_item->bookcount], verse_item->chaptercount, verse_item->versecount+1);
 		elm_object_part_text_set(layout, "elm.text.reference", reference);
 		if (!verse_item->tagged) {
-			word_list *query_token = verse_item->appdata->search_query_tokens;
-			while (query_token) {
-				const char *search_keyword = query_token->word;
-				verse_item->verse = _get_tagged_verse(verse_item->verse, search_keyword,
-												  elm_check_state_get(verse_item->appdata->check_whole));
-				query_token = query_token->nxt;
-			}
+			verse_item->tag_thread = ecore_thread_feedback_run(_get_tagged_verse, _tagged_notify, _thread_done, _thread_cancel,
+						                                           verse_item, EINA_FALSE);
 			verse_item->tagged = EINA_TRUE;
 		}
 		elm_object_part_text_set(layout, "elm.text.verse", verse_item->verse);
@@ -191,6 +242,9 @@ static void
 search_gl_del_cb(void *data, Evas_Object *obj)
 {
 	bible_verse_item *verse_item = (bible_verse_item*)data;
+	if (verse_item->tag_thread) {
+
+	}
 	free(verse_item->verse);
 	free(verse_item);
 	verse_item = NULL;
@@ -316,6 +370,7 @@ _get_search_results(void *data, int argc, char **argv, char **azColName)
 	}
 	verse_item->appdata = ad;
 	gl_item = elm_genlist_item_append(ad->search_result_genlist, ad->search_itc, (void*)verse_item, NULL, ELM_GENLIST_ITEM_NONE, _search_result_selected, (void*)verse_item);
+	verse_item->it = gl_item;
 	elm_object_item_data_set(gl_item, verse_item);
 	return 0;
 }
@@ -404,7 +459,8 @@ _search_keyword(void *data,
 		ch = strtok(keyword, " ");
 		query_list->word = strdup(ch);
 		query_list->nxt = NULL;
-		if (elm_check_state_get(ad->check_whole))
+		ad->search_whole = elm_check_state_get(ad->check_whole);
+		if (ad->search_whole)
 			sprintf(keyword_query, "( %s LIKE '%% %s %%'", BIBLE_VERSE_COLUMN, ch);
 		else
 			sprintf(keyword_query, "( %s LIKE '%%%s%%'", BIBLE_VERSE_COLUMN, ch);

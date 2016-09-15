@@ -9,6 +9,7 @@
 #include <dlog.h>
 #include <package_info.h>
 #include <package_manager.h>
+#include <notification_status.h>
 #include "bible_strings.h"
 
 #ifdef  LOG_TAG
@@ -68,6 +69,7 @@ typedef struct appdata{
 	Eina_Bool panel_mode:1;
 	Eina_Bool rotate_flag:1;
 	Eina_Bool app_control_mode:1;
+	Eina_Bool search_whole:1;
 } appdata_s;
 
 #define PARALLEL_READING_SUPPORT_VERSION 0.5
@@ -94,7 +96,8 @@ struct _bible_verse_item
 {
    appdata_s *appdata;
    Elm_Object_Item *it;
-   char *verse, *verse_s;
+   Ecore_Thread *tag_thread;
+   char *verse, *verse_s, *tagged_verse;
    int bookcount, chaptercount, versecount;
    Eina_Bool bookmark : 1;
    Eina_Bool note : 1;
