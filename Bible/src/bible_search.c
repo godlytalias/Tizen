@@ -1,4 +1,3 @@
-#define _GNU_SOURCE
 #include <tizen.h>
 #include <sqlite3.h>
 #include "bible.h"
@@ -147,6 +146,20 @@ _thread_cancel(void *data, Ecore_Thread *thread)
 	return;
 }
 
+static int
+_gtastrcasestr(char *word, const char *keyword)
+{
+	int i;
+	int w_len = strlen(word);
+	int k_len = strlen(keyword);
+	if (w_len < k_len)
+		return -1;
+	for (i = 0; i <= (w_len - k_len); i++)
+		if (strncasecmp(word + i, keyword, k_len) == 0)
+			return i;
+	return -1;
+}
+
 static void
 _get_tagged_verse(void *data, Ecore_Thread *thread)
 {
@@ -185,23 +198,38 @@ _get_tagged_verse(void *data, Ecore_Thread *thread)
 	}
 	strcpy(tagged_verse, "");
 	for (c = 0; c < count; c++) {
+		int needlepos = 0;
+		const char *search_keyword;
 		word_list *query_token = verse_item->appdata->search_query_tokens;
 		while (query_token) {
-			const char *search_keyword = query_token->word;
+			search_keyword = query_token->word;
 			if (whole && !strcasecmp(words[c], search_keyword))
 				comp_flag = true;
-			else if (!whole && strcasestr(words[c], search_keyword))
+			else if (!whole && (needlepos = _gtastrcasestr(words[c], search_keyword)) >= 0)
 				comp_flag = true;
 			else
 				comp_flag = false;
 			if (comp_flag) break;
 			query_token = query_token->nxt;
 		}
-	   if (comp_flag)
+	   if (comp_flag && needlepos > 0) {
+		  char temp[128];
+		  snprintf(temp, (needlepos + 1) * sizeof(char), "%s", words[c]);
+		  strcat(tagged_verse, temp);
 		  strcat(tagged_verse, "<color=#ff0000>");
-	   strcat(tagged_verse, words[c]);
-	   if (comp_flag)
+		  snprintf(temp, (strlen(search_keyword) + 1) * sizeof(char), "%s", words[c] + needlepos);
+		  strcat(tagged_verse, temp);
 		  strcat(tagged_verse, "</color>");
+		  if (strlen(words[c] + needlepos) > strlen(search_keyword))
+			  strcat(tagged_verse, words[c] + needlepos + strlen(search_keyword));
+	   }
+	   else if (comp_flag) {
+		  strcat(tagged_verse, "<color=#ff0000>");
+		  strcat(tagged_verse, words[c]);
+		  strcat(tagged_verse, "</color>");
+	   }
+	   else strcat(tagged_verse, words[c]);
+
 	   if (c != (count - 1)) strcat(tagged_verse, " ");
 	}
 	for (c = 0; c < count; c++) {
