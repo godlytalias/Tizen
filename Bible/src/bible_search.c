@@ -275,7 +275,8 @@ search_gl_del_cb(void *data, Evas_Object *obj)
 {
 	bible_verse_item *verse_item = (bible_verse_item*)data;
 	if (verse_item->tag_thread) {
-
+		ecore_thread_cancel(verse_item->tag_thread);
+		verse_item->tag_thread = NULL;
 	}
 	free(verse_item->verse);
 	free(verse_item);
