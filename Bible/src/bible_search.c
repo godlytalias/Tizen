@@ -224,9 +224,13 @@ _get_tagged_verse(void *data, Ecore_Thread *thread)
 			  strcat(tagged_verse, words[c] + needlepos + strlen(search_keyword));
 	   }
 	   else if (comp_flag) {
+		  char temp[128];
 		  strcat(tagged_verse, "<color=#ff0000>");
-		  strcat(tagged_verse, words[c]);
+		  snprintf(temp, (strlen(search_keyword) + 1) * sizeof(char), "%s", words[c]);
+		  strcat(tagged_verse, temp);
 		  strcat(tagged_verse, "</color>");
+		  if (strlen(words[c]) > strlen(search_keyword))
+			  strcat(tagged_verse, words[c] + strlen(search_keyword));
 	   }
 	   else strcat(tagged_verse, words[c]);
 
