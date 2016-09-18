@@ -388,6 +388,8 @@ _get_search_results(void *data, int argc, char **argv, char **azColName)
 	int i;
 	bible_verse_item *verse_item = malloc(sizeof(bible_verse_item));
 	verse_item->tagged = EINA_FALSE;
+	verse_item->tag_thread = NULL;
+	verse_item->tagged_verse = NULL;
 	for (i = 0; i < argc; i++)
 	{
 		if (!strcmp(azColName[i], "Book"))
