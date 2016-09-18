@@ -203,8 +203,10 @@ _get_tagged_verse(void *data, Ecore_Thread *thread)
 		word_list *query_token = verse_item->appdata->search_query_tokens;
 		while (query_token) {
 			search_keyword = query_token->word;
-			if (whole && !strcasecmp(words[c], search_keyword))
+			if (whole && !strcasecmp(words[c], search_keyword)) {
 				comp_flag = true;
+				needlepos = 0;
+			}
 			else if (!whole && (needlepos = _gtastrcasestr(words[c], search_keyword)) >= 0)
 				comp_flag = true;
 			else
