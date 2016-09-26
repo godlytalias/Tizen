@@ -168,14 +168,14 @@ _get_tagged_verse(void *data, Ecore_Thread *thread)
 	Eina_Bool whole = verse_item->appdata->search_whole;
 	char *tagged_verse = NULL, **words = NULL;
 
-	words = (char**)malloc(sizeof(char*) * 128);
+	words = (char**)malloc(sizeof(char*) * 512);
 	if (!words) return;
 	int start, c, len, count;
 	bool comp_flag;
 	for(start = 0, count = 0, c = 0; verse[c] != '\0'; c++) {
 	   if (verse[c] == ' ') {
 		  len = c - start;
-		  words[count] = (char*)malloc(sizeof(char) * 128);
+		  words[count] = (char*)malloc(sizeof(char) * 512);
 		  strncpy(words[count], verse + start, len);
 		  words[count][len] = '\0';
 		  count++;
@@ -183,7 +183,7 @@ _get_tagged_verse(void *data, Ecore_Thread *thread)
 	   }
 	}
 	len = c - start;
-	words[count] = (char*)malloc(sizeof(char) * 128);
+	words[count] = (char*)malloc(sizeof(char) * 512);
 	strncpy(words[count], verse + start, len);
 	words[count][len] = '\0';
 	count++;
@@ -215,7 +215,7 @@ _get_tagged_verse(void *data, Ecore_Thread *thread)
 			query_token = query_token->nxt;
 		}
 	   if (comp_flag && needlepos > 0) {
-		  char temp[128];
+		  char temp[512];
 		  snprintf(temp, (needlepos + 1) * sizeof(char), "%s", words[c]);
 		  strcat(tagged_verse, temp);
 		  strcat(tagged_verse, "<color=#ff0000>");
@@ -226,7 +226,7 @@ _get_tagged_verse(void *data, Ecore_Thread *thread)
 			  strcat(tagged_verse, words[c] + needlepos + strlen(search_keyword));
 	   }
 	   else if (comp_flag) {
-		  char temp[128];
+		  char temp[512];
 		  strcat(tagged_verse, "<color=#ff0000>");
 		  snprintf(temp, (strlen(search_keyword) + 1) * sizeof(char), "%s", words[c]);
 		  strcat(tagged_verse, temp);
