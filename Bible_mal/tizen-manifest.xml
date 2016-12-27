@@ -3,7 +3,7 @@
     <author email="godlytalias@yahoo.co.in" href="godlytalias.blogspot.com">Godly T Alias</author>
     <description>This is a free Bible application released with GPL license.</description>
     <profile name="mobile"/>
-    <ui-application appid="org.tizen.gtaholybiblemal" exec="gtaholybiblemal" multiple="false" nodisplay="false" taskmanage="true" type="capp">
+    <ui-application appid="org.tizen.gtaholybiblemal" exec="gtaholybiblemal" hw-acceleration="on" multiple="false" nodisplay="false" taskmanage="true" type="capp">
         <label>Malayalam Bible</label>
         <label xml:lang="ml-in">സത്യവേദ പുസ്തകം</label>
         <icon>Bible.png</icon>

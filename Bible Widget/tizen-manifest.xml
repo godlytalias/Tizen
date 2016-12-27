@@ -3,7 +3,7 @@
     <author email="godlytalias@yahoo.co.in" href="godlytalias.blogspot.com">Godly T.Alias</author>
     <description>This is a wallpaper widget packed along with GTA Holy Bible apps.</description>
     <profile name="mobile"/>
-    <widget-application appid="org.widget.gta_holy_bible" exec="gta_holy_bible_widget" main="true" update-period="1800">
+    <widget-application appid="org.widget.gta_holy_bible" exec="gta_holy_bible_widget" hw-acceleration="on" main="true" update-period="1800">
         <label>English Verse</label>
         <icon>Bible.png</icon>
         <support-size preview="preview_4x4.png">4x4</support-size>
